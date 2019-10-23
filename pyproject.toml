@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "conan-for-poetry"
+version = "0.0.0"
+description = " A Poetry plugin integrating Conan support."
+
+license = "MIT"
+
+authors = [
+    "Synodic Software"
+]
+
+readme = "README.md"
+
+repository = "https://github.com/Synodic-Software/Conan-for-Poetry"
+homepage = "https://github.com/Synodic-Software/Conan-for-Poetry"
+
+
+[tool.poetry.dependencies]
+python  = "^3.8"
+poetry = "^0.12"
+conan = "^1.19"
+
+
+[tool.poetry.dev-dependencies]
+pylint  = "^2.4"
+coverage = "^4.5"
+
+[build-system]
+requires        = ["poetry>=0.12"]
+build-backend   = "poetry.masonry.api"
