@@ -1,5 +1,6 @@
 #Project
 Build/
+TestResults/
 
 #Visual Studio
 *.sln
