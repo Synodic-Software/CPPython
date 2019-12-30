@@ -1,8 +1,8 @@
 name: Pull Request Chores
+
 on:
   pull_request:
-    types: 
-      - [opened, edited]
+    types: [opened, edited]
 
 jobs:
 
