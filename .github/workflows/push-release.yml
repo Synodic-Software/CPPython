@@ -1,15 +1,16 @@
-name: Release Management
+name: Release Push Chores
 
 on:
   push:
     branches:
-      - development
       - release-*
 
 jobs:
-  update_draft_release:
+
+  Update Draft Release:
+  
     runs-on: ubuntu-latest
     steps:
-      - uses: toolmantim/release-drafter@v5.2.0
+      - uses: release-drafter/release-drafter@v5.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
