@@ -1,4 +1,4 @@
-name: Publishing Chores
+name: Publish Chores
 
 on: 
   release:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   
-  PyPI Release Deployment:
+  pypi_release_deployment:
 
     runs-on: ubuntu-latest
     strategy:

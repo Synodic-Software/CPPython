@@ -7,7 +7,7 @@ on:
 
 jobs:
 
-  Update Draft Release:
+  update_draft_release:
   
     runs-on: ubuntu-latest
     steps:
