@@ -1,6 +1,6 @@
 ﻿import pytest
 
-from conan_for_poetry.plugin import ConanPlugin
+from synodic_poetry.plugin import SynodicPlugin
 from path import Path
 from distutils.dir_util import copy_tree
 
@@ -20,64 +20,64 @@ class TestPlugin():
 
     def test_poetry_new(self):
 
-        ConanPlugin().poetry_new()
+        SynodicPlugin().poetry_new()
 
     def test_poetry_init(self):
 
-        ConanPlugin().poetry_init()
+        SynodicPlugin().poetry_init()
 
     def test_poetry_install(self, test_project):
 
-        ConanPlugin().poetry_install()
+        SynodicPlugin().poetry_install()
 
     def test_poetry_update(self, test_project):
 
-        ConanPlugin().poetry_update()
+        SynodicPlugin().poetry_update()
 
     def test_poetry_add(self):
 
-        ConanPlugin().poetry_add()
+        SynodicPlugin().poetry_add()
 
     def test_poetry_remove(self):
 
-        ConanPlugin().poetry_remove()
+        SynodicPlugin().poetry_remove()
 
     def test_poetry_show(self):
 
-        ConanPlugin().poetry_show()
+        SynodicPlugin().poetry_show()
 
     def test_poetry_build(self):
 
-        ConanPlugin().poetry_build()
+        SynodicPlugin().poetry_build()
 
     def test_poetry_publish(self):
 
-        ConanPlugin().poetry_publish()
+        SynodicPlugin().poetry_publish()
 
     def test_poetry_config(self):
 
-        ConanPlugin().poetry_config()
+        SynodicPlugin().poetry_config()
 
     def test_poetry_check(self):
 
-        ConanPlugin().poetry_check()
+        SynodicPlugin().poetry_check()
 
     def test_poetry_search(self):
 
-        ConanPlugin().poetry_search()
+        SynodicPlugin().poetry_search()
 
     def test_poetry_lock(self):
 
-        ConanPlugin().poetry_lock()
+        SynodicPlugin().poetry_lock()
 
     def test_poetry_version(self):
 
-        ConanPlugin().poetry_version()
+        SynodicPlugin().poetry_version()
 
     def test_poetry_export(self):
 
-        ConanPlugin().poetry_export()
+        SynodicPlugin().poetry_export()
 
     def test_poetry_env(self):
 
-        ConanPlugin().poetry_env()
+        SynodicPlugin().poetry_env()

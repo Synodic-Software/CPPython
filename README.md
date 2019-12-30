@@ -1,2 +1,2 @@
-# Conan-for-Poetry
-A plugin for Poetry that enables integrated Conan support.
+# Synodic-Poetry
+A Plugin for Poetry that enables a transparent Conan and CMake workflow.
