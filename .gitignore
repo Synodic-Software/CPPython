@@ -11,3 +11,4 @@ TestResults/
 *.pyc
 dist/
 .vs/
+.vscode/

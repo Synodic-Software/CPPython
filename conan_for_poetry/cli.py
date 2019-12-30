@@ -1,90 +1,94 @@
-#TODO: Remove CLI interface once poetry has plugin support
+# TODO: Remove CLI interface once poetry has plugin support
 
 import click
+import sys
+import subprocess
 
 from conan_for_poetry.plugin import ConanPlugin
 
 
 @click.group()
 def entrypoint():
-    pass
+    command = ['poetry']
+    command.extend(sys.argv[1:])
+    subprocess.run(command)
 
 
 @entrypoint.command()
-def poetry_new(self):
+def new():
     ConanPlugin().poetry_new()
 
 
 @entrypoint.command()
-def Init(self):
-    ConanPlugin.poetry_init()
+def init():
+    ConanPlugin().poetry_init()
 
 
 @entrypoint.command()
-def Install():
+def install():
     ConanPlugin().poetry_install()
 
 
 @entrypoint.command()
-def Update():
+def update():
     ConanPlugin().poetry_update()
 
 
 @entrypoint.command()
-def poetry_add(self):
+def add():
     ConanPlugin().poetry_add()
 
 
 @entrypoint.command()
-def poetry_remove(self):
+def remove():
     ConanPlugin().poetry_remove()
 
 
 @entrypoint.command()
-def poetry_show(self):
+def show():
     ConanPlugin().poetry_show()
 
 
 @entrypoint.command()
-def poetry_build(self):
+def build():
     ConanPlugin().poetry_build()
 
 
 @entrypoint.command()
-def poetry_publish(self):
+def publish():
     ConanPlugin().poetry_publish()
 
 
 @entrypoint.command()
-def poetry_config(self):
+def config():
     ConanPlugin().poetry_config()
 
 
 @entrypoint.command()
-def poetry_check(self):
+def check():
     ConanPlugin().poetry_check()
 
 
 @entrypoint.command()
-def poetry_search(self):
+def search():
     ConanPlugin().poetry_search()
 
-    
+
 @entrypoint.command()
-def poetry_lock(self):
+def lock():
     ConanPlugin().poetry_lock()
 
 
 @entrypoint.command()
-def poetry_version(self):
+def version():
     ConanPlugin().poetry_version()
 
 
 @entrypoint.command()
-def poetry_export(self):
+def export():
     ConanPlugin().poetry_export()
 
 
 @entrypoint.command()
-def poetry_env(self):
+def env():
     ConanPlugin().poetry_env()
