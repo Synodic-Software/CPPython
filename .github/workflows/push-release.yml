@@ -1,0 +1,16 @@
+name: Release Push Chores
+
+on:
+  push:
+    branches:
+      - release-*
+
+jobs:
+
+  update_draft_release:
+  
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v5.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

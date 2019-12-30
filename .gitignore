@@ -1,0 +1,14 @@
+#Project
+Build/
+TestResults/
+
+#Visual Studio
+*.sln
+*.pyproj
+
+#Python
+*.egg-info
+*.pyc
+dist/
+.vs/
+.vscode/

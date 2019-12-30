@@ -1,0 +1,6 @@
+Feature: ['feature/*', 'feat/*']
+Bug: bug/*
+Chore: chore/*
+Optimization: ['optimization/*', 'opt/*']
+Cleanup: cleanup/*
+Documentation: ['documentation/*', 'doc/*']

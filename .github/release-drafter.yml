@@ -1,0 +1,21 @@
+name-template: 'v$NEXT_PATCH_VERSION'
+tag-template: 'v$NEXT_PATCH_VERSION'
+categories:
+  - title: 'Features'
+    labels:
+      - 'Feature'
+  - title: 'Optimizations'
+    labels:
+      - 'Optimization'    
+  - title: 'Bug Fixes'
+    labels:
+      - 'Bug'
+  - title: 'Maintenance'
+    labels:
+      - 'Chore'
+      - 'Cleanup'
+      - 'Documentation'
+template: |
+  ## Changes
+
+  $CHANGES

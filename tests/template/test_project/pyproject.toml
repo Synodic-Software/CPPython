@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "conan-for-poetry-test"
+version = "0.0.0"
+description = "A test package for Conan for Poetry."
+
+license = "MIT"
+
+authors = [
+    "Synodic Software"
+]
+
+readme = "README.md"
+
+repository = "https://github.com"
+homepage = "https://github.com"
+
+
+[tool.poetry.dependencies]
+conan = "^1.21"
+
+[tool.conan]
+install-path = "test_install"
+generators =  ["cmake_find_package", "cmake_paths"]
+
+[tool.conan.remotes]
+
+[tool.conan.dependencies]
+Poco = "1.9.2"
+
+[build-system]
+requires        = ["poetry>=1.0.0"]
+build-backend   = "poetry.masonry.api"
