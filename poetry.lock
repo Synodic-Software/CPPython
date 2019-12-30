@@ -130,7 +130,7 @@ version = "0.7.6"
 clikit = ">=0.4.0,<0.5.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Composable command line interface toolkit"
 name = "click"
 optional = false
@@ -817,7 +817,7 @@ python-versions = "*"
 version = "0.5.1"
 
 [metadata]
-content-hash = "627b48d699a5ec5365a1dbddab165abb4c05dccd23da785aca9a618f7d65a720"
+content-hash = "98b14d016538f09da5cc433f051542f736b5b71112cb67fc8e0e9ab7e4ae4538"
 python-versions = "^3.8"
 
 [metadata.files]

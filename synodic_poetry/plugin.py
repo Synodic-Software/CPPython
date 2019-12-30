@@ -4,7 +4,7 @@ from pathlib import Path as _Path
 from conans.client.conan_api import ConanAPIV1 as _ConanAPI
 
 
-class ConanPlugin:
+class SynodicPlugin:
 
     data = None
 
