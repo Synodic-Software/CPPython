@@ -1,6 +1,6 @@
 ﻿import pytest
 
-from conan_for_poetry.plugin import SynodicPlugin
+from synodic_poetry.plugin import SynodicPlugin
 from path import Path
 from distutils.dir_util import copy_tree
 
