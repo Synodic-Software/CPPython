@@ -18,8 +18,8 @@ homepage = "https://github.com/Synodic-Software/Synodic-Poetry"
 [tool.poetry.dependencies]
 python  = "^3.8"
 poetry = "^1.0"
-conan = "^1.21"
-toml = "^0.10"
+conan = "^1.22"
+tomlkit = "^0.5.8"
 
 
 [tool.poetry.dev-dependencies]

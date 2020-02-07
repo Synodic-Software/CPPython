@@ -30,7 +30,7 @@ class SynodicPlugin:
             self.dependencies = conanData["dependencies"]
 
             # Dependencies require some post processing
-            self.generators = conanData["generators"]
+            self.generators = ["cmake_find_package", "cmake_paths"]
             assert len(self.generators) > 0
 
             # Generate the conanfile.txt
