@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "conan-for-poetry-test"
+name = "synodic-poetry-test"
 version = "0.0.0"
 description = "A test package for Conan for Poetry."
 
@@ -24,7 +24,7 @@ install-path = "test_install"
 [tool.conan.remotes]
 
 [tool.conan.dependencies]
-Poco = "^1.9"
+Poco = "1.9"
 
 [build-system]
 requires        = ["poetry>=1.0.3"]
