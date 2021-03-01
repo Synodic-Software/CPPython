@@ -1,4 +1,4 @@
-﻿from synodic_poetry.plugin import SynodicPlugin
+﻿from poetic_conan.plugin import SynodicPlugin
 from conans.client.conan_api import ConanAPIV1
 
 
