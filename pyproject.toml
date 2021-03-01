@@ -1,41 +1,37 @@
 [tool.poetry]
+description = " A Poetry plugin integrating a transparent Conan and CMake workflow."
 name = "poetic-conan"
 version = "0.1.0"
-description = " A Poetry plugin integrating a transparent Conan and CMake workflow."
 
 license = "MIT"
 
 authors = [
-    "Synodic Software"
+  "Synodic Software",
 ]
 
 readme = "README.md"
 
-repository = "https://github.com/Synodic-Software/Synodic-Poetry"
 homepage = "https://github.com/Synodic-Software/Synodic-Poetry"
-
+repository = "https://github.com/Synodic-Software/Synodic-Poetry"
 
 [tool.poetry.dependencies]
-python  = "^3.9"
-poetry = "^1.1"
 conan = "^1.34"
+poetry = "^1.1"
+python = "^3.9"
 tomlkit = "^0.7"
 
-
 [tool.poetry.dev-dependencies]
+black = {version = "^20.8b1", allow-prereleases = true}
+coverage = "^5.5"
 flake8 = "^.8.4"
 pytest = "^6.2"
-coverage = "^5.5"
-black = {version = "^20.8b1", allow-prereleases = true}
 pytest-xdist = "^2.2"
 
-
 [tool.pytest.ini_options]
-addopts = "-n8"
+addopts = "-n auto"
 
 [tool.black]
 
-
 [build-system]
-requires        = ["poetry>=1.1"]
-build-backend   = "poetry.core.masonry.api"
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry>=1.1"]
