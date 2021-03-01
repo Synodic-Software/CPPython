@@ -16,20 +16,26 @@ homepage = "https://github.com/Synodic-Software/Synodic-Poetry"
 
 
 [tool.poetry.dependencies]
-python  = "^3.8"
-poetry = "^1.0"
-conan = "^1.22"
-tomlkit = "^0.5.8"
+python  = "^3.9"
+poetry = "^1.1"
+conan = "^1.34"
+tomlkit = "^0.7"
 
 
 [tool.poetry.dev-dependencies]
-flake8 = "^3.7.9"
-pytest = "^5.3.2"
-coverage = "^5.0"
-black = {version = "^19.10b0", allow-prereleases = true}
-pytest-xdist = "^1.31.0"
+flake8 = "^.8.4"
+pytest = "^6.2"
+coverage = "^5.5"
+black = {version = "^20.8b1", allow-prereleases = true}
+pytest-xdist = "^2.2"
+
+
+[tool.pytest.ini_options]
+addopts = "-n8"
+
+[tool.black]
 
 
 [build-system]
-requires        = ["poetry>=1.0.0"]
-build-backend   = "poetry.masonry.api"
+requires        = ["poetry>=1.1"]
+build-backend   = "poetry.core.masonry.api"
