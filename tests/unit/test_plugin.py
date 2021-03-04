@@ -3,7 +3,7 @@ from conans.client.conan_api import ConanAPIV1
 
 
 class TestFormat:
-    def test_validation(self, tmp_workspace):
+    def test_poetry_validation(self, tmp_workspace):
         with tmp_workspace:
             SynodicPlugin().poetry_check()
 
