@@ -1,10 +1,15 @@
 from tomlkit import parse
 
+from cleo.io.io import IO as _IO
+
+from poetry.plugins.plugin import Plugin as _Plugin
+from poetry.poetry import Poetry as _Poetry
+
 from pathlib import Path as _Path
 from conans.client.conan_api import ConanAPIV1 as _ConanAPI
 
 
-class SynodicPlugin:
+class SynodicPlugin(_Plugin):
 
     data = None
     generators = ["cmake_find_package", "cmake_paths"]
@@ -55,6 +60,13 @@ class SynodicPlugin:
             )
 
             print(contents, file=file)
+
+    def activate(self, poetry: _Poetry, io: _IO):
+        """
+        The entry function for the Poetry plugin
+        """
+
+        io.write_line(f"Hello")
 
     def poetry_new(self):
 
