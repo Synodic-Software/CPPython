@@ -11,12 +11,12 @@ authors = [
 
 readme = "README.md"
 
-homepage = "https://github.com/Synodic-Software/Synodic-Poetry"
-repository = "https://github.com/Synodic-Software/Synodic-Poetry"
+homepage = "https://github.com/Synodic-Software/Poetic-Conan"
+repository = "https://github.com/Synodic-Software/Poetic-Conan"
 
 [tool.poetry.dependencies]
 conan = "^1.35"
-poetry = "^1.1"
+poetry = { git = "https://github.com/python-poetry/poetry.git", branch = "master" }
 python = "^3.9"
 tomlkit = "^0.7"
 pylint = "^2.7.4"

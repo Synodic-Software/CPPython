@@ -131,9 +131,8 @@ class SynodicPlugin:
         pass
 
     def poetry_publish(self):
-        self.__init_data()
-
-        _ConanAPI().export()
+        
+        pass
 
     def poetry_config(self):
 
