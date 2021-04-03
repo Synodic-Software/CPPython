@@ -556,7 +556,7 @@ virtualenv = "^20.4.3"
 type = "git"
 url = "https://github.com/python-poetry/poetry.git"
 reference = "master"
-resolved_reference = "45a9b8f20384591d0a33ae876bcf23656f928ec0"
+resolved_reference = "b753aaf4c3c08ef0e54941a6616fe318fdf4f6e4"
 
 [[package]]
 name = "poetry-core"
@@ -571,7 +571,7 @@ develop = false
 type = "git"
 url = "https://github.com/python-poetry/poetry-core.git"
 reference = "master"
-resolved_reference = "8996496241ace59160411454f4a641ac391471f4"
+resolved_reference = "f5c6b648381c842223a3ea4ae28c4ea35458c7d3"
 
 [[package]]
 name = "ptyprocess"

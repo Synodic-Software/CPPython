@@ -1,4 +1,4 @@
-name: Development Push Chores
+name: Publish Development
 
 on:
   push:

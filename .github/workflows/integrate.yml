@@ -1,4 +1,4 @@
-name: Pull Request Chores
+name: Integration
 
 on:
   pull_request:
@@ -10,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - uses: TimonVS/pr-labeler-action@v3.1
+      - uses: TimonVS/pr-labeler-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -18,9 +18,10 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      matrix:
+      matrix: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
         python-version: [3.8]
 
+    runs-on: ${{ matrix.os }}
     steps:
 
     - uses: actions/checkout@v2

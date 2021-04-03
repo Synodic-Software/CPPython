@@ -1,4 +1,4 @@
-name: Release Push Chores
+name: Github Release
 
 on:
   push:
