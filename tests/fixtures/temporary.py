@@ -14,7 +14,7 @@ def pytest_generate_tests(metafunc):
 
     # Provides a directory taken from the 'tests/data' directory
     if "directory" in metafunc.fixturenames:
-        metafunc.parametrize("directory", _directories)
+        metafunc.parametrize("directory", _directories, ids = [id.name for id in _directories])
 
 
 @pytest.fixture
