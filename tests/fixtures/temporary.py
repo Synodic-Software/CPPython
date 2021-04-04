@@ -6,6 +6,10 @@ from distutils.dir_util import copy_tree
 
 from typing import Generator
 
+from poetry.poetry import Poetry
+from poetry.packages.locker import Locker
+from poetry.packages.project_package import ProjectPackage
+from poetry.config.config import Config
 
 def _extract_directories(directory):
     directories = [Path(f) for f in scandir(directory) if f.is_dir()]
@@ -32,12 +36,26 @@ def tmp_library(tmp_path: Path, directory: Path) -> Path:
     return target_directory
 
 
+class workspaceInfo:
+    def __init__(self, name, poetry):
+        self.name = name
+        self.poetry = poetry
+
 @pytest.fixture
-def tmp_workspace(tmp_library: Path) -> Generator[str, None, None]:
+def tmp_workspace(tmp_library: Path) -> Generator[workspaceInfo, None, None]:
     """
     While the fixture is used, the current directory exists as a temporary workspace populated with a library and a virtual environment
 
     @returns - The name of the library
     """
     with tmp_library:
-        yield tmp_library.name
+        poetry = Poetry(
+                "pyproject.toml",
+                {},
+                ProjectPackage(tmp_library.name, "0.1.0"),
+                Locker("poetry.lock", {}),
+                Config(False, Path().absolute())
+        )
+
+
+        yield workspaceInfo(tmp_library.name, poetry)
