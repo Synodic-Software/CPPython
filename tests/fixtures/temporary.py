@@ -6,11 +6,6 @@ from distutils.dir_util import copy_tree
 
 from typing import Generator
 
-from poetry.poetry import Poetry
-from poetry.packages.locker import Locker
-from poetry.packages.project_package import ProjectPackage
-from poetry.config.config import Config
-
 def _extract_directories(directory):
     directories = [Path(f) for f in scandir(directory) if f.is_dir()]
     return directories
@@ -37,9 +32,9 @@ def tmp_library(tmp_path: Path, directory: Path) -> Path:
 
 
 class workspaceInfo:
-    def __init__(self, name, poetry):
+    def __init__(self, name: str):
         self.name = name
-        self.poetry = poetry
+
 
 @pytest.fixture
 def tmp_workspace(tmp_library: Path) -> Generator[workspaceInfo, None, None]:
@@ -49,13 +44,5 @@ def tmp_workspace(tmp_library: Path) -> Generator[workspaceInfo, None, None]:
     @returns - The name of the library
     """
     with tmp_library:
-        poetry = Poetry(
-                "pyproject.toml",
-                {},
-                ProjectPackage(tmp_library.name, "0.1.0"),
-                Locker("poetry.lock", {}),
-                Config(False, Path().absolute())
-        )
 
-
-        yield workspaceInfo(tmp_library.name, poetry)
+        yield workspaceInfo(tmp_library.name)

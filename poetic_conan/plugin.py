@@ -1,15 +1,15 @@
 from tomlkit import parse
 
-from cleo.io.io import IO as _IO
+from cleo.io.io import IO
 
-from poetry.plugins.plugin import Plugin as _Plugin
-from poetry.poetry import Poetry as _Poetry
+from poetry.plugins.plugin import Plugin
+from poetry.poetry import Poetry
 
-from pathlib import Path as _Path
-from conans.client.conan_api import ConanAPIV1 as _ConanAPI
+from pathlib import Path
+from conans.client.conan_api import ConanAPIV1 as ConanAPI
 
 
-class SynodicPlugin(_Plugin):
+class SynodicPlugin(Plugin):
 
     data = None
     generators = ["cmake_find_package", "cmake_paths"]
@@ -25,10 +25,10 @@ class SynodicPlugin(_Plugin):
 
             # Generate the conanfile.py
             self.__write_conanfile(
-                _Path(SynodicPlugin.data["tool"]["conan"]["install-path"])
+                Path(SynodicPlugin.data["tool"]["conan"]["install-path"])
             )
 
-    def __write_conanfile(self, path: _Path):
+    def __write_conanfile(self, path: Path):
         """
         Generate a conanfile.py with the given path.
         The resulting recipe is TODO
@@ -61,7 +61,7 @@ class SynodicPlugin(_Plugin):
 
             print(contents, file=file)
 
-    def activate(self, poetry: _Poetry, io: _IO):
+    def activate(self, poetry: Poetry, io: IO):
         """
         The entry function for the Poetry plugin
         """
@@ -78,7 +78,7 @@ class SynodicPlugin(_Plugin):
 
     def poetry_install(self):
 
-        _ConanAPI().install(
+        ConanAPI().install(
             path=SynodicPlugin.data["tool"]["conan"]["install-path"],
             name=SynodicPlugin.data["tool"]["poetry"]["name"],
             version=SynodicPlugin.data["tool"]["poetry"]["version"],
@@ -97,13 +97,13 @@ class SynodicPlugin(_Plugin):
             generators=None,
             no_imports=False,
             install_folder=SynodicPlugin.data["tool"]["conan"]["install-path"],
-            cwd=_Path().absolute(),
+            cwd=Path().absolute(),
             lockfile=None,
         )
 
     def poetry_update(self):
 
-        _ConanAPI().install(
+        ConanAPI().install(
             path=SynodicPlugin.data["tool"]["conan"]["install-path"],
             name=SynodicPlugin.data["tool"]["poetry"]["name"],
             version=SynodicPlugin.data["tool"]["poetry"]["version"],
@@ -122,7 +122,7 @@ class SynodicPlugin(_Plugin):
             generators=None,
             no_imports=False,
             install_folder=SynodicPlugin.data["tool"]["conan"]["install-path"],
-            cwd=_Path().absolute(),
+            cwd=Path().absolute(),
             lockfile=None,
         )
 
