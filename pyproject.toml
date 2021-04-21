@@ -16,19 +16,22 @@ repository = "https://github.com/Synodic-Software/Poetic-Conan"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-conan = "^1.35"
+conan = "^1.35.2"
 poetry = { git = "https://github.com/python-poetry/poetry.git", branch = "master" }
-tomlkit = "^0.7"
+tomlkit = "^0.7.0"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^20.8b1", allow-prereleases = true}
 coverage = "^5.5"
-pytest = "^6.2"
-pytest-xdist = "^2.2"
+pytest = "^6.2.3"
+pytest-xdist = "^2.2.1"
 pylint = "^2.7.4"
 
+[tool.poetry.plugins."poetry.application.plugin"]
+poetic-conan = "poetic-conan.plugin:SynodicPlugin"
+
 [tool.pytest.ini_options]
-addopts = "-n auto"
+#addopts = "-n auto"
 
 [tool.black]
 line-length = 120
@@ -41,4 +44,4 @@ max-line-length = "120"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = ["poetry>=1.1"]
+requires = ["poetry>=1.1.6"]

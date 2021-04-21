@@ -2,14 +2,14 @@ from tomlkit import parse
 
 from cleo.io.io import IO
 
-from poetry.plugins.plugin import Plugin
+from poetry.plugins.application_plugin import ApplicationPlugin
 from poetry.poetry import Poetry
 
 from pathlib import Path
 from conans.client.conan_api import ConanAPIV1 as ConanAPI
 
 
-class SynodicPlugin(Plugin):
+class SynodicPlugin(ApplicationPlugin):
 
     data = None
     generators = ["cmake_find_package", "cmake_paths"]

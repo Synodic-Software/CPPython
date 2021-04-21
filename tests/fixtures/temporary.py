@@ -1,14 +1,28 @@
 import pytest
-from os import scandir
+import subprocess
+import os
+import contextlib
 
 from pathlib import Path
 from distutils.dir_util import copy_tree
 
 from typing import Generator
 
+
 def _extract_directories(directory):
-    directories = [Path(f) for f in scandir(directory) if f.is_dir()]
+    directories = [Path(f) for f in os.scandir(directory) if f.is_dir()]
     return directories
+
+
+@contextlib.contextmanager
+def _working_directory(path):
+    """Changes working directory and returns to previous on exit."""
+    prev_cwd = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
 
 
 _directories = _extract_directories(Path("tests/data/project_templates").absolute())
@@ -30,19 +44,12 @@ def tmp_library(tmp_path: Path, directory: Path) -> Path:
 
     return target_directory
 
-
-class workspaceInfo:
-    def __init__(self, name: str):
-        self.name = name
-
-
 @pytest.fixture
-def tmp_workspace(tmp_library: Path) -> Generator[workspaceInfo, None, None]:
+def tmp_workspace(tmp_library: Path) -> Generator[Path, None, None]:
     """
     While the fixture is used, the current directory exists as a temporary workspace populated with a library and a virtual environment
 
     @returns - The name of the library
     """
-    with tmp_library:
-
-        yield workspaceInfo(tmp_library.name)
+    with _working_directory(tmp_library):
+        yield tmp_library
