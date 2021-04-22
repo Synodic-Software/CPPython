@@ -1,6 +1,6 @@
 [tool.poetry]
 description = " A Poetry plugin integrating a transparent Conan and CMake workflow."
-name = "poetic-conan"
+name = "cppoetry"
 version = "0.1.0"
 
 license = "MIT"
@@ -11,14 +11,15 @@ authors = [
 
 readme = "README.md"
 
-homepage = "https://github.com/Synodic-Software/Poetic-Conan"
-repository = "https://github.com/Synodic-Software/Poetic-Conan"
+homepage = "https://github.com/Synodic-Software/CPPoetry"
+repository = "https://github.com/Synodic-Software/CPPoetry"
 
 [tool.poetry.dependencies]
 python = "^3.9"
 conan = "^1.35.2"
 poetry = { git = "https://github.com/python-poetry/poetry.git", branch = "master" }
 tomlkit = "^0.7.0"
+click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^20.8b1", allow-prereleases = true}
@@ -28,7 +29,10 @@ pytest-xdist = "^2.2.1"
 pylint = "^2.7.4"
 
 [tool.poetry.plugins."poetry.application.plugin"]
-poetic-conan = "poetic-conan.plugin:SynodicPlugin"
+cppoetry = "cppoetry.plugin:SynodicPlugin"
+
+[tool.poetry.scripts]
+cppoetry = 'cppoetry.console:cli'
 
 [tool.pytest.ini_options]
 #addopts = "-n auto"

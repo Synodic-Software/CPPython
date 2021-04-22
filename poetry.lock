@@ -151,7 +151,7 @@ pylev = ">=1.3.0,<2.0.0"
 name = "click"
 version = "7.1.2"
 description = "Composable command line interface toolkit"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -556,7 +556,7 @@ virtualenv = "^20.4.3"
 type = "git"
 url = "https://github.com/python-poetry/poetry.git"
 reference = "master"
-resolved_reference = "f8ada85487834dfea60b469f5701f593fceb6e00"
+resolved_reference = "494dec279daeb3b52348a793598eb4861163403e"
 
 [[package]]
 name = "poetry-core"
@@ -571,7 +571,7 @@ develop = false
 type = "git"
 url = "https://github.com/python-poetry/poetry-core.git"
 reference = "master"
-resolved_reference = "f478ec31412a7f9e22df99e17e337e24a61cc989"
+resolved_reference = "44167a577b6cccafb1baef2e42a2991e11d8ea1e"
 
 [[package]]
 name = "ptyprocess"
@@ -854,7 +854,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.4.3"
+version = "20.4.4"
 description = "Virtual Python Environment builder"
 category = "main"
 optional = false
@@ -889,7 +889,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "cb37baa454748dc26c608933b765b561bf3f9742ce9f68932f02b6c9375e9838"
+content-hash = "ceefe43354cad5ef9c8149dcce5fefc52aefaaf434a525b0634e7f59d32eb22f"
 
 [metadata.files]
 apipkg = [
@@ -1445,8 +1445,8 @@ urllib3 = [
     {file = "urllib3-1.25.11.tar.gz", hash = "sha256:8d7eaa5a82a1cac232164990f04874c594c9453ec55eef02eab885aa02fc17a2"},
 ]
 virtualenv = [
-    {file = "virtualenv-20.4.3-py2.py3-none-any.whl", hash = "sha256:83f95875d382c7abafe06bd2a4cdd1b363e1bb77e02f155ebe8ac082a916b37c"},
-    {file = "virtualenv-20.4.3.tar.gz", hash = "sha256:49ec4eb4c224c6f7dd81bb6d0a28a09ecae5894f4e593c89b0db0885f565a107"},
+    {file = "virtualenv-20.4.4-py2.py3-none-any.whl", hash = "sha256:a935126db63128861987a7d5d30e23e8ec045a73840eeccb467c148514e29535"},
+    {file = "virtualenv-20.4.4.tar.gz", hash = "sha256:09c61377ef072f43568207dc8e46ddeac6bcdcaf288d49011bda0e7f4d38c4a2"},
 ]
 webencodings = [
     {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
