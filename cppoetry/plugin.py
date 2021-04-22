@@ -1,12 +1,13 @@
 from tomlkit import parse
 
-from cleo.io.io import IO
-
+from cleo.events.console_events import COMMAND
+from cleo.events.console_command_event import ConsoleCommandEvent
+from cleo.events.event_dispatcher import EventDispatcher
+from poetry.console.application import Application
 from poetry.plugins.application_plugin import ApplicationPlugin
 from poetry.poetry import Poetry
 
 from pathlib import Path
-from conans.client.conan_api import ConanAPIV1 as ConanAPI
 
 
 class SynodicPlugin(ApplicationPlugin):
@@ -24,9 +25,7 @@ class SynodicPlugin(ApplicationPlugin):
                 SynodicPlugin.data = parse(file.read())
 
             # Generate the conanfile.py
-            self.__write_conanfile(
-                Path(SynodicPlugin.data["tool"]["conan"]["install-path"])
-            )
+            self.__write_conanfile(Path(SynodicPlugin.data["tool"]["conan"]["install-path"]))
 
     def __write_conanfile(self, path: Path):
         """
@@ -41,10 +40,7 @@ class SynodicPlugin(ApplicationPlugin):
             name = SynodicPlugin.data["tool"]["poetry"]["name"]
             name = name.replace("-", "")
 
-            dependencies = [
-                "/".join(tup)
-                for tup in SynodicPlugin.data["tool"]["conan"]["dependencies"].items()
-            ]
+            dependencies = ["/".join(tup) for tup in SynodicPlugin.data["tool"]["conan"]["dependencies"].items()]
             dependencies = ",".join('"{0}"'.format(w) for w in dependencies)
 
             generators = ",".join('"{0}"'.format(g) for g in SynodicPlugin.generators)
@@ -61,130 +57,85 @@ class SynodicPlugin(ApplicationPlugin):
 
             print(contents, file=file)
 
-    def activate(self, poetry: Poetry, io: IO):
+    def activate(self, application: Application):
         """
         The entry function for the Poetry plugin
         """
 
-        io.write_line(f"Hello")
+        application.event_dispatcher.add_listener(COMMAND, self.new)
 
-    def poetry_new(self):
-
-        pass
-
-    def poetry_init(self):
+    def new(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_install(self):
-
-        ConanAPI().install(
-            path=SynodicPlugin.data["tool"]["conan"]["install-path"],
-            name=SynodicPlugin.data["tool"]["poetry"]["name"],
-            version=SynodicPlugin.data["tool"]["poetry"]["version"],
-            user=None,
-            channel=None,
-            settings=None,
-            options=None,
-            env=None,
-            remote_name=SynodicPlugin.data["tool"]["conan"]["remotes"],
-            verify=None,
-            manifests=None,
-            manifests_interactive=None,
-            build=None,
-            profile_names=None,
-            update=False,
-            generators=None,
-            no_imports=False,
-            install_folder=SynodicPlugin.data["tool"]["conan"]["install-path"],
-            cwd=Path().absolute(),
-            lockfile=None,
-        )
-
-    def poetry_update(self):
-
-        ConanAPI().install(
-            path=SynodicPlugin.data["tool"]["conan"]["install-path"],
-            name=SynodicPlugin.data["tool"]["poetry"]["name"],
-            version=SynodicPlugin.data["tool"]["poetry"]["version"],
-            user=None,
-            channel=None,
-            settings=None,
-            options=None,
-            env=None,
-            remote_name=SynodicPlugin.data["tool"]["conan"]["remotes"],
-            verify=None,
-            manifests=None,
-            manifests_interactive=None,
-            build=None,
-            profile_names=None,
-            update=True,
-            generators=None,
-            no_imports=False,
-            install_folder=SynodicPlugin.data["tool"]["conan"]["install-path"],
-            cwd=Path().absolute(),
-            lockfile=None,
-        )
-
-    def poetry_add(self):
+    def init(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_remove(self):
+    def install(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_show(self):
+    def update(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_build(self):
+    def add(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_publish(self):
-        
-        pass
-
-    def poetry_config(self):
+    def remove(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_run(self):
+    def show(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_shell(self):
+    def build(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_check(self):
-        """
-        Validate the conan entries
-        """
+    def publish(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_search(self):
+    def config(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_lock(self):
+    def run(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_version(self):
+    def shell(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_export(self):
+    def check(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_env(self):
+    def search(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass
 
-    def poetry_cache(self):
+    def lock(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
+
+        pass
+
+    def version(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
+
+        pass
+
+    def export(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
+
+        pass
+
+    def env(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
+
+        pass
+
+    def cache(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
 
         pass

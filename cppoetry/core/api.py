@@ -1,74 +1,125 @@
-def new():
-    pass
+from conans.client.conan_api import ConanAPIV1 as ConanAPI
+
+from pathlib import Path
+
+class CPPoetryAPI:
+
+    def __init__(self):
+        pass
+
+    def new(self):
+        pass
 
 
-def init():
-    pass
+    def init(self):
+        pass
 
 
-def install():
-    pass
+    def install(self):
+        ConanAPI().install(
+            path=None,  # SynodicPlugin.data["tool"]["conan"]["install-path"],
+            name=None,  # SynodicPlugin.data["tool"]["poetry"]["name"],
+            version=None,  # SynodicPlugin.data["tool"]["poetry"]["version"],
+            user=None,
+            channel=None,
+            settings=None,
+            options=None,
+            env=None,
+            remote_name=None,  # SynodicPlugin.data["tool"]["conan"]["remotes"],
+            verify=None,
+            manifests=None,
+            manifests_interactive=None,
+            build=None,
+            profile_names=None,
+            update=False,
+            generators=None,
+            no_imports=False,
+            install_folder=None,  # SynodicPlugin.data["tool"]["conan"]["install-path"],
+            cwd=Path().absolute(),
+            lockfile=None,
+        )
 
 
-def update():
-    pass
+    def update(self):
+        ConanAPI().install(
+            path=None,  # SynodicPlugin.data["tool"]["conan"]["install-path"],
+            name=None,  # SynodicPlugin.data["tool"]["poetry"]["name"],
+            version=None,  # SynodicPlugin.data["tool"]["poetry"]["version"],
+            user=None,
+            channel=None,
+            settings=None,
+            options=None,
+            env=None,
+            remote_name=None,  # SynodicPlugin.data["tool"]["conan"]["remotes"],
+            verify=None,
+            manifests=None,
+            manifests_interactive=None,
+            build=None,
+            profile_names=None,
+            update=True,
+            generators=None,
+            no_imports=False,
+            install_folder=None,  # SynodicPlugin.data["tool"]["conan"]["install-path"],
+            cwd=Path().absolute(),
+            lockfile=None,
+        )
 
 
-def add():
-    pass
+    def add(self):
+        pass
 
 
-def remove():
-    pass
+    def remove(self):
+        pass
 
 
-def show():
-    pass
+    def show(self):
+        pass
 
 
-def build():
-    pass
+    def build(self):
+        pass
 
 
-def publish():
-    pass
+    def publish(self):
+        pass
 
 
-def config():
-    pass
+    def config(self):
+        pass
 
 
-def run():
-    pass
+    def run(self):
+        pass
 
 
-def shell():
-    pass
+    def shell(self):
+        pass
 
 
-def check():
-    pass
+    def check(self):
+        pass
 
 
-def search():
-    pass
+    def search(self):
+        pass
 
 
-def lock():
-    pass
+    def lock(self):
+        pass
 
 
-def version():
-    pass
+    def version(self):
+        pass
 
 
-def export():
-    pass
+    def export(self):
+        pass
 
 
-def env():
-    pass
+    def env(self):
+        pass
 
 
-def cache():
-    pass
+    def cache(self):
+        pass
