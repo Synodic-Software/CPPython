@@ -35,7 +35,7 @@ cppoetry = "cppoetry.plugin:SynodicPlugin"
 cppoetry = 'cppoetry.console:cli'
 
 [tool.pytest.ini_options]
-#addopts = "-n auto"
+addopts = "-n auto"
 
 [tool.black]
 line-length = 120

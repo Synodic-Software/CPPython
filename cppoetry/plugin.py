@@ -150,6 +150,14 @@ class SynodicPlugin(ApplicationPlugin):
 
         pass
 
+    def poetry_run(self):
+
+        pass
+
+    def poetry_shell(self):
+
+        pass
+
     def poetry_check(self):
         """
         Validate the conan entries
@@ -174,5 +182,9 @@ class SynodicPlugin(ApplicationPlugin):
         pass
 
     def poetry_env(self):
+
+        pass
+
+    def poetry_cache(self):
 
         pass
