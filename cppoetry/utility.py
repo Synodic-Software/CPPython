@@ -23,7 +23,7 @@ class Metadata:
             name = name.replace("-", "")
 
             dependencies = ["/".join(tup) for tup in self.dependencies.items()]
-            dependencies = ",".join('"{0}"'.format(w) for w in dependencies)
+            dependencies = ",".join(f'"{dep}"' for dep in dependencies)
 
             # Write the Conan data to file
             contents = (
@@ -80,7 +80,7 @@ class Metadata:
             self._dependencies = self.document["tool"]["conan"]["dependencies"]
 
         except NonExistentKey:
-            raise LookupError("The project's TOML file does not contain a name")
+            raise LookupError("The project's TOML file does not contain dependencies")
 
         return self._dependencies
 
@@ -89,3 +89,35 @@ class Metadata:
 
         self.dirty = True
         self._dependencies = values
+
+    @property
+    def install_directory(self) -> Path:
+        try:
+            self._install_directory = Path(self.document["tool"]["conan"]["install-directory"])
+
+        except NonExistentKey:
+            self._install_directory = Path.cwd().absolute() / "build"
+
+        return self._install_directory
+
+    @install_directory.setter
+    def install_directory(self, value: Path) -> None:
+
+        self.dirty = True
+        self._install_directory = value
+
+    @property
+    def version(self) -> Path:
+        try:
+            self._version = self.document["tool"]["poetry"]["version"]
+
+        except NonExistentKey:
+            raise LookupError("The project's TOML file does not contain a version")
+
+        return self._version
+
+    @version.setter
+    def version(self, value: str) -> None:
+
+        self.dirty = True
+        self._version = value
