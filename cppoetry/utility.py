@@ -12,34 +12,30 @@ class Metadata:
 
     def generate_conanfile(self) -> Path:
 
-#     Generate a conanfile.py with the given path.
-#     The resulting recipe is TODO
-#     """
-#     path = path.absolute()
-#     path.mkdir(parents=True, exist_ok=True)
-#     with open(path / "conanfile.py", "w+") as file:
+        #     Generate a conanfile.py with the given path.
+        #     The resulting recipe is TODO
+        path = Path.cwd().absolute()
+        path.mkdir(parents=True, exist_ok=True)
+        with open(path / "conanfile.py", "w+") as file:
 
-#         # Process the Conan data into a Conan format
-#         name = SynodicPlugin.data["tool"]["poetry"]["name"]
-#         name = name.replace("-", "")
+            # Process the Conan data into a Conan format
+            name = self.name
+            name = name.replace("-", "")
 
-#         dependencies = ["/".join(tup) for tup in SynodicPlugin.data["tool"]["conan"]["dependencies"].items()]
-#         dependencies = ",".join('"{0}"'.format(w) for w in dependencies)
+            dependencies = ["/".join(tup) for tup in self.dependencies.items()]
+            dependencies = ",".join('"{0}"'.format(w) for w in dependencies)
 
-#         generators = ",".join('"{0}"'.format(g) for g in SynodicPlugin.generators)
+            # Write the Conan data to file
+            contents = (
+                f'from conans import ConanFile, CMake\n'
+                f'\n'
+                f'class {name}Conan(ConanFile):\n'
+                f'    settings = "os", "compiler", "build_type", "arch"\n'
+                f'    requires = {dependencies}\n'
+                f'    generators = ["cmake_find_package", "cmake_paths"]\n'
+            )
 
-#         # Write the Conan data to file
-#         contents = (
-#             f"from conans import ConanFile, CMake\n"
-#             f"\n"
-#             f"class {name}Conan(ConanFile):\n"
-#             f'    settings = "os", "compiler", "build_type", "arch"\n'
-#             f"    requires = {dependencies}\n"
-#             f"    generators = {generators}\n"
-#         )
-
-#         print(contents, file=file)
-
+            print(contents, file=file)
 
         return Path()
 
@@ -79,19 +75,17 @@ class Metadata:
         self._remotes = values
 
     @property
-    def dependencies(self) -> list[str]:
+    def dependencies(self) -> dict[str]:
         try:
-            self._remotes = self.document["tool"]["conan"]["dependencies"]
+            self._dependencies = self.document["tool"]["conan"]["dependencies"]
 
         except NonExistentKey:
             raise LookupError("The project's TOML file does not contain a name")
 
-        return self._remotes
+        return self._dependencies
 
     @dependencies.setter
-    def dependencies(self, values: list[str]) -> None:
+    def dependencies(self, values: dict[str]) -> None:
 
         self.dirty = True
-        self._remotes = values
-        
-        
+        self._dependencies = values
