@@ -1,19 +1,11 @@
 from conans.client.conan_api import ConanAPIV1 as ConanAPI
+from cppoetry.utility import Metadata
 
 from pathlib import Path
 
 class CPPoetryAPI:
-
-    def __init__(self):
+    def __init__(self, Metadata):
         pass
-
-    def new(self):
-        pass
-
-
-    def init(self):
-        pass
-
 
     def install(self):
         ConanAPI().install(
@@ -37,8 +29,9 @@ class CPPoetryAPI:
             install_folder=None,  # SynodicPlugin.data["tool"]["conan"]["install-path"],
             cwd=Path().absolute(),
             lockfile=None,
+            lockfile_out=None,
+            profile_build=None,
         )
-
 
     def update(self):
         ConanAPI().install(
@@ -62,64 +55,9 @@ class CPPoetryAPI:
             install_folder=None,  # SynodicPlugin.data["tool"]["conan"]["install-path"],
             cwd=Path().absolute(),
             lockfile=None,
+            lockfile_out=None,
+            profile_build=None,
         )
 
-
-    def add(self):
-        pass
-
-
-    def remove(self):
-        pass
-
-
-    def show(self):
-        pass
-
-
-    def build(self):
-        pass
-
-
-    def publish(self):
-        pass
-
-
-    def config(self):
-        pass
-
-
-    def run(self):
-        pass
-
-
-    def shell(self):
-        pass
-
-
-    def check(self):
-        pass
-
-
-    def search(self):
-        pass
-
-
-    def lock(self):
-        pass
-
-
-    def version(self):
-        pass
-
-
-    def export(self):
-        pass
-
-
-    def env(self):
-        pass
-
-
-    def cache(self):
+    def validate(self):
         pass

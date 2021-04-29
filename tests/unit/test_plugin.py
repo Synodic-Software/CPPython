@@ -1,3 +1,3 @@
-﻿class TestFormat:
-    def test_something(self):
+class TestPlugin:
+    def test_validate(self, test_workspace):
         pass
