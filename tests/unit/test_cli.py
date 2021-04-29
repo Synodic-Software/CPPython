@@ -4,23 +4,14 @@ from cppoetry.console import cli
 
 
 class TestCLI:
-    def test_validate(self, test_workspace):
-        runner = CliRunner()
+    def test_validate(self, cli_workspace):
+        result = cli_workspace.invoke(cli, ["validate"])
 
-        with runner.isolated_filesystem():
+        if result.exception is not None:
+            raise result.exception
 
-            result = runner.invoke(cli, ["validate"])
+    def test_install(self, cli_workspace):
+        result = cli_workspace.invoke(cli, ["install"])
 
-            if result.exception is not None:
-                raise result.exception
-
-    def test_install(self, test_workspace):
-
-        runner = CliRunner()
-
-        with runner.isolated_filesystem():
-
-            result = runner.invoke(cli, ["install"])
-
-            if result.exception is not None:
-                raise result.exception
+        if result.exception is not None:
+            raise result.exception

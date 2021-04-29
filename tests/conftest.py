@@ -1,12 +1,14 @@
 ﻿import pytest
 
-import subprocess
 import os
 import contextlib
 
 from pathlib import Path
 from distutils.dir_util import copy_tree
 from typing import Generator
+
+from cppoetry.utility import Metadata
+from tomlkit.toml_file import TOMLFile
 
 
 def _extract_directories(directory: Path):
@@ -34,8 +36,14 @@ def pytest_generate_tests(metafunc):
         metafunc.parametrize("test_workspace", _directories, ids=[id.name for id in _directories])
 
 
+class WorkspaceData:
+    def __init__(self, path: Path, metadata: Metadata):
+        self.path = path
+        self.metadata = metadata
+
+
 @pytest.fixture
-def tmp_workspace(tmp_path: Path, test_workspace: Path) -> Path:
+def tmp_workspace(tmp_path: Path, test_workspace: Path) -> WorkspaceData:
     """
     @returns - A path to the temporary directory populated with a test workspace
     """
@@ -43,4 +51,24 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path) -> Path:
     copy_tree(str(test_workspace), str(target_directory))
 
     with _working_directory(test_workspace):
-        yield target_directory
+        projectFile = TOMLFile("pyproject.toml")
+        document = projectFile.read()
+        metadata = Metadata(document)
+
+        yield WorkspaceData(target_directory, metadata)
+
+
+from click.testing import CliRunner
+
+
+@pytest.fixture
+def cli_workspace(test_workspace: Path) -> CliRunner:
+    """
+    @returns - A Test runner using the path to the temporary directory populated with a test workspace
+    """
+    
+    runner = CliRunner()
+
+    with runner.isolated_filesystem():
+        copy_tree(str(test_workspace), str(Path.cwd()))
+        yield runner

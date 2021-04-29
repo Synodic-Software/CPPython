@@ -77,5 +77,21 @@ class Metadata:
 
         self.dirty = True
         self._remotes = values
+
+    @property
+    def dependencies(self) -> list[str]:
+        try:
+            self._remotes = self.document["tool"]["conan"]["dependencies"]
+
+        except NonExistentKey:
+            raise LookupError("The project's TOML file does not contain a name")
+
+        return self._remotes
+
+    @dependencies.setter
+    def dependencies(self, values: list[str]) -> None:
+
+        self.dirty = True
+        self._remotes = values
         
         

@@ -16,15 +16,15 @@ def cli():
 
 @cli.command()
 def validate():
-    CPPoetryAPI(_document).validate()
+    CPPoetryAPI(_metadata).validate()
 
 @cli.command()
 def install():
-    CPPoetryAPI(_document).install()
+    CPPoetryAPI(_metadata).install()
 
 @cli.command()
 def update():
-    CPPoetryAPI(_document).update()
+    CPPoetryAPI(_metadata).update()
 
 @cli.resultcallback()
 def cleanup(result):
