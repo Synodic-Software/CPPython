@@ -70,5 +70,6 @@ def cli_workspace(test_workspace: Path) -> CliRunner:
     runner = CliRunner()
 
     with runner.isolated_filesystem():
-        copy_tree(str(test_workspace), str(Path.cwd()))
+        target_path = Path.cwd()
+        copy_tree(str(test_workspace), str(target_path))
         yield runner

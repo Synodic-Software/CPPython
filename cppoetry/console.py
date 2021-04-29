@@ -5,28 +5,35 @@ from cppoetry.utility import Metadata
 
 from tomlkit.toml_file import TOMLFile
 
-# TODO: Project location management
-_projectFile = TOMLFile("pyproject.toml")
-_document = _projectFile.read()
-_metadata = Metadata(_document)
+class Config(object):
+
+    def __init__(self):
+        self.projectFile = TOMLFile("pyproject.toml")
+        self.document = self.projectFile.read()
+        self.metadata = Metadata(self.document)
 
 @click.group()
-def cli():
-    pass
+@click.pass_context
+def cli(context):
+    context.obj = Config()
 
 @cli.command()
-def validate():
-    CPPoetryAPI(_metadata).validate()
+@click.pass_obj
+def validate(obj):
+    CPPoetryAPI(obj.metadata).validate()
 
 @cli.command()
-def install():
-    CPPoetryAPI(_metadata).install()
+@click.pass_obj
+def install(obj):
+    CPPoetryAPI(obj.metadata).install()
 
 @cli.command()
-def update():
-    CPPoetryAPI(_metadata).update()
+@click.pass_obj
+def update(obj):
+    CPPoetryAPI(obj.metadata).update()
 
 @cli.resultcallback()
-def cleanup(result):
-    if _metadata.dirty:
-        _projectFile.write(_document)
+@click.pass_obj
+def cleanup(obj, result):
+    if obj.metadata.dirty:
+        obj.projectFile.write(obj.document)

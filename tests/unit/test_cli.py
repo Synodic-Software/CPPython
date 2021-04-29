@@ -1,5 +1,3 @@
-from click.testing import CliRunner
-
 from cppoetry.console import cli
 
 
