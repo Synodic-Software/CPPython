@@ -5,22 +5,26 @@ from pathlib import Path
 
 
 class CPPoetryAPI:
-    def __init__(self, metadata: Metadata):
+    def __init__(self, root: Path, metadata: Metadata):
+        self.root = root.absolute()
         self.metadata = metadata
 
     def install(self):
         self.metadata.generate_conanfile()
 
+        for remote_name, url in self.metadata.remotes:
+             ConanAPI().remote_add(remote_name, url)
+
         ConanAPI().install(
-            path=str(Path().absolute()),
+            path=str(self.root),
             name=self.metadata.name,
             version=self.metadata.version,
             user=None,
             channel=None,
             settings=None,
             options=None,
-            env=None,
-            remote_name=None,
+            env=["CONAN_USER_HOME=.conan-cache"],
+            remote_name=None,  # Let the selection happen automatically from the 'conan remote' command
             verify=None,
             manifests=None,
             manifests_interactive=None,
@@ -39,16 +43,19 @@ class CPPoetryAPI:
     def update(self):
         self.metadata.generate_conanfile()
 
+        for remote_name, url in self.metadata.remotes:
+             ConanAPI().remote_add(remote_name, url)
+
         ConanAPI().install(
-            path=str(Path().absolute()),
+            path=str(self.root),
             name=self.metadata.name,
             version=self.metadata.version,
             user=None,
             channel=None,
             settings=None,
             options=None,
-            env=None,
-            remote_name=self.metadata.remotes,
+            env=["CONAN_USER_HOME=.conan-cache"],
+            remote_name=None,  # Let the selection happen automatically from the 'conan remote' command
             verify=None,
             manifests=None,
             manifests_interactive=None,

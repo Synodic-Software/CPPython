@@ -16,17 +16,17 @@ repository = "https://github.com/Synodic-Software/CPPoetry"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-conan = "^1.35.2"
+conan = "^1.36.0"
 poetry = { git = "https://github.com/python-poetry/poetry.git", branch = "master" }
 tomlkit = "^0.7.0"
 click = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
-black = {version = "^20.8b1", allow-prereleases = true}
+black = {version = "^21.4b2", allow-prereleases = true}
 coverage = "^5.5"
 pytest = "^6.2.3"
 pytest-xdist = "^2.2.1"
-pylint = "^2.7.4"
+pylint = "^2.8.2"
 
 [tool.poetry.plugins."poetry.application.plugin"]
 cppoetry = "cppoetry.plugin:SynodicPlugin"

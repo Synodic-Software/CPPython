@@ -5,8 +5,9 @@ from pathlib import Path
 
 
 class Metadata:
-    def __init__(self, document: TOMLDocument) -> None:
+    def __init__(self, root: Path, document: TOMLDocument) -> None:
 
+        self.root = root.absolute()
         self.document = document
         self.dirty = False
 
@@ -14,7 +15,7 @@ class Metadata:
 
         #     Generate a conanfile.py with the given path.
         #     The resulting recipe is TODO
-        path = Path.cwd().absolute()
+        path = self.root 
         path.mkdir(parents=True, exist_ok=True)
         with open(path / "conanfile.py", "w+") as file:
 
@@ -26,8 +27,11 @@ class Metadata:
             dependencies = ",".join(f'"{dep}"' for dep in dependencies)
 
             # Write the Conan data to file
+            # TODO: Require the conan version that this plugin depends on
             contents = (
                 f'from conans import ConanFile, CMake\n'
+                f'\n'
+                f'required_conan_version = ">=1.36.0"'
                 f'\n'
                 f'class {name}Conan(ConanFile):\n'
                 f'    settings = "os", "compiler", "build_type", "arch"\n'
@@ -59,17 +63,17 @@ class Metadata:
         self._name = value
 
     @property
-    def remotes(self) -> list[str]:
+    def remotes(self) -> list[tuple[str, str]]:
         try:
             self._remotes = self.document["tool"]["conan"]["remotes"]
 
         except NonExistentKey:
-            raise LookupError("The project's TOML file does not contain a name")
+            raise LookupError("The project's TOML file does not contain a remotes value")
 
         return self._remotes
 
     @remotes.setter
-    def remotes(self, values: list[str]) -> None:
+    def remotes(self, values: list[tuple[str, str]]) -> None:
 
         self.dirty = True
         self._remotes = values
@@ -96,7 +100,10 @@ class Metadata:
             self._install_directory = Path(self.document["tool"]["conan"]["install-directory"])
 
         except NonExistentKey:
-            self._install_directory = Path.cwd().absolute() / "build"
+            self._install_directory = Path("build")
+
+        if not self._install_directory.is_absolute():
+            self._install_directory = self.root / self._install_directory 
 
         return self._install_directory
 
