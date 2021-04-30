@@ -50,10 +50,10 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path) -> WorkspaceData:
     target_directory = Path(tmp_path).absolute()
     copy_tree(str(test_workspace), str(target_directory))
 
-    with _working_directory(test_workspace):
+    with _working_directory(target_directory):
         projectFile = TOMLFile("pyproject.toml")
         document = projectFile.read()
-        metadata = Metadata(test_workspace, document)
+        metadata = Metadata(target_directory, document)
 
         yield WorkspaceData(target_directory, metadata)
 
