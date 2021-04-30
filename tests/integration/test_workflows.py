@@ -7,4 +7,7 @@ class TestWorkflow:
 
     def test_development_workflow(self, tmp_workspace):
 
-        CPPoetryAPI(tmp_workspace.path, tmp_workspace.metadata).install()
+        api = CPPoetryAPI(tmp_workspace.path, tmp_workspace.metadata)
+        
+        api.install()
+        api.update()

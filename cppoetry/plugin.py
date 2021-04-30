@@ -4,47 +4,59 @@ from cleo.events.console_command_event import ConsoleCommandEvent
 from cleo.events.event_dispatcher import EventDispatcher
 from poetry.console.application import Application
 from poetry.plugins.application_plugin import ApplicationPlugin
-from poetry.poetry import Poetry
 
-# Document
-from pathlib import Path
-from poetry.core.pyproject.toml import PyProjectTOML
+# Commands
+from poetry.console.commands.install import InstallCommand
+from poetry.console.commands.update import UpdateCommand
+from poetry.console.commands.check import CheckCommand
+
+# CPPoetry
 from cppoetry.utility import Metadata
-
+from cppoetry.core import CPPoetryAPI
 
 class SynodicPlugin(ApplicationPlugin):
     def __init__(self):
-        """
-        Extracts the plugin database from the existing Poetry data
-        """
-
-        # TODO: Project location management
-        self.project = PyProjectTOML("pyproject.toml")
-        self.metadata = Metadata(self.project.data)
+       pass
 
     def __del__(self):
         """
         Saves the project file if there have been any writes
         """
 
-        if self.metadata.dirty:
-            self.project.save()
+        if self._metadata.dirty:
+            self._project.save()
+
+    def _command_dispatch(
+        self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher
+    ) -> None:
+        command = event.command
+
+        # TODO: Condense
+        if isinstance(command, InstallCommand):
+            self.install()
+        if isinstance(command, UpdateCommand):
+            self.update()
+        if isinstance(command, CheckCommand):
+           self. check()
 
     def activate(self, application: Application):
         """
         The entry function for the Poetry plugin
         """
 
-        # application.event_dispatcher.add_listener(COMMAND, self.new)
+        self._project = application.poetry.pyproject
+        self._metadata = Metadata(self._project.file, self._project.data)
 
-    def install(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
+        application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
-        pass
+    def install(self) -> None:
 
-    def update(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
+        CPPoetryAPI(self._project.file, self._metadata).install()
 
-        pass
+    def update(self) -> None:
 
-    def check(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
+        CPPoetryAPI(self._project.file, self._metadata).update()
 
-        pass
+    def check(self) -> None:
+
+        CPPoetryAPI(self._project.file, self._metadata).validate()
