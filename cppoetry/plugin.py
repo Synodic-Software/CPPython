@@ -14,9 +14,10 @@ from poetry.console.commands.check import CheckCommand
 from cppoetry.utility import Metadata
 from cppoetry.core import CPPoetryAPI
 
+
 class SynodicPlugin(ApplicationPlugin):
     def __init__(self):
-       pass
+        pass
 
     def __del__(self):
         """
@@ -26,10 +27,13 @@ class SynodicPlugin(ApplicationPlugin):
         if self._metadata.dirty:
             self._project.save()
 
-    def _command_dispatch(
-        self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher
-    ) -> None:
+    def _command_dispatch(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
         command = event.command
+
+        # TODO: Use internally
+        io = event.io
+        if io.is_debug():
+            io.write_line("<debug>Running plugin command setup.</debug>")
 
         # TODO: Condense
         if isinstance(command, InstallCommand):
@@ -37,7 +41,7 @@ class SynodicPlugin(ApplicationPlugin):
         if isinstance(command, UpdateCommand):
             self.update()
         if isinstance(command, CheckCommand):
-           self. check()
+            self.check()
 
     def activate(self, application: Application):
         """
