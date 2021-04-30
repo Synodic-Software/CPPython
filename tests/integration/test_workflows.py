@@ -1,4 +1,46 @@
+import pytest
+import contextlib
+import os
+
 from cppoetry.core import CPPoetryAPI
+from cppoetry.utility import Metadata
+from tomlkit.toml_file import TOMLFile
+from pathlib import Path
+from distutils.dir_util import copy_tree
+
+# Fixtures
+class WorkspaceData:
+    def __init__(self, path: Path, metadata: Metadata):
+        self.path = path
+        self.metadata = metadata
+
+
+@contextlib.contextmanager
+def working_directory(path):
+    """Changes working directory and returns to previous on exit."""
+    prev_cwd = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(prev_cwd)
+
+
+# Tests
+@pytest.fixture
+def tmp_workspace(tmp_path: Path, test_workspace: Path):
+    """
+    @returns - A path to the temporary directory populated with a test workspace
+    """
+    target_directory = Path(tmp_path).absolute()
+    copy_tree(str(test_workspace), str(target_directory))
+
+    with working_directory(target_directory):
+        projectFile = TOMLFile("pyproject.toml")
+        document = projectFile.read()
+        metadata = Metadata(target_directory, document)
+
+        yield WorkspaceData(target_directory, metadata)
 
 
 class TestWorkflow:
@@ -8,6 +50,6 @@ class TestWorkflow:
     def test_development_workflow(self, tmp_workspace):
 
         api = CPPoetryAPI(tmp_workspace.path, tmp_workspace.metadata)
-        
+
         api.install()
         api.update()
