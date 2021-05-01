@@ -17,7 +17,12 @@ from cppoetry.core import CPPoetryAPI
 
 class SynodicPlugin(ApplicationPlugin):
     def __init__(self):
-        pass
+
+        self._available_commands = {
+            InstallCommand: self._install,
+            UpdateCommand: self._update,
+            CheckCommand: self._check
+        }
 
     def __del__(self):
         """
@@ -35,13 +40,10 @@ class SynodicPlugin(ApplicationPlugin):
         if io.is_debug():
             io.write_line("<debug>Running plugin command setup.</debug>")
 
-        # TODO: Condense
-        if isinstance(command, InstallCommand):
-            self.install()
-        if isinstance(command, UpdateCommand):
-            self.update()
-        if isinstance(command, CheckCommand):
-            self.check()
+        func = self._available_commands.get(command)
+
+        if func is not None:
+            func(command)
 
     def activate(self, application: Application):
         """
@@ -53,14 +55,16 @@ class SynodicPlugin(ApplicationPlugin):
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
-    def install(self) -> None:
+        self.api = CPPoetryAPI(self._project.file, self._metadata)
 
-        CPPoetryAPI(self._project.file, self._metadata).install()
+    def _install(self, command: InstallCommand) -> None:
 
-    def update(self) -> None:
+        self.api.install()
 
-        CPPoetryAPI(self._project.file, self._metadata).update()
+    def _update(self, command: UpdateCommand) -> None:
 
-    def check(self) -> None:
+        self.api.update()
 
-        CPPoetryAPI(self._project.file, self._metadata).validate()
+    def _check(self, command: CheckCommand) -> None:
+
+        self.api.validate()

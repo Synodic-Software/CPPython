@@ -19,6 +19,7 @@ def cli_workspace(test_workspace: Path) -> CliRunner:
         copy_tree(str(test_workspace), str(target_path))
         yield runner
 
+
 class TestCLI:
     def test_validate(self, cli_workspace):
         result = cli_workspace.invoke(cli, ["validate"])
