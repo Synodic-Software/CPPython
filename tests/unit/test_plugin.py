@@ -7,10 +7,10 @@ from pathlib import Path
 @pytest.fixture
 def plugin_workspace(test_workspace: Path):
     """
-    @returns - 
+    @returns - TODO
     """
 
-    return test_workspace
+    yield test_workspace
 
 
 # Tests
