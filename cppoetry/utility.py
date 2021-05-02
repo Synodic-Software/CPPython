@@ -1,8 +1,6 @@
 from tomlkit.toml_document import TOMLDocument
 from tomlkit.exceptions import NonExistentKey
 
-from cerberus import Validator
-
 from pathlib import Path
 
 
@@ -47,111 +45,73 @@ class ConanGenerator(_BaseGenerator):
 class Metadata:
     def __init__(self, root: Path, document: TOMLDocument) -> None:
 
+        from cerberus import Validator
+
         self._root = root.absolute()
-        self._document = document
         self._validator = Validator()
         self._generator = ConanGenerator()
+
+        # Gather data from the document
+        # TODO: Error handling for these document tabs
+        self._poetry_data = document["tool"]["poetry"]
+        self._conan_data = document["tool"]["conan"]
+
+        # Schema for poetry values
+        self._poetry_schema = {
+            "name": {"type": "string"},
+            "version": {"type": "string"},  # TODO: Make Version type
+        }
+
+        # Schema for Conan values
+        self._conan_schema = {
+            "remotes": {"type": "list", "schema": {"type": "tuple", "items": ({"type": "string"}, {"type": "string"})}},
+            "dependencies": {
+                "type": "list",
+                "schema": {
+                    "type": "tuple",
+                    "items": ({"type": "string"}, {"type": "string"}),  # TODO: Make Version type
+                },
+            },
+            "install_directory": {"type": "string"},  # TODO: Make Path type
+        }
 
         self.dirty = False
 
     def __getattr__(self, name):
-        try:
-            return self.__dict[name]
-        except KeyError:
-            msg = "'{0}' object has no attribute '{1}'"
-            raise AttributeError(msg.format(type(self).__name__, name))
+
+        if name in self._poetry_schema:
+            if not self._validator.validate(self._poetry_data, self._poetry_schema[name]):
+                return self._poetry_data[name]
+
+            msg = f"'{type(self).__name__}' failed Poetry validation with attribute '{name}'"
+            raise AttributeError(msg)
+
+        if name in self._conan_schema:
+            if not self._validator.validate(self._conan_data, self._conan_schema[name]):
+                return self._conan_data[name]
+
+            msg = f"'{type(self).__name__}' failed Conan validation with attribute '{name}'"
+            raise AttributeError(msg)
+
+        msg = f"'{type(self).__name__}' object has no attribute '{name}'"
+        raise AttributeError(msg)
 
     def __setattr__(self, name, value):
-        if name in self.data:
-            self.data[name] = value
+        if name in self._poetry_data:
+            self.dirty = True
+            self._poetry_data[name] = value
+        elif name in self._conan_data:
+            self.dirty = True
+            self._conan_data[name] = value
         else:
             super().__setattr__(name, value)
 
     def generate_conanfile(self) -> None:
         self._generator.write_file(self._root)
 
-    @property
-    def name(self) -> str:
-        try:
-            self._name = self.document["tool"]["poetry"]["name"]
-
-        except NonExistentKey:
-            try:
-                self._name = self.document["tool"]["poetry"]["name"]
-            except NonExistentKey:
-                raise LookupError("The project's TOML file does not contain a name")
-
-        return self._name
-
-    @name.setter
-    def name(self, value: str) -> None:
-
-        self.dirty = True
-        self._name = value
-
-    @property
-    def remotes(self) -> list[tuple[str, str]]:
-        try:
-            self._remotes = self.document["tool"]["conan"]["remotes"]
-
-        except NonExistentKey:
-            raise LookupError("The project's TOML file does not contain a remotes value")
-
-        return self._remotes
-
-    @remotes.setter
-    def remotes(self, values: list[tuple[str, str]]) -> None:
-
-        self.dirty = True
-        self._remotes = values
-
-    @property
-    def dependencies(self) -> dict[str]:
-        try:
-            self._dependencies = self.document["tool"]["conan"]["dependencies"]
-
-        except NonExistentKey:
-            raise LookupError("The project's TOML file does not contain dependencies")
-
-        return self._dependencies
-
-    @dependencies.setter
-    def dependencies(self, values: dict[str]) -> None:
-
-        self.dirty = True
-        self._dependencies = values
-
-    @property
-    def install_directory(self) -> Path:
-        try:
-            self._install_directory = Path(self.document["tool"]["conan"]["install-directory"])
-
-        except NonExistentKey:
-            self._install_directory = Path("build")
-
-        if not self._install_directory.is_absolute():
-            self._install_directory = self.root / self._install_directory
-
-        return self._install_directory
-
-    @install_directory.setter
-    def install_directory(self, value: Path) -> None:
-
-        self.dirty = True
-        self._install_directory = value
-
-    @property
-    def version(self) -> Path:
-        try:
-            self._version = self.document["tool"]["poetry"]["version"]
-
-        except NonExistentKey:
-            raise LookupError("The project's TOML file does not contain a version")
-
-        return self._version
-
-    @version.setter
-    def version(self, value: str) -> None:
-
-        self.dirty = True
-        self._version = value
+    def validate(self) -> None:
+        if self._validator.validate(self._poetry_data, self._poetry_schema) or self._validator.validate(
+            self._conan_data, self._conan_schema
+        ):
+            msg = f"Failed Validation"
+            raise AttributeError(msg)

@@ -40,10 +40,8 @@ class SynodicPlugin(ApplicationPlugin):
         if io.is_debug():
             io.write_line("<debug>Running plugin command setup.</debug>")
 
-        func = self._available_commands.get(command)
-
-        if func is not None:
-            func(command)
+        if command in self._available_commands:
+            self._available_commands[command](command)
 
     def activate(self, application: Application):
         """

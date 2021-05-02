@@ -72,7 +72,4 @@ class CPPoetryAPI:
         )
 
     def validate(self):
-        properties = [name for name, value in vars(Metadata).items() if isinstance(value, property)]
-
-        for prop in properties:
-            print(getattr(self.metadata, prop))
+        self.metadata.validate()
