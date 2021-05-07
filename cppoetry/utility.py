@@ -4,45 +4,6 @@ from tomlkit.exceptions import NonExistentKey
 from pathlib import Path
 from typing import Callable
 
-
-class _BaseGenerator:
-    def __init__(self, metadata: "MetaData") -> None:
-        self._metadata = metadata
-
-
-class ConanGenerator(_BaseGenerator):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-    def write_file(self, path: Path) -> None:
-        #     Generate a conanfile.py with the given path.
-        #     The resulting recipe is TODO
-        path.mkdir(parents=True, exist_ok=True)
-        with open(path / "conanfile.py", "w+") as file:
-
-            # Process the Conan data into a Conan format
-            name = self._metadata.name
-            name = name.replace("-", "")
-
-            dependencies = ["/".join(tup) for tup in self._metadata.dependencies.items()]
-            dependencies = ",".join(f'"{dep}"' for dep in dependencies)
-
-            # Write the Conan data to file
-            # TODO: Require the conan version that this plugin depends on
-            contents = (
-                f"from conans import ConanFile, CMake\n"
-                f"\n"
-                f'required_conan_version = ">=1.36.0"\n'
-                f"\n"
-                f"class {name}Conan(ConanFile):\n"
-                f'    settings = "os", "compiler", "build_type", "arch"\n'
-                f"    requires = {dependencies}\n"
-                f'    generators = ["cmake_find_package", "cmake_paths"]\n'
-            )
-
-            print(contents, file=file)
-
-
 class Metadata:
 
     # Schema for poetry values
@@ -73,13 +34,11 @@ class Metadata:
         "dirty",
     }
 
-    def __init__(self, root: Path, document: TOMLDocument) -> None:
+    def __init__(self, document: TOMLDocument) -> None:
 
         from cerberus import Validator
 
-        self._root = root.absolute()  # TODO: Only required for Generator
         self._validator = Validator()
-        self._generator = ConanGenerator(document)  # TODO: Make external to Metadata
 
         # Gather data from the document
         # TODO: Error handling for these document tabs
@@ -122,8 +81,7 @@ class Metadata:
                 msg = f"'{type(self).__name__}' object has no attribute '{name}'"
                 raise AttributeError(msg)
 
-    def generate_conanfile(self) -> None:
-        self._generator.write_file(self._root)
+  
 
     def validate(self) -> None:
         if self._validator.validate(self._poetry_data, self._poetry_schema) or self._validator.validate(
@@ -131,3 +89,40 @@ class Metadata:
         ):
             msg = f"Failed Validation"
             raise AttributeError(msg)
+
+class _BaseGenerator:
+    def __init__(self, metadata: "MetaData") -> None:
+        self._metadata = metadata
+
+
+class ConanGenerator(_BaseGenerator):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+    def write_file(self, path: Path) -> None:
+        #     Generate a conanfile.py with the given path.
+        #     The resulting recipe is TODO
+        path.mkdir(parents=True, exist_ok=True)
+        with open(path / "conanfile.py", "w+") as file:
+
+            # Process the Conan data into a Conan format
+            name = self._metadata.name
+            name = name.replace("-", "")
+
+            dependencies = ["/".join(tup) for tup in self._metadata.dependencies.items()]
+            dependencies = ",".join(f'"{dep}"' for dep in dependencies)
+
+            # Write the Conan data to file
+            # TODO: Require the conan version that this plugin depends on
+            contents = (
+                f"from conans import ConanFile, CMake\n"
+                f"\n"
+                f'required_conan_version = ">=1.36.0"\n'
+                f"\n"
+                f"class {name}Conan(ConanFile):\n"
+                f'    settings = "os", "compiler", "build_type", "arch"\n'
+                f"    requires = {dependencies}\n"
+                f'    generators = ["cmake_find_package", "cmake_paths"]\n'
+            )
+
+            print(contents, file=file)

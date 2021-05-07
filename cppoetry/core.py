@@ -1,24 +1,25 @@
 from conans.client.conan_api import ConanAPIV1 as ConanAPI
-from cppoetry.utility import Metadata
+from cppoetry.utility import Metadata, ConanGenerator
 
 from pathlib import Path
 
 
 class CPPoetryAPI:
     def __init__(self, root: Path, metadata: Metadata):
-        self.root = root.absolute()
-        self.metadata = metadata
+        self._root = root.absolute()
+        self._metadata = metadata
+        self._generator = ConanGenerator(self._metadata)
 
     def install(self):
-        self.metadata.generate_conanfile()
+        self._metadata.generate_conanfile()
 
-        for remote_name, url in self.metadata.remotes:
+        for remote_name, url in self._metadata.remotes:
              ConanAPI().remote_add(remote_name, url)
 
         ConanAPI().install(
-            path=str(self.root),
-            name=self.metadata.name,
-            version=self.metadata.version,
+            path=str(self._root),
+            name=self._metadata.name,
+            version=self._metadata.version,
             user=None,
             channel=None,
             settings=None,
@@ -33,23 +34,23 @@ class CPPoetryAPI:
             update=False,
             generators=None,
             no_imports=False,
-            install_folder=str(self.metadata.install_directory),
-            cwd=str(self.metadata.install_directory),
+            install_folder=str(self._metadata.install_directory),
+            cwd=str(self._metadata.install_directory),
             lockfile=None,
             lockfile_out=None,
             profile_build=None,
         )
 
     def update(self):
-        self.metadata.generate_conanfile()
+        self._generator.write_file(self._root)
 
-        for remote_name, url in self.metadata.remotes:
+        for remote_name, url in self._metadata.remotes:
              ConanAPI().remote_add(remote_name, url)
 
         ConanAPI().install(
-            path=str(self.root),
-            name=self.metadata.name,
-            version=self.metadata.version,
+            path=str(self._root),
+            name=self._metadata.name,
+            version=self._metadata.version,
             user=None,
             channel=None,
             settings=None,
@@ -64,12 +65,12 @@ class CPPoetryAPI:
             update=True,
             generators=None,
             no_imports=False,
-            install_folder=str(self.metadata.install_directory),
-            cwd=str(self.metadata.install_directory),
+            install_folder=str(self._metadata.install_directory),
+            cwd=str(self._metadata.install_directory),
             lockfile=None,
             lockfile_out=None,
             profile_build=None,
         )
 
     def validate(self):
-        self.metadata.validate()
+        self._metadata.validate()

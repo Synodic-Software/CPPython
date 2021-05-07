@@ -12,7 +12,7 @@ class Config(object):
         self.cwd = Path.cwd()
         self.projectFile = TOMLFile("pyproject.toml")
         self.document = self.projectFile.read()
-        self.metadata = Metadata(self.cwd, self.document)
+        self.metadata = Metadata(self.document)
 
 @click.group()
 @click.pass_context

@@ -49,7 +49,7 @@ class SynodicPlugin(ApplicationPlugin):
         """
 
         self._project = application.poetry.pyproject
-        self._metadata = Metadata(self._project.file, self._project.data)
+        self._metadata = Metadata(self._project.data)
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
