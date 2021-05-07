@@ -26,9 +26,7 @@ class Metadata:
     }
 
     _frozen_variables = {
-        "_root",
         "_validator",
-        "_generator",
         "_poetry_data",
         "_conan_data",
         "dirty",
@@ -91,7 +89,7 @@ class Metadata:
             raise AttributeError(msg)
 
 class _BaseGenerator:
-    def __init__(self, metadata: "MetaData") -> None:
+    def __init__(self, metadata: Metadata) -> None:
         self._metadata = metadata
 
 
@@ -117,12 +115,12 @@ class ConanGenerator(_BaseGenerator):
             contents = (
                 f"from conans import ConanFile, CMake\n"
                 f"\n"
-                f'required_conan_version = ">=1.36.0"\n'
+                f"required_conan_version = '>=1.36.0'\n"
                 f"\n"
                 f"class {name}Conan(ConanFile):\n"
-                f'    settings = "os", "compiler", "build_type", "arch"\n'
+                f"    settings = 'os', 'compiler', 'build_type', 'arch'\n"
                 f"    requires = {dependencies}\n"
-                f'    generators = ["cmake_find_package", "cmake_paths"]\n'
+                f"    generators = ['cmake_find_package', 'cmake_paths']\n"
             )
 
             print(contents, file=file)

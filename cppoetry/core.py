@@ -11,7 +11,7 @@ class CPPoetryAPI:
         self._generator = ConanGenerator(self._metadata)
 
     def install(self):
-        self._metadata.generate_conanfile()
+        self._generator.write_file(self._root)
 
         for remote_name, url in self._metadata.remotes:
              ConanAPI().remote_add(remote_name, url)
