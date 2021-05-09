@@ -11,8 +11,8 @@ from poetry.console.commands.update import UpdateCommand
 from poetry.console.commands.check import CheckCommand
 
 # CPPoetry
-from cppoetry.utility import Metadata
-from cppoetry.core import CPPoetryAPI
+from cppython.utility import Metadata
+from cppython.core import CPPythonAPI
 
 
 class SynodicPlugin(ApplicationPlugin):
@@ -45,7 +45,7 @@ class SynodicPlugin(ApplicationPlugin):
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
-        self.api = CPPoetryAPI(self._project.file, self._metadata)
+        self.api = CPPythonAPI(self._project.file, self._metadata)
 
     def _install(self, command: InstallCommand) -> None:
 

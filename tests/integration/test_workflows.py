@@ -2,8 +2,8 @@ import pytest
 import contextlib
 import os
 
-from cppoetry.core import CPPoetryAPI
-from cppoetry.utility import Metadata
+from cppython.core import CPPythonAPI
+from cppython.utility import Metadata
 from tomlkit.toml_file import TOMLFile
 from pathlib import Path
 from distutils.dir_util import copy_tree
@@ -45,11 +45,11 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path):
 
 class TestWorkflow:
     def test_validation_workflow(self, tmp_workspace):
-        CPPoetryAPI(tmp_workspace.path, tmp_workspace.metadata).validate()
+        CPPythonAPI(tmp_workspace.path, tmp_workspace.metadata).validate()
 
     def test_development_workflow(self, tmp_workspace):
 
-        api = CPPoetryAPI(tmp_workspace.path, tmp_workspace.metadata)
+        api = CPPythonAPI(tmp_workspace.path, tmp_workspace.metadata)
 
         api.install()
         api.update()

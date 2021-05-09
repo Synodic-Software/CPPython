@@ -1,10 +1,10 @@
 from conans.client.conan_api import ConanAPIV1 as ConanAPI
-from cppoetry.utility import Metadata, ConanGenerator
+from cppython.utility import Metadata, ConanGenerator
 
 from pathlib import Path
 
 
-class CPPoetryAPI:
+class CPPythonAPI:
     def __init__(self, root: Path, metadata: Metadata):
         self._root = root.absolute()
         self._metadata = metadata
