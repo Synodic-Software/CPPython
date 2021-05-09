@@ -38,7 +38,7 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path):
     with working_directory(target_directory):
         projectFile = TOMLFile("pyproject.toml")
         document = projectFile.read()
-        metadata = Metadata(target_directory, document)
+        metadata = Metadata(document)
 
         yield WorkspaceData(target_directory, metadata)
 

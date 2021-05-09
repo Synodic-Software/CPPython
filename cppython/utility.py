@@ -3,6 +3,8 @@ from tomlkit.exceptions import NonExistentKey
 
 from pathlib import Path
 from typing import Callable
+from cerberus import Validator
+
 
 class Metadata:
 
@@ -34,31 +36,39 @@ class Metadata:
 
     def __init__(self, document: TOMLDocument) -> None:
 
-        from cerberus import Validator
-
         self._validator = Validator()
+        self._validator.allow_unknown = True
 
         # Gather data from the document
-        # TODO: Error handling for these document tabs
-        self._poetry_data = document["tool"]["poetry"]
-        self._conan_data = document["tool"]["conan"]
+        try:
+            self._poetry_data = document["tool"]["poetry"]
+
+        except NonExistentKey as e:
+            raise e
+
+        try:
+            self._conan_data = document["tool"]["conan"]
+
+        except NonExistentKey as e:
+            pass  # TODO: Disable C++ support
 
         self.dirty = False
 
     def __getattr__(self, name):
 
         if name in Metadata._poetry_schema:
-            if not self._validator.validate(self._poetry_data, Metadata._poetry_schema[name]):
+
+            if self._validator.validate(self._poetry_data, {name: Metadata._poetry_schema[name]}):
                 return self._poetry_data[name]
 
-            msg = f"'{type(self).__name__}' failed Poetry validation with attribute '{name}'"
+            msg = f"'{type(self).__name__}' failed Poetry validation with attribute '{name}' Errors: {self._validator.errors}"
             raise AttributeError(msg)
 
         if name in Metadata._conan_schema:
-            if not self._validator.validate(self._conan_data, Metadata._conan_schema[name]):
+            if self._validator.validate(self._conan_data, {name: Metadata._conan_schema[name]}):
                 return self._conan_data[name]
 
-            msg = f"'{type(self).__name__}' failed Conan validation with attribute '{name}'"
+            msg = f"'{type(self).__name__}' failed Conan validation with attribute '{name}'. Errors: {self._validator.errors}"
             raise AttributeError(msg)
 
         msg = f"'{type(self).__name__}' object has no attribute '{name}'"
@@ -79,14 +89,17 @@ class Metadata:
                 msg = f"'{type(self).__name__}' object has no attribute '{name}'"
                 raise AttributeError(msg)
 
-  
-
     def validate(self) -> None:
-        if self._validator.validate(self._poetry_data, self._poetry_schema) or self._validator.validate(
-            self._conan_data, self._conan_schema
-        ):
-            msg = f"Failed Validation"
+
+        if not self._validator.validate(self._poetry_data, self._poetry_schema):
+            msg = f"Failed validation with {self._validator.errors}"
             raise AttributeError(msg)
+
+        if not self._validator.validate(self._conan_data, self._conan_schema):
+            msg = f"Failed validation with {self._validator.errors}"
+            raise AttributeError(msg)
+
+
 
 class _BaseGenerator:
     def __init__(self, metadata: Metadata) -> None:

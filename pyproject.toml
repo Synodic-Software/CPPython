@@ -1,6 +1,6 @@
 [tool.poetry]
 description = " A Poetry plugin integrating a transparent Conan and CMake workflow."
-name = "cppoetry"
+name = "cppython"
 version = "0.1.0"
 
 license = "MIT"

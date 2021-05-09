@@ -24,14 +24,6 @@ class SynodicPlugin(ApplicationPlugin):
             CheckCommand: self._check
         }
 
-    def __del__(self):
-        """
-        Saves the project file if there have been any writes
-        """
-
-        if self._metadata.dirty:
-            self._project.save()
-
     def _command_dispatch(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
         command = event.command
 
