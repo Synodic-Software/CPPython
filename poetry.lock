@@ -123,6 +123,9 @@ category = "main"
 optional = false
 python-versions = ">=2.7"
 
+[package.dependencies]
+setuptools = "*"
+
 [[package]]
 name = "certifi"
 version = "2020.12.5"
@@ -529,12 +532,14 @@ click = "*"
 distlib = ">=0.3.1"
 pdm-pep517 = ">=0.7.0,<0.8.0"
 pep517 = "*"
+pip = ">=20.1"
 python-cfonts = "*"
 python-dotenv = ">=0.15.0,<1.0.0"
 pythonfinder = "*"
 resolvelib = ">=0.7.0,<0.8.0"
 shellingham = ">=1.3.2,<2.0.0"
 tomlkit = "*"
+wheel = ">=0.36.2,<1.0.0"
 
 [[package]]
 name = "pdm-pep517"
@@ -565,6 +570,14 @@ python-versions = "*"
 
 [package.dependencies]
 ptyprocess = ">=0.5"
+
+[[package]]
+name = "pip"
+version = "21.1.1"
+description = "The PyPA recommended tool for installing Python packages."
+category = "main"
+optional = false
+python-versions = ">=3.6"
 
 [[package]]
 name = "pkginfo"
@@ -772,11 +785,11 @@ testing = ["filelock"]
 
 [[package]]
 name = "python-cfonts"
-version = "1.4.0"
+version = "1.5.0"
 description = "Sexy fonts for the console"
 category = "main"
 optional = false
-python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*"
+python-versions = ">=3.6"
 
 [package.dependencies]
 colorama = "*"
@@ -903,6 +916,20 @@ cryptography = ">=2.0"
 jeepney = ">=0.6"
 
 [[package]]
+name = "setuptools"
+version = "56.2.0"
+description = "Easily download, build, install, upgrade, and uninstall Python packages"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.extras]
+certs = ["certifi (==2016.9.26)"]
+docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "pygments-github-lexers (==0.0.5)", "sphinx-inline-tabs"]
+ssl = ["wincertstore (==0.2)"]
+testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "mock", "flake8-2020", "virtualenv (>=13.0.0)", "pytest-virtualenv (>=1.2.7)", "wheel", "paver", "pip (>=19.1)", "jaraco.envs", "pytest-xdist", "sphinx", "jaraco.path (>=3.2.0)", "pytest-black (>=0.3.7)", "pytest-mypy"]
+
+[[package]]
 name = "shellingham"
 version = "1.4.0"
 description = "Tool to Detect Surrounding Shell"
@@ -987,6 +1014,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "wheel"
+version = "0.36.2"
+description = "A built-package format for Python"
+category = "main"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
+
+[package.extras]
+test = ["pytest (>=3.0.0)", "pytest-cov"]
+
+[[package]]
 name = "wrapt"
 version = "1.12.1"
 description = "Module for decorators, wrappers and monkey patching."
@@ -1009,7 +1047,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "98d34ff226b79cd2896204cf076eee8a2274a01b8a8d9bc72956d5f8651c9585"
+content-hash = "3d5a22bb3b3e59bf7269b7f39dbaf7cc99195a5f72b4de72ae934a6351161853"
 
 [metadata.files]
 apipkg = [
@@ -1403,6 +1441,10 @@ pexpect = [
     {file = "pexpect-4.8.0-py2.py3-none-any.whl", hash = "sha256:0b48a55dcb3c05f3329815901ea4fc1537514d6ba867a152b581d69ae3710937"},
     {file = "pexpect-4.8.0.tar.gz", hash = "sha256:fc65a43959d153d0114afe13997d439c22823a27cefceb5ff35c2178c6784c0c"},
 ]
+pip = [
+    {file = "pip-21.1.1-py3-none-any.whl", hash = "sha256:11d095ed5c15265fc5c15cc40a45188675c239fb0f9913b673a33e54ff7d45f0"},
+    {file = "pip-21.1.1.tar.gz", hash = "sha256:51ad01ddcd8de923533b01a870e7b987c2eb4d83b50b89e1bf102723ff9fed8b"},
+]
 pkginfo = [
     {file = "pkginfo-1.7.0-py2.py3-none-any.whl", hash = "sha256:9fdbea6495622e022cc72c2e5e1b735218e4ffb2a2a69cde2694a6c1f16afb75"},
     {file = "pkginfo-1.7.0.tar.gz", hash = "sha256:029a70cb45c6171c329dfc890cde0879f8c52d6f3922794796e06f577bb03db4"},
@@ -1461,8 +1503,8 @@ pytest-xdist = [
     {file = "pytest_xdist-2.2.1-py3-none-any.whl", hash = "sha256:2447a1592ab41745955fb870ac7023026f20a5f0bfccf1b52a879bd193d46450"},
 ]
 python-cfonts = [
-    {file = "python-cfonts-1.4.0.tar.gz", hash = "sha256:5042bf039d2937e30511a9c675e8316de9eaff1d034db1b63789702f74266372"},
-    {file = "python_cfonts-1.4.0-py2.py3-none-any.whl", hash = "sha256:35b57448536142a78f3faf4c23d8bcca58a8451ab5c988ff0f7b7fb6f277dfd1"},
+    {file = "python-cfonts-1.5.0.tar.gz", hash = "sha256:76db1912c65d322abf5ba7be939e7b0862d239d0dee7321a6afb003b26fc8f62"},
+    {file = "python_cfonts-1.5.0-py3-none-any.whl", hash = "sha256:ba78bbeb8884820cb1bb525af851124816318dfc22a74a61e905224281af3121"},
 ]
 python-dateutil = [
     {file = "python-dateutil-2.8.1.tar.gz", hash = "sha256:73ebfe9dbf22e832286dafa60473e4cd239f8592f699aa5adaf10050e6e1823c"},
@@ -1570,6 +1612,10 @@ secretstorage = [
     {file = "SecretStorage-3.3.1-py3-none-any.whl", hash = "sha256:422d82c36172d88d6a0ed5afdec956514b189ddbfb72fefab0c8a1cee4eaf71f"},
     {file = "SecretStorage-3.3.1.tar.gz", hash = "sha256:fd666c51a6bf200643495a04abb261f83229dcb6fd8472ec393df7ffc8b6f195"},
 ]
+setuptools = [
+    {file = "setuptools-56.2.0-py3-none-any.whl", hash = "sha256:bc30153eec47d82f20c6f5e1a13d4ee725c6deb7013a67557f89bfe5d25235c4"},
+    {file = "setuptools-56.2.0.tar.gz", hash = "sha256:7bb5652625e94e73b9358b7ed8c6431b732e80cf31f4e0972294c64f0e5b849e"},
+]
 shellingham = [
     {file = "shellingham-1.4.0-py2.py3-none-any.whl", hash = "sha256:536b67a0697f2e4af32ab176c00a50ac2899c5a05e0d8e2dadac8e58888283f9"},
     {file = "shellingham-1.4.0.tar.gz", hash = "sha256:4855c2458d6904829bd34c299f11fdeed7cfefbf8a2c522e4caea6cd76b3171e"},
@@ -1601,6 +1647,10 @@ virtualenv = [
 webencodings = [
     {file = "webencodings-0.5.1-py2.py3-none-any.whl", hash = "sha256:a0af1213f3c2226497a97e2b3aa01a7e4bee4f403f95be16fc9acd2947514a78"},
     {file = "webencodings-0.5.1.tar.gz", hash = "sha256:b36a1c245f2d304965eb4e0a82848379241dc04b865afcc4aab16748587e1923"},
+]
+wheel = [
+    {file = "wheel-0.36.2-py2.py3-none-any.whl", hash = "sha256:78b5b185f0e5763c26ca1e324373aadd49182ca90e825f7853f4b2509215dc0e"},
+    {file = "wheel-0.36.2.tar.gz", hash = "sha256:e11eefd162658ea59a60a0f6c7d493a7190ea4b9a85e335b33489d9f17e0245e"},
 ]
 wrapt = [
     {file = "wrapt-1.12.1.tar.gz", hash = "sha256:b62ffa81fb85f4332a4f609cab4ac40709470da05643a082ec1eb88e6d9b97d7"},

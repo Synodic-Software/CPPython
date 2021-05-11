@@ -3,8 +3,9 @@ import contextlib
 import os
 
 from cppython.core import CPPythonAPI
-from cppython.utility import Metadata
+from cppython.data import Metadata
 from tomlkit.toml_file import TOMLFile
+from tomlkit.exceptions import NonExistentKey
 from pathlib import Path
 from distutils.dir_util import copy_tree
 
@@ -38,7 +39,16 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path):
     with working_directory(target_directory):
         projectFile = TOMLFile("pyproject.toml")
         document = projectFile.read()
-        metadata = Metadata(document)
+
+        data = {}
+        
+        try:
+            # Strip the the TOMLDocument metadata
+            data |= {}
+        except NonExistentKey:
+            pass
+
+        metadata = Metadata(data)
 
         yield WorkspaceData(target_directory, metadata)
 

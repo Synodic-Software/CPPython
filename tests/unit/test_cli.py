@@ -1,6 +1,6 @@
 import pytest
 
-from cppython.console import cli
+from cppython.entry_points.console import cli
 from click.testing import CliRunner
 from pathlib import Path
 from distutils.dir_util import copy_tree

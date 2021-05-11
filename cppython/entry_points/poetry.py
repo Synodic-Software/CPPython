@@ -4,6 +4,7 @@ from cleo.events.console_command_event import ConsoleCommandEvent
 from cleo.events.event_dispatcher import EventDispatcher
 from poetry.console.application import Application
 from poetry.plugins.application_plugin import ApplicationPlugin
+from tomlkit.exceptions import NonExistentKey
 
 # Commands
 from poetry.console.commands.install import InstallCommand
@@ -41,7 +42,16 @@ class SynodicPlugin(ApplicationPlugin):
         """
 
         self._project = application.poetry.pyproject
-        self._metadata = Metadata(self._project.data)
+
+        data = {}
+        
+        try:
+            # Strip the the TOMLDocument metadata
+            data |= {}
+        except NonExistentKey:
+            pass
+
+        self._metadata = Metadata(data)
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 

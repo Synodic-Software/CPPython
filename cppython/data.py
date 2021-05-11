@@ -1,9 +1,5 @@
-from tomlkit.toml_document import TOMLDocument
-from tomlkit.exceptions import NonExistentKey
-
 from pathlib import Path
-from typing import Callable
-from cerberus import Validator, TypeDefinition
+from cerberus import Validator
 from collections.abc import MutableMapping
 
 
@@ -40,6 +36,7 @@ class Metadata(MutableMapping):
     _schema = {
         "remotes": {
             "type": "list",
+            "empty": True,
             "schema": {"type": "list", "items": [{"type": "string"}, {"type": "string"}]},  # TODO: Make URL type
         },
         "dependencies": {
@@ -49,43 +46,58 @@ class Metadata(MutableMapping):
                 "items": [{"type": "string"}, {"type": "string"}],  # TODO: Make Version type
             },
         },
-        "install_directory": {"type": "string"},  # TODO: Make Path type
+        "install-path": {"type": "string"},  # TODO: Make Path type
     }
 
-    def __init__(self, data: dict) -> None:
+    def __init__(self, *args, **kwargs) -> None:
+        self.update(dict(*args, **kwargs))
 
         self._validator = Validator(schema=Metadata._schema, allow_unknown=True)
-        self._data = data
 
         self.dirty = False
 
-    def __getattr__(self, name):
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
 
-        if name in Metadata._schema:
-            if self._validator.validate(self._data, {name: Metadata._schema[name]}):
-                return self._data[name]
+    def __getitem__(self, key):
+        return self.__dict__[key]
 
-            msg = f"'{type(self).__name__}' failed validation with attribute '{name}'. Errors: {self._validator.errors}"
-            raise AttributeError(msg)
+    def __delitem__(self, key):
+        del self.__dict__[key]
 
-        msg = f"'{type(self).__name__}' object has no attribute '{name}'"
-        raise AttributeError(msg)
+    def __iter__(self):
+        return iter(self.__dict__)
 
-    def __setattr__(self, name, value):
-        if name in self._frozen_variables:
-            super().__setattr__(name, value)
+    def __len__(self):
+        return len(self.__dict__)
 
-        else:
-            if name in self._data:
-                self.dirty = True
-                self._data[name] = value
-            else:
-                msg = f"'{type(self).__name__}' object has no attribute '{name}'"
-                raise AttributeError(msg)
+    # def __getattr__(self, name):
+
+    #     if name in Metadata._schema:
+    #         if self._validator.validate(self._data, {name: Metadata._schema[name]}):
+    #             return self._data[name]
+
+    #         msg = f"'{type(self).__name__}' failed validation with attribute '{name}'. Errors: {self._validator.errors}"
+    #         raise AttributeError(msg)
+
+    #     msg = f"'{type(self).__name__}' object has no attribute '{name}'"
+    #     raise AttributeError(msg)
+
+    # def __setattr__(self, name, value):
+    #     if name in self._frozen_variables:
+    #         super().__setattr__(name, value)
+
+    #     else:
+    #         if name in self._data:
+    #             self.dirty = True
+    #             self._data[name] = value
+    #         else:
+    #             msg = f"'{type(self).__name__}' object has no attribute '{name}'"
+    # raise AttributeError(msg)
 
     def validate(self) -> None:
 
-        if not self._validator.validate(self._data, self._schema):
+        if not self._validator.validate(self, self._schema):
             msg = f"Failed validation with {self._validator.errors}"
             raise AttributeError(msg)
 
