@@ -3,72 +3,69 @@ from tomlkit.exceptions import NonExistentKey
 
 from pathlib import Path
 from typing import Callable
-from cerberus import Validator
+from cerberus import Validator, TypeDefinition
+from collections.abc import MutableMapping
 
 
-class Metadata:
+class Project:
 
-    # Schema for poetry values
-    _poetry_schema = {
-        "name": {"type": "string"},
-        "version": {"type": "string"},  # TODO: Make Version type
+    """
+    Schema for subset of PEP 621
+        The entirety of PEP 621 is not relevant for this plugin
+        Link: https://www.python.org/dev/peps/pep-0621/
+    """
+
+    _schema = {
+        "name": {"type": "string"},  # TODO: Normalize for internal consumption - PEP 503
+        "version": {"type": "string"},  # TODO:  Make Version type
+        "description": {"type": "string"},
+        "readme": {"type": "string"},  # TODO: String or table
+        "requires-python": {"type": "string"},  # TODO: Version type
+        "license": {"type": "string"},  # TODO: Table specification
+        "authors": {"type": "string"},  # TODO:  specification
+        "maintainers": {"type": "string"},  # TODO:  specification
+        "keywords": {"type": "string"},  # TODO:  specification
+        "classifiers": {"type": "string"},  # TODO:  specification
+        "urls": {"type": "string"},  # TODO:  specification
     }
 
-    # Schema for Conan values
-    _conan_schema = {
-        "remotes": {"type": "list", "schema": {"type": "tuple", "items": ({"type": "string"}, {"type": "string"})}},
-        "dependencies": {
+    def __init__(self, data: dict) -> None:
+
+        self._validator = Validator(schema=Project._schema, allow_unknown=True)
+        self._data = data
+
+
+class Metadata(MutableMapping):
+
+    _schema = {
+        "remotes": {
             "type": "list",
+            "schema": {"type": "list", "items": [{"type": "string"}, {"type": "string"}]},  # TODO: Make URL type
+        },
+        "dependencies": {
+            "type": "dict",
             "schema": {
-                "type": "tuple",
-                "items": ({"type": "string"}, {"type": "string"}),  # TODO: Make Version type
+                "type": "list",
+                "items": [{"type": "string"}, {"type": "string"}],  # TODO: Make Version type
             },
         },
         "install_directory": {"type": "string"},  # TODO: Make Path type
     }
 
-    _frozen_variables = {
-        "_validator",
-        "_poetry_data",
-        "_conan_data",
-        "dirty",
-    }
+    def __init__(self, data: dict) -> None:
 
-    def __init__(self, document: TOMLDocument) -> None:
-
-        self._validator = Validator()
-        self._validator.allow_unknown = True
-
-        # Gather data from the document
-        try:
-            self._poetry_data = document["tool"]["poetry"]
-
-        except NonExistentKey as e:
-            raise e
-
-        try:
-            self._conan_data = document["tool"]["conan"]
-
-        except NonExistentKey as e:
-            pass  # TODO: Disable C++ support
+        self._validator = Validator(schema=Metadata._schema, allow_unknown=True)
+        self._data = data
 
         self.dirty = False
 
     def __getattr__(self, name):
 
-        if name in Metadata._poetry_schema:
+        if name in Metadata._schema:
+            if self._validator.validate(self._data, {name: Metadata._schema[name]}):
+                return self._data[name]
 
-            if self._validator.validate(self._poetry_data, {name: Metadata._poetry_schema[name]}):
-                return self._poetry_data[name]
-
-            msg = f"'{type(self).__name__}' failed Poetry validation with attribute '{name}' Errors: {self._validator.errors}"
-            raise AttributeError(msg)
-
-        if name in Metadata._conan_schema:
-            if self._validator.validate(self._conan_data, {name: Metadata._conan_schema[name]}):
-                return self._conan_data[name]
-
-            msg = f"'{type(self).__name__}' failed Conan validation with attribute '{name}'. Errors: {self._validator.errors}"
+            msg = f"'{type(self).__name__}' failed validation with attribute '{name}'. Errors: {self._validator.errors}"
             raise AttributeError(msg)
 
         msg = f"'{type(self).__name__}' object has no attribute '{name}'"
@@ -79,26 +76,18 @@ class Metadata:
             super().__setattr__(name, value)
 
         else:
-            if name in self._poetry_data:
+            if name in self._data:
                 self.dirty = True
-                self._poetry_data[name] = value
-            elif name in self._conan_data:
-                self.dirty = True
-                self._conan_data[name] = value
+                self._data[name] = value
             else:
                 msg = f"'{type(self).__name__}' object has no attribute '{name}'"
                 raise AttributeError(msg)
 
     def validate(self) -> None:
 
-        if not self._validator.validate(self._poetry_data, self._poetry_schema):
+        if not self._validator.validate(self._data, self._schema):
             msg = f"Failed validation with {self._validator.errors}"
             raise AttributeError(msg)
-
-        if not self._validator.validate(self._conan_data, self._conan_schema):
-            msg = f"Failed validation with {self._validator.errors}"
-            raise AttributeError(msg)
-
 
 
 class _BaseGenerator:

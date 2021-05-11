@@ -1,7 +1,7 @@
 import click
 
 from cppython.core import CPPythonAPI
-from cppython.utility import Metadata
+from cppython.data import Metadata
 
 from tomlkit.toml_file import TOMLFile
 from pathlib import Path

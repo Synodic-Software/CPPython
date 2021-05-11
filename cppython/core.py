@@ -1,5 +1,5 @@
 from conans.client.conan_api import ConanAPIV1 as ConanAPI
-from cppython.utility import Metadata, ConanGenerator
+from cppython.data import Metadata, ConanGenerator
 
 from pathlib import Path
 

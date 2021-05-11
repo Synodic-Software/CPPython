@@ -1,5 +1,5 @@
 [tool.poetry]
-description = " A Poetry plugin integrating a transparent Conan and CMake workflow."
+description = " A Python package manager agnostic plugin integrating a transparent Conan and CMake workflow."
 name = "cppython"
 version = "0.1.0"
 
@@ -11,8 +11,8 @@ authors = [
 
 readme = "README.md"
 
-homepage = "https://github.com/Synodic-Software/CPPoetry"
-repository = "https://github.com/Synodic-Software/CPPoetry"
+homepage = "https://github.com/Synodic-Software/CPPython"
+repository = "https://github.com/Synodic-Software/CPPython"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -21,6 +21,7 @@ poetry = { git = "https://github.com/python-poetry/poetry.git", branch = "master
 tomlkit = "^0.7.0"
 click = "^7.1.2"
 cerberus = "^1.3.4"
+pdm = "^1.5.2"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.5b0", allow-prereleases = true}
@@ -30,10 +31,13 @@ pytest-xdist = "^2.2.1"
 pylint = "^2.8.2"
 
 [tool.poetry.plugins."poetry.application.plugin"]
-cppoetry = "cppoetry.plugin:SynodicPlugin"
+cppython = "cppython.entry_points.poetry:SynodicPlugin"
 
 [tool.poetry.scripts]
-cppoetry = 'cppoetry.console:cli'
+cppython = 'cppython.entry_points.console:cli'
+
+[project.entry-points.pdm]
+hello = "cppython.entry_points:hello_plugin"
 
 [tool.pytest.ini_options]
 addopts = "-n auto"

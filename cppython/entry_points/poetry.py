@@ -10,8 +10,8 @@ from poetry.console.commands.install import InstallCommand
 from poetry.console.commands.update import UpdateCommand
 from poetry.console.commands.check import CheckCommand
 
-# CPPoetry
-from cppython.utility import Metadata
+# CPPython
+from cppython.data import Metadata
 from cppython.core import CPPythonAPI
 
 
@@ -21,7 +21,7 @@ class SynodicPlugin(ApplicationPlugin):
         self._available_commands = {
             InstallCommand: self._install,
             UpdateCommand: self._update,
-            CheckCommand: self._check
+            CheckCommand: self._check,
         }
 
     def _command_dispatch(self, event: ConsoleCommandEvent, event_name: str, dispatcher: EventDispatcher) -> None:
