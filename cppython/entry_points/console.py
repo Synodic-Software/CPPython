@@ -1,28 +1,17 @@
 import click
+import toml
 
 from cppython.core import CPPythonAPI
 from cppython.data import Metadata
 
-from tomlkit.toml_file import TOMLFile
-from tomlkit.exceptions import NonExistentKey
 from pathlib import Path
 
 class Config(object):
 
     def __init__(self):
-        self.cwd = Path.cwd()
-        self.projectFile = TOMLFile("pyproject.toml")
-        self.document = self.projectFile.read()
-
-        data = {}
-        
-        try:
-            # Strip the the TOMLDocument metadata
-            data |= {}
-        except NonExistentKey:
-            pass
-
-        self.metadata = Metadata(data)
+        self.cwd = Path.cwd()        
+        data = toml.load(self.cwd / "pyproject.toml")
+        self.metadata = Metadata(data['tool']['conan'])
 
 @click.group()
 @click.pass_context

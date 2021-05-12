@@ -41,15 +41,15 @@ class Metadata(MutableMapping):
         },
         "dependencies": {
             "type": "dict",
-            "schema": {
-                "type": "list",
-                "items": [{"type": "string"}, {"type": "string"}],  # TODO: Make Version type
-            },
+            'keysrules': {'type': 'string'}, # TODO Proper PyPi names?
+            'valuesrules': {'type': 'string'} # TODO:  Make Version type
         },
         "install-path": {"type": "string"},  # TODO: Make Path type
     }
 
     def __init__(self, *args, **kwargs) -> None:
+
+        self.store = dict()
         self.update(dict(*args, **kwargs))
 
         self._validator = Validator(schema=Metadata._schema, allow_unknown=True)
@@ -57,19 +57,22 @@ class Metadata(MutableMapping):
         self.dirty = False
 
     def __setitem__(self, key, value):
-        self.__dict__[key] = value
+        self.store[self._keytransform(key)] = value
 
     def __getitem__(self, key):
-        return self.__dict__[key]
+        return self.store[self._keytransform(key)]
 
     def __delitem__(self, key):
-        del self.__dict__[key]
+        del self.store[self._keytransform(key)]
 
     def __iter__(self):
-        return iter(self.__dict__)
+        return iter(self.store)
 
     def __len__(self):
-        return len(self.__dict__)
+        return len(self.store)
+
+    def _keytransform(self, key):
+        return key
 
     # def __getattr__(self, name):
 
@@ -118,10 +121,10 @@ class ConanGenerator(_BaseGenerator):
         with open(path / "conanfile.py", "w+") as file:
 
             # Process the Conan data into a Conan format
-            name = self._metadata.name
+            name = self._metadata['name']
             name = name.replace("-", "")
 
-            dependencies = ["/".join(tup) for tup in self._metadata.dependencies.items()]
+            dependencies = ["/".join(tup) for tup in self._metadata['dependencies'].items()]
             dependencies = ",".join(f'"{dep}"' for dep in dependencies)
 
             # Write the Conan data to file

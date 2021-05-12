@@ -1,10 +1,13 @@
+import toml
+
+from pathlib import Path
+
 # Plugin
 from cleo.events.console_events import COMMAND
 from cleo.events.console_command_event import ConsoleCommandEvent
 from cleo.events.event_dispatcher import EventDispatcher
 from poetry.console.application import Application
 from poetry.plugins.application_plugin import ApplicationPlugin
-from tomlkit.exceptions import NonExistentKey
 
 # Commands
 from poetry.console.commands.install import InstallCommand
@@ -40,18 +43,12 @@ class SynodicPlugin(ApplicationPlugin):
         """
         The entry function for the Poetry plugin
         """
-
+        # pyproject will only be used for writing. tomlkit virally adds metadata
         self._project = application.poetry.pyproject
 
-        data = {}
-        
-        try:
-            # Strip the the TOMLDocument metadata
-            data |= {}
-        except NonExistentKey:
-            pass
+        data = toml.load(Path.cwd() / "pyproject.toml")
 
-        self._metadata = Metadata(data)
+        self._metadata = Metadata(data['tool']['conan'])
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
