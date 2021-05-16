@@ -32,13 +32,13 @@ pytest-xdist = "^2.2.1"
 pylint = "^2.8.2"
 
 [tool.poetry.plugins."poetry.application.plugin"]
-cppython = "cppython.entry_points.poetry:SynodicPlugin"
+cppython = "cppython.plugins.poetry:SynodicPlugin"
 
 [tool.poetry.scripts]
-cppython = 'cppython.entry_points.console:cli'
+cppython = 'cppython.console:cli'
 
 [project.entry-points.pdm]
-hello = "cppython.entry_points:hello_plugin"
+hello = "cppython.plugins:hello_plugin"
 
 [tool.pytest.ini_options]
 addopts = "-n auto"

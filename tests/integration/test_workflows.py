@@ -1,19 +1,18 @@
 import pytest
 import contextlib
 import os
-import toml
 
 from cppython.core import CPPythonAPI
-from cppython.data import Metadata
+from cppython.data import Project
 
 from pathlib import Path
 from distutils.dir_util import copy_tree
 
 # Fixtures
 class WorkspaceData:
-    def __init__(self, path: Path, metadata: Metadata):
+    def __init__(self, path: Path, project: Project):
         self.path = path
-        self.metadata = metadata
+        self.project = project
 
 
 @contextlib.contextmanager
@@ -37,19 +36,18 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path):
     copy_tree(str(test_workspace), str(target_directory))
 
     with working_directory(target_directory):
-        data = toml.load(Path.cwd() / "pyproject.toml")
-        metadata = Metadata(data['tool']['conan'])
+        project = Project(Path.cwd())
 
-        yield WorkspaceData(target_directory, metadata)
+        yield WorkspaceData(target_directory, project)
 
 
 class TestWorkflow:
     def test_validation_workflow(self, tmp_workspace):
-        CPPythonAPI(tmp_workspace.path, tmp_workspace.metadata).validate()
+        CPPythonAPI(tmp_workspace.path, tmp_workspace.project).validate()
 
     def test_development_workflow(self, tmp_workspace):
 
-        api = CPPythonAPI(tmp_workspace.path, tmp_workspace.metadata)
+        api = CPPythonAPI(tmp_workspace.path, tmp_workspace.project)
 
         api.install()
         api.update()

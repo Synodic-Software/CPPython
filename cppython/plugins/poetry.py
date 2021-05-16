@@ -15,12 +15,14 @@ from poetry.console.commands.update import UpdateCommand
 from poetry.console.commands.check import CheckCommand
 
 # CPPython
-from cppython.data import Metadata
+from cppython.data import Metadata, Plugin
 from cppython.core import CPPythonAPI
 
 
-class SynodicPlugin(ApplicationPlugin):
+class SynodicPlugin(ApplicationPlugin, Plugin):
     def __init__(self):
+
+
 
         self._available_commands = {
             InstallCommand: self._install,
