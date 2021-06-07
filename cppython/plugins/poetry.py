@@ -15,11 +15,11 @@ from poetry.console.commands.update import UpdateCommand
 from poetry.console.commands.check import CheckCommand
 
 # CPPython
-from cppython.data import Metadata, Plugin
-from cppython.core import CPPythonAPI
+from cppython.core import Project, Plugin
+from cppython.api import CPPythonAPI
 
 
-class SynodicPlugin(ApplicationPlugin, Plugin):
+class PoetryPlugin(ApplicationPlugin, Plugin):
     def __init__(self):
 
 
@@ -50,11 +50,17 @@ class SynodicPlugin(ApplicationPlugin, Plugin):
 
         data = toml.load(Path.cwd() / "pyproject.toml")
 
-        self._metadata = Metadata(data['tool']['conan'])
+        self._project = Project(data['tool']['conan'])
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
-        self.api = CPPythonAPI(self._project.file, self._metadata)
+        self.api = CPPythonAPI(self._project.file, self._project)
+
+    def valid(self) -> bool:
+        return True
+
+    def gather_pep_612(self, data: dict) -> dict:
+        return {}
 
     def _install(self, command: InstallCommand) -> None:
 

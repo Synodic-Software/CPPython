@@ -2,8 +2,8 @@ import pytest
 import contextlib
 import os
 
-from cppython.core import CPPythonAPI
-from cppython.data import Project
+from cppython.api import CPPythonAPI
+from cppython.core import Project
 
 from pathlib import Path
 from distutils.dir_util import copy_tree

@@ -6,10 +6,13 @@ from importlib.metadata import entry_points
 
 import importlib
 import pkgutil
+import inspect
+
+# TODO: Comment
 import cppython.plugins
 
-class Plugin(ABC):
 
+class Plugin(ABC):
     def __init__(self) -> None:
         pass
 
@@ -73,34 +76,25 @@ class Project(MutableMapping):
 
             data = toml.load(path / "pyproject.toml")
 
-        # import all plugins from the internal namespace
-
-            def iter_namespace(ns_pkg):
-                # Specifying the second argument (prefix) to iter_modules makes the
-                # returned name an absolute name instead of a relative one. This allows
-                # import_module to work without having to do additional modification to
-                # the name.
-                return pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + ".")
-
-        internal_plugins = {
-            name: importlib.import_module(name)
-            for finder, name, ispkg
-            in iter_namespace(cppython.plugins)
-        }
-
-        # import all plugins from the external environment
-        external_plugins = entry_points(group='cppython.plugins')
-
-        plugins = []
-
-        project_plugin = None
+        # import all plugins from the namespace
         
-        for plugin in plugins:
-            if plugin.valid():
-                project_plugin = plugin
+        def extract_plugin(namespace_package):
+            for _, name, is_package in pkgutil.iter_modules(namespace_package.__path__, namespace_package.__name__ + "."):
+                if not is_package:
+                    module = importlib.import_module(name)
+                    class_members = inspect.getmembers(module, inspect.isclass)
+                    for (_, value) in class_members:
+                        if issubclass(value, Plugin) & (value is not Plugin):
+                            plugin = value()
+                            if plugin.valid():
+                                return plugin
+            return None
+
+
+        project_plugin = extract_plugin(cppython.plugins)
 
         if project_plugin is None:
-            assert "This is not a valid project."
+            raise Exception("This is not a valid project.")
 
         self._data = project_plugin.gather_pep_612(data)
 
@@ -121,7 +115,9 @@ class Project(MutableMapping):
         if self._conan_validator.validate(self._metadata, {key: Project._conan_schema[key]}):
             return self._metadata[key]
 
-        msg = f"'{type(self).__name__}' failed validation with attribute '{key}'. Errors: {self._conan_validator.errors}"
+        msg = (
+            f"'{type(self).__name__}' failed validation with attribute '{key}'. Errors: {self._conan_validator.errors}"
+        )
         raise AttributeError(msg)
 
     def __delitem__(self, key):

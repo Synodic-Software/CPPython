@@ -1,8 +1,7 @@
 import click
-import toml
 
-from cppython.core import CPPythonAPI
-from cppython.data import Metadata
+from cppython.api import CPPythonAPI
+from cppython.core import Project
 
 from pathlib import Path
 
@@ -10,8 +9,7 @@ class Config(object):
 
     def __init__(self):
         self.cwd = Path.cwd()        
-        data = toml.load(self.cwd / "pyproject.toml")
-        self.metadata = Metadata(data['tool']['conan'])
+        self.project = Project(self.cwd / "pyproject.toml")
 
 @click.group()
 @click.pass_context
@@ -21,20 +19,20 @@ def cli(context):
 @cli.command()
 @click.pass_obj
 def validate(obj):
-    CPPythonAPI(obj.cwd, obj.metadata).validate()
+    CPPythonAPI(obj.cwd, obj.project).validate()
 
 @cli.command()
 @click.pass_obj
 def install(obj):
-    CPPythonAPI(obj.cwd, obj.metadata).install()
+    CPPythonAPI(obj.cwd, obj.project).install()
 
 @cli.command()
 @click.pass_obj
 def update(obj):
-    CPPythonAPI(obj.cwd, obj.metadata).update()
+    CPPythonAPI(obj.cwd, obj.project).update()
 
 @cli.resultcallback()
 @click.pass_obj
 def cleanup(obj, result):
-    if obj.metadata.dirty:
+    if obj.project.dirty:
         obj.projectFile.write(obj.document)
