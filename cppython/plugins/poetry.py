@@ -50,6 +50,10 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
 
         data = toml.load(Path.cwd() / "pyproject.toml")
 
+        # Skip initialization if there is no conan section
+        if not 'tool' in data and not 'conan' in data['tool']:
+            return
+
         self._project = Project(data['tool']['conan'])
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
@@ -63,13 +67,13 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
         return {}
 
     def _install(self, command: InstallCommand) -> None:
-
-        self.api.install()
+        pass
+        # self.api.install()
 
     def _update(self, command: UpdateCommand) -> None:
-
-        self.api.update()
+        pass
+        # self.api.update()
 
     def _check(self, command: CheckCommand) -> None:
-
-        self.api.validate()
+        pass
+        # self.api.validate()
