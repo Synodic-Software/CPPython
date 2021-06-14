@@ -43,20 +43,12 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
         """
         The entry function for the Poetry plugin
         """
-        # pyproject will only be used for writing. tomlkit virally adds metadata
-        self._project = application.poetry.pyproject
 
-        data = self._project.data
-
-        # Skip initialization if there is no conan section
-        if not "conan" in data["tool"]:
-            return
-
-        self._project = Project(data["tool"]["conan"])
+        self._project = Project(application.poetry.pyproject.data)
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
-        self.api = CPPythonAPI(self._project.file, self._project)
+        self._api = CPPythonAPI(application.poetry.pyproject.file, self._project)
 
     def valid(self) -> bool:
         return True
@@ -66,12 +58,12 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
 
     def _install(self, command: InstallCommand) -> None:
         pass
-        self.api.install()
+        self._api.install()
 
     def _update(self, command: UpdateCommand) -> None:
         pass
-        self.api.update()
+        self._api.update()
 
     def _check(self, command: CheckCommand) -> None:
         pass
-        self.api.validate()
+        self._api.validate()

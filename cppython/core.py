@@ -62,7 +62,10 @@ class Project(MutableMapping):
     }
 
     def __init__(self, path: Path, data: dict = {}) -> None:
-
+        """
+        data - The top level dictionary of the pyproject.toml file
+                    If not provided, pyproject.toml will be loaded internally
+        """
         if not data:
 
             if path.is_file():
@@ -70,16 +73,19 @@ class Project(MutableMapping):
 
             while not path.glob("pyproject.toml"):
                 if path.is_absolute():
-                    assert "This is not a valid project."
+                    assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
 
-            import toml
+            import tomlkit
 
-            data = toml.load(path / "pyproject.toml")
+            pyproject = path / "pyproject.toml"
+            data = dict(tomlkit.parse(pyproject.read_text("utf-8")))
 
         # import all plugins from the namespace
-        
+
         def extract_plugin(namespace_package):
-            for _, name, is_package in pkgutil.iter_modules(namespace_package.__path__, namespace_package.__name__ + "."):
+            for _, name, is_package in pkgutil.iter_modules(
+                namespace_package.__path__, namespace_package.__name__ + "."
+            ):
                 if not is_package:
                     module = importlib.import_module(name)
                     class_members = inspect.getmembers(module, inspect.isclass)
@@ -90,17 +96,15 @@ class Project(MutableMapping):
                                 return plugin
             return None
 
-
         project_plugin = extract_plugin(cppython.plugins)
 
         if project_plugin is None:
             raise Exception("This is not a valid project.")
 
-        self._data = project_plugin.gather_pep_612(data)
-
         self._project_validator = Validator(schema=Project._project_schema)
         self._conan_validator = Validator(schema=Project._conan_schema)
 
+        self._data = project_plugin.gather_pep_612(data)
         self._metadata = data["tool"]["conan"]
 
         self.dirty = False
@@ -184,11 +188,11 @@ class Project(MutableMapping):
         return self._validate_project_key("urls")
 
     def validate(self):
-        if not self._project_validator.validate(self, self._project_schema):
+        if not self._project_validator.validate(self, self._data):
             msg = f"Failed project validation with {self._project_validator.errors}"
             raise AttributeError(msg)
 
-        if not self._conan_validator.validate(self, self._conan_schema):
+        if not self._conan_validator.validate(self, self._metadata):
             msg = f"Failed conan validation with {self._conan_validator.errors}"
             raise AttributeError(msg)
 
