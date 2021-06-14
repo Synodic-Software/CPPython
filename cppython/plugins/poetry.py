@@ -22,8 +22,6 @@ from cppython.api import CPPythonAPI
 class PoetryPlugin(ApplicationPlugin, Plugin):
     def __init__(self):
 
-
-
         self._available_commands = {
             InstallCommand: self._install,
             UpdateCommand: self._update,
@@ -48,13 +46,13 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
         # pyproject will only be used for writing. tomlkit virally adds metadata
         self._project = application.poetry.pyproject
 
-        data = toml.load(Path.cwd() / "pyproject.toml")
+        data = self._project.data
 
         # Skip initialization if there is no conan section
-        if not 'tool' in data and not 'conan' in data['tool']:
+        if not "conan" in data["tool"]:
             return
 
-        self._project = Project(data['tool']['conan'])
+        self._project = Project(data["tool"]["conan"])
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
@@ -68,12 +66,12 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
 
     def _install(self, command: InstallCommand) -> None:
         pass
-        # self.api.install()
+        self.api.install()
 
     def _update(self, command: UpdateCommand) -> None:
         pass
-        # self.api.update()
+        self.api.update()
 
     def _check(self, command: CheckCommand) -> None:
         pass
-        # self.api.validate()
+        self.api.validate()
