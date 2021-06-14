@@ -224,7 +224,7 @@ class ConanGenerator(_BaseGenerator):
             contents = (
                 f"from conans import ConanFile, CMake\n"
                 f"\n"
-                f"required_conan_version = '>=1.36.0'\n"
+                f"required_conan_version = '>=1.37.1'\n"
                 f"\n"
                 f"class {name}Conan(ConanFile):\n"
                 f"    settings = 'os', 'compiler', 'build_type', 'arch'\n"
