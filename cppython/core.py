@@ -182,7 +182,7 @@ class Project:
 
         self.info = project_plugin.gather_pep_612(data)
 
-        # The dataclass 'Metadata'
+        # The dataclass 'Metadata' may contain improper attributes.
         try:
             self.metadata = Metadata(**normalize(self._data))
         except TypeError:
