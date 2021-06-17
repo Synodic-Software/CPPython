@@ -80,6 +80,13 @@ class Project(MutableMapping):
             pyproject = path / "pyproject.toml"
             data = dict(tomlkit.parse(pyproject.read_text("utf-8")))
 
+        # Deactivate this plugin based on the presence of the 'conan' table
+        if "tool" not in data or "conan" not in data["tool"]:
+            self.enabled = False
+            return
+
+        self.enabled = True
+
         # import all plugins from the namespace
 
         def extract_plugin(namespace_package):

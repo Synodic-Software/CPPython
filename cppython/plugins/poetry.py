@@ -44,7 +44,7 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
         The entry function for the Poetry plugin
         """
 
-        self._project = Project(application.poetry.pyproject.data)
+        self._project = Project(application.poetry.file, application.poetry.pyproject.data)
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
