@@ -1,8 +1,7 @@
 from pathlib import Path
 from cerberus import Validator
-from collections.abc import MutableMapping
 from abc import ABC, abstractmethod
-from importlib.metadata import entry_points
+from dataclasses import dataclass, asdict
 
 import importlib
 import pkgutil
@@ -10,6 +9,98 @@ import inspect
 
 # TODO: Comment
 import cppython.plugins
+
+
+@dataclass(frozen=True)
+class PEP621:
+    """
+    Subset of PEP 621
+        The entirety of PEP 621 is not relevant for this plugin
+        Link: https://www.python.org/dev/peps/pep-0621/
+    """
+
+    name: str
+    version: str
+    description: str
+    readme: str
+    requires_python: str
+    license: str
+    authors: str
+    maintainers: str
+    keywords: str
+    classifiers: str
+    urls: str
+
+    def __post_init__(self):
+        """
+        Manual validation per attribute
+            TODO: Remove with Cerberus 2.0
+        """
+
+        # TODO: Unify with dataclass definition with Cerberus 2.0
+        schema = {
+            "name": {"type": "string"},  # TODO: Normalize for internal consumption - PEP 503
+            "version": {"type": "string"},  # TODO:  Make Version type
+            "description": {"type": "string"},
+            "readme": {"type": "string"},  # TODO: String or table
+            "requires_python": {"type": "string"},  # TODO: Version type
+            "license": {"type": "string"},  # TODO: Table specification
+            "authors": {"type": "string"},  # TODO:  specification
+            "maintainers": {"type": "string"},  # TODO:  specification
+            "keywords": {"type": "string"},  # TODO:  specification
+            "classifiers": {"type": "string"},  # TODO:  specification
+            "urls": {"type": "string"},  # TODO:  specification
+        }
+
+        _validator = Validator(schema)
+
+        if not _validator.validate(asdict(self)):
+            msg = f"'{type(self).__name__}' validation failed: {_validator.errors}"
+            raise AttributeError(msg)
+
+
+@dataclass
+class Metadata:
+    """
+    TODO: Description
+    """
+
+    # TODO: Unify with dataclass definition with Cerberus 2.0
+    _schema = {
+        "remotes": {
+            "type": "list",
+            "empty": True,
+            "schema": {"type": "list", "items": [{"type": "string"}, {"type": "string"}]},  # TODO: Make URL type
+        },
+        "dependencies": {
+            "type": "dict",
+            "keysrules": {"type": "string"},  # TODO Proper PyPi names?
+            "valuesrules": {"type": "string"},  # TODO:  Make Version type
+        },
+        "install_path": {"type": "string"},  # TODO: Make Path type
+    }
+
+    _validator = Validator()
+
+    remotes: str
+    dependencies: str
+    install_path: str
+
+    def __getattribute__(self, name):
+        """
+        Lazily validate attributes as they are accessed
+        """
+        if not self._validator.validate(object.__getattribute__(self, name), schema=self._schema[name]):
+            msg = f"'{type(self).__name__}' validation failed: {self._validator.errors}"
+            raise AttributeError(msg)
+
+    def validate(self):
+        """
+        Validate all attributes
+        """
+        if not self._validator.validate(asdict(self), schema=self._schema):
+            msg = f"'{type(self).__name__}' validation failed: {self._validator.errors}"
+            raise AttributeError(msg)
 
 
 class Plugin(ABC):
@@ -21,51 +112,21 @@ class Plugin(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def gather_pep_612(self, data: dict) -> dict:
+    def gather_pep_612(self, data: dict) -> PEP621:
         raise NotImplementedError()
 
 
-class Project(MutableMapping):
-
-    """
-    Schema for subset of PEP 621
-        The entirety of PEP 621 is not relevant for this plugin
-        Link: https://www.python.org/dev/peps/pep-0621/
-    """
-
-    _project_schema = {
-        "name": {"type": "string"},  # TODO: Normalize for internal consumption - PEP 503
-        "version": {"type": "string"},  # TODO:  Make Version type
-        "description": {"type": "string"},
-        "readme": {"type": "string"},  # TODO: String or table
-        "requires-python": {"type": "string"},  # TODO: Version type
-        "license": {"type": "string"},  # TODO: Table specification
-        "authors": {"type": "string"},  # TODO:  specification
-        "maintainers": {"type": "string"},  # TODO:  specification
-        "keywords": {"type": "string"},  # TODO:  specification
-        "classifiers": {"type": "string"},  # TODO:  specification
-        "urls": {"type": "string"},  # TODO:  specification
-    }
-
-    _conan_schema = {
-        "remotes": {
-            "type": "list",
-            "empty": True,
-            "schema": {"type": "list", "items": [{"type": "string"}, {"type": "string"}]},  # TODO: Make URL type
-        },
-        "dependencies": {
-            "type": "dict",
-            "keysrules": {"type": "string"},  # TODO Proper PyPi names?
-            "valuesrules": {"type": "string"},  # TODO:  Make Version type
-        },
-        "install-path": {"type": "string"},  # TODO: Make Path type
-    }
-
+class Project:
     def __init__(self, path: Path, data: dict = {}) -> None:
         """
         data - The top level dictionary of the pyproject.toml file
                     If not provided, pyproject.toml will be loaded internally
         """
+
+        self.enabled = False
+        self.dirty = False
+
+        # TODO: If data is loaded, it needs to be written out as well
         if not data:
 
             if path.is_file():
@@ -82,10 +143,7 @@ class Project(MutableMapping):
 
         # Deactivate this plugin based on the presence of the 'conan' table
         if "tool" not in data or "conan" not in data["tool"]:
-            self.enabled = False
             return
-
-        self.enabled = True
 
         # import all plugins from the namespace
 
@@ -105,52 +163,33 @@ class Project(MutableMapping):
 
         project_plugin = extract_plugin(cppython.plugins)
 
+        # This is not a valid project.
         if project_plugin is None:
-            raise Exception("This is not a valid project.")
+            return
 
-        self._project_validator = Validator(schema=Project._project_schema)
-        self._conan_validator = Validator(schema=Project._conan_schema)
+        # Pass-through initialization ends here
+        self.enabled = True
 
-        self.project_data = project_plugin.gather_pep_612(data)
-        self._metadata = data["tool"]["conan"]
+        # Maintain the input data for writing capabilities
+        self._data = data["tool"]["conan"]
 
-        if not self._project_validator.validate(self.project_data, Project._project_schema):
-            msg = f"'{type(self).__name__}' failed validation. Errors: {self._conan_validator.errors}"
-            raise AttributeError(msg)
+        def normalize(data: dict) -> dict:
+            """
+            Returns a copy of the original with key names normalized
+            """
 
-        self.dirty = False
+            return {key.replace("-", "_"): value for (key, value) in data.items()}
 
-    def __setitem__(self, key, value):
-        self.dirty = True
-        self._metadata[self._keytransform(key)] = value
+        self.info = project_plugin.gather_pep_612(data)
 
-    def __getitem__(self, key):
-        key = self._keytransform(key)
-
-        if self._conan_validator.validate(self._metadata, {key: Project._conan_schema[key]}):
-            return self._metadata[key]
-
-        msg = (
-            f"'{type(self).__name__}' failed validation with attribute '{key}'. Errors: {self._conan_validator.errors}"
-        )
-        raise AttributeError(msg)
-
-    def __delitem__(self, key):
-        del self._metadata[self._keytransform(key)]
-
-    def __iter__(self):
-        return iter(self._metadata)
-
-    def __len__(self):
-        return len(self._metadata)
-
-    def _keytransform(self, key):
-        return key
+        # The dataclass 'Metadata'
+        try:
+            self.metadata = Metadata(**normalize(self._data))
+        except TypeError:
+            Metadata.validate(self._data)
 
     def validate(self):
-        if not self._conan_validator.validate(self, self._metadata):
-            msg = f"Failed conan validation with {self._conan_validator.errors}"
-            raise AttributeError(msg)
+        self.metadata.validate()
 
 
 class _BaseGenerator:
