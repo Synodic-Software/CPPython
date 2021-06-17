@@ -104,8 +104,12 @@ class Project(MutableMapping):
         self._project_validator = Validator(schema=Project._project_schema)
         self._conan_validator = Validator(schema=Project._conan_schema)
 
-        self._data = project_plugin.gather_pep_612(data)
+        self.project_data = project_plugin.gather_pep_612(data)
         self._metadata = data["tool"]["conan"]
+
+        if not self._project_validator.validate(self.project_data, Project._project_schema):
+            msg = f"'{type(self).__name__}' failed validation. Errors: {self._conan_validator.errors}"
+            raise AttributeError(msg)
 
         self.dirty = False
 
@@ -136,62 +140,7 @@ class Project(MutableMapping):
     def _keytransform(self, key):
         return key
 
-    def _validate_project_key(self, key):
-        if self._project_validator.validate(self._data, {key: Project._project_schema[key]}):
-            return self._data[key]
-
-        msg = f"'{type(self).__name__}' failed validation with attribute '{key}'. Errors: {self._project_validator.errors}"
-        raise AttributeError(msg)
-
-    @property
-    def name(self) -> str:
-        return self._validate_project_key("name")
-
-    @property
-    def version(self) -> str:
-        return self._validate_project_key("version")
-
-    @property
-    def description(self) -> str:
-        return self._validate_project_key("description")
-
-    @property
-    def readme(self) -> str:
-        return self._validate_project_key("readme")
-
-    @property
-    def requires_python(self) -> str:
-        return self._validate_project_key("requires-python")
-
-    @property
-    def license(self) -> str:
-        return self._validate_project_key("license")
-
-    @property
-    def authors(self) -> str:
-        return self._validate_project_key("authors")
-
-    @property
-    def maintainers(self) -> str:
-        return self._validate_project_key("maintainers")
-
-    @property
-    def keywords(self) -> str:
-        return self._validate_project_key("keywords")
-
-    @property
-    def classifiers(self) -> str:
-        return self._validate_project_key("classifiers")
-
-    @property
-    def urls(self) -> str:
-        return self._validate_project_key("urls")
-
     def validate(self):
-        if not self._project_validator.validate(self, self._data):
-            msg = f"Failed project validation with {self._project_validator.errors}"
-            raise AttributeError(msg)
-
         if not self._conan_validator.validate(self, self._metadata):
             msg = f"Failed conan validation with {self._conan_validator.errors}"
             raise AttributeError(msg)
