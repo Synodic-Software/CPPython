@@ -2,6 +2,7 @@ from pathlib import Path
 from cerberus import Validator
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, asdict
+from typing import ClassVar
 
 import importlib
 import pkgutil
@@ -19,6 +20,22 @@ class PEP621:
         Link: https://www.python.org/dev/peps/pep-0621/
     """
 
+    # TODO: Unify with dataclass definition with Cerberus 2.0
+    _validator: ClassVar[Validator] = Validator(
+        {
+            "name": {"type": "string"},  # TODO: Normalize for internal consumption - PEP 503
+            "version": {"type": "string"},  # TODO:  Make Version type
+            "description": {"type": "string"},
+            "readme": {"type": "string"},  # TODO: String or table
+            "requires_python": {"type": "string"},  # TODO: Version type
+            "license": {"type": "string"},  # TODO: Table specification
+            "authors": {"type": "string"},  # TODO:  specification
+            "maintainers": {"type": "string"},  # TODO:  specification
+            "keywords": {"type": "string"},  # TODO:  specification
+            "classifiers": {"type": "string"},  # TODO:  specification
+            "urls": {"type": "string"},  # TODO:  specification
+        }
+    )
     name: str
     version: str
     description: str
@@ -33,29 +50,12 @@ class PEP621:
 
     def __post_init__(self):
         """
-        Manual validation per attribute
+        Manual validation
             TODO: Remove with Cerberus 2.0
         """
 
-        # TODO: Unify with dataclass definition with Cerberus 2.0
-        schema = {
-            "name": {"type": "string"},  # TODO: Normalize for internal consumption - PEP 503
-            "version": {"type": "string"},  # TODO:  Make Version type
-            "description": {"type": "string"},
-            "readme": {"type": "string"},  # TODO: String or table
-            "requires_python": {"type": "string"},  # TODO: Version type
-            "license": {"type": "string"},  # TODO: Table specification
-            "authors": {"type": "string"},  # TODO:  specification
-            "maintainers": {"type": "string"},  # TODO:  specification
-            "keywords": {"type": "string"},  # TODO:  specification
-            "classifiers": {"type": "string"},  # TODO:  specification
-            "urls": {"type": "string"},  # TODO:  specification
-        }
-
-        _validator = Validator(schema)
-
-        if not _validator.validate(asdict(self)):
-            msg = f"'{type(self).__name__}' validation failed: {_validator.errors}"
+        if not PEP621._validator.validate(asdict(self)):
+            msg = f"'{type(self).__name__}' validation failed: {PEP621._validator.errors}"
             raise AttributeError(msg)
 
 
@@ -66,41 +66,40 @@ class Metadata:
     """
 
     # TODO: Unify with dataclass definition with Cerberus 2.0
-    _schema = {
-        "remotes": {
-            "type": "list",
-            "empty": True,
-            "schema": {"type": "list", "items": [{"type": "string"}, {"type": "string"}]},  # TODO: Make URL type
+    _validator: ClassVar[Validator] = Validator(
+        {
+            "remotes": {
+                "type": "list",
+                "empty": True,
+                "schema": {"type": "list", "items": [{"type": "string"}, {"type": "string"}]},  # TODO: Make URL type
+            },
+            "dependencies": {
+                "type": "dict",
+                "keysrules": {"type": "string"},  # TODO Proper PyPi names?
+                "valuesrules": {"type": "string"},  # TODO:  Make Version type
+            },
+            "install-path": {"rename": "install_path"},
+            "install_path": {"type": "string"},  # TODO: Make Path type
         },
-        "dependencies": {
-            "type": "dict",
-            "keysrules": {"type": "string"},  # TODO Proper PyPi names?
-            "valuesrules": {"type": "string"},  # TODO:  Make Version type
-        },
-        "install_path": {"type": "string"},  # TODO: Make Path type
-    }
-
-    _validator = Validator()
-
+        purge_unknown=True,
+    )
     remotes: str
     dependencies: str
     install_path: str
 
-    def __getattribute__(self, name):
+    def __post_init__(self):
         """
-        Lazily validate attributes as they are accessed
+        Manual validation
+            TODO: Remove with Cerberus 2.0
         """
-        if not self._validator.validate(object.__getattribute__(self, name), schema=self._schema[name]):
-            msg = f"'{type(self).__name__}' validation failed: {self._validator.errors}"
+
+        if not Metadata._validator.validate(asdict(self)):
+            msg = f"'{type(self).__name__}' validation failed: {Metadata._validator.errors}"
             raise AttributeError(msg)
 
-    def validate(self):
-        """
-        Validate all attributes
-        """
-        if not self._validator.validate(asdict(self), schema=self._schema):
-            msg = f"'{type(self).__name__}' validation failed: {self._validator.errors}"
-            raise AttributeError(msg)
+    @staticmethod
+    def validator():
+        return Metadata._validator
 
 
 class Plugin(ABC):
@@ -136,10 +135,9 @@ class Project:
                 if path.is_absolute():
                     assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
 
-            import tomlkit
+            import toml
 
-            pyproject = path / "pyproject.toml"
-            data = dict(tomlkit.parse(pyproject.read_text("utf-8")))
+            data = toml.load(path / "pyproject.toml")
 
         # Deactivate this plugin based on the presence of the 'conan' table
         if "tool" not in data or "conan" not in data["tool"]:
@@ -170,26 +168,10 @@ class Project:
         # Pass-through initialization ends here
         self.enabled = True
 
-        # Maintain the input data for writing capabilities
-        self._data = data["tool"]["conan"]
-
-        def normalize(data: dict) -> dict:
-            """
-            Returns a copy of the original with key names normalized
-            """
-
-            return {key.replace("-", "_"): value for (key, value) in data.items()}
-
         self.info = project_plugin.gather_pep_612(data)
 
-        # The dataclass 'Metadata' may contain improper attributes.
-        try:
-            self.metadata = Metadata(**normalize(self._data))
-        except TypeError:
-            Metadata.validate(self._data)
-
-    def validate(self):
-        self.metadata.validate()
+        normalized_data = Metadata.validator().normalized(data["tool"]["conan"])
+        self.metadata = Metadata(**normalized_data)
 
 
 class _BaseGenerator:
