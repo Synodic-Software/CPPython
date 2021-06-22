@@ -1,15 +1,17 @@
 
 # CPPython
-from cppython.core import Project
-from cppython.api import CPPythonAPI
+from cppython.core import PEP621, Plugin
 
-
-class PDMPlugin():
+class CPPythonPlugin():
     def __init__(self):
         pass
 
-    def valid(self) -> bool:
+class PDMPlugin(Plugin):
+    def __init__(self):
+        pass
+
+    def valid(self, data: dict) -> bool:
         return False
 
     def gather_pep_612(self, data: dict) -> dict:
-        return {}
+        return PEP621()

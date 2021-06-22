@@ -107,7 +107,7 @@ class Plugin(ABC):
         pass
 
     @abstractmethod
-    def valid(self) -> bool:
+    def valid(self, data: dict) -> bool:
         raise NotImplementedError()
 
     @abstractmethod
@@ -155,7 +155,7 @@ class Project:
                     for (_, value) in class_members:
                         if issubclass(value, Plugin) & (value is not Plugin):
                             plugin = value()
-                            if plugin.valid():
+                            if plugin.valid(data):
                                 return plugin
             return None
 
@@ -190,7 +190,7 @@ class ConanGenerator(_BaseGenerator):
         with open(path / "conanfile.py", "w+") as file:
 
             # Process the Conan data into a Conan format
-            name = self._project["name"]
+            name = self._project.info.name
             name = name.replace("-", "")
 
             dependencies = ["/".join(tup) for tup in self._project["dependencies"].items()]

@@ -15,11 +15,11 @@ from poetry.console.commands.update import UpdateCommand
 from poetry.console.commands.check import CheckCommand
 
 # CPPython
-from cppython.core import Project, Plugin
+from cppython.core import PEP621, Project, Plugin
 from cppython.api import CPPythonAPI
 
 
-class PoetryPlugin(ApplicationPlugin, Plugin):
+class CPPythonPlugin(ApplicationPlugin):
     def __init__(self):
 
         self._available_commands = {
@@ -43,18 +43,12 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
         """
         The entry function for the Poetry plugin
         """
-
-        self._project = Project(application.poetry.file, application.poetry.pyproject.data)
+        self._data = application.poetry.pyproject.data
+        self._project = Project(application.poetry.file, self._data)
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
         self._api = CPPythonAPI(application.poetry.pyproject.file, self._project)
-
-    def valid(self) -> bool:
-        return True
-
-    def gather_pep_612(self, data: dict) -> dict:
-        return {}
 
     def _install(self, command: InstallCommand) -> None:
         pass
@@ -67,3 +61,22 @@ class PoetryPlugin(ApplicationPlugin, Plugin):
     def _check(self, command: CheckCommand) -> None:
         pass
         self._api.validate()
+
+class PoetryPlugin(Plugin):
+    def valid(self, data: dict) -> bool:
+        return data["build-system"]["build-backend"] == "poetry.core.masonry.api"
+
+    def gather_pep_612(self, data: dict) -> dict:
+        return PEP621(
+            data["tool"]["poetry"]["name"], 
+            data["tool"]["poetry"]["version"],
+            data["tool"]["poetry"]["description"],
+            data["tool"]["poetry"]["readme"],
+            data["tool"]["poetry"]["dependencies"]['python'],
+            data["tool"]["poetry"]["license"],
+            data["tool"]["poetry"]["authors"],
+            data["tool"]["poetry"]["maintainers"],
+            data["tool"]["poetry"]["keywords"],
+            data["tool"]["poetry"]["classifiers"],
+            data["tool"]["poetry"]["urls"]
+        )
