@@ -27,7 +27,6 @@ class PEP621:
             "version": {"type": "string"},  # TODO:  Make Version type
             "description": {"type": "string"},
             "readme": {"type": "string"},  # TODO: String or table
-            "requires_python": {"type": "string"},  # TODO: Version type
             "license": {"type": "string"},  # TODO: Table specification
             "authors": {"type": "string"},  # TODO:  specification
             "maintainers": {"type": "string"},  # TODO:  specification
@@ -111,7 +110,7 @@ class Plugin(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def gather_pep_612(self, data: dict) -> PEP621:
+    def gather_pep_612(self, validator: Validator, data: dict) -> PEP621:
         raise NotImplementedError()
 
 

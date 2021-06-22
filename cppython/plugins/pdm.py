@@ -13,5 +13,5 @@ class PDMPlugin(Plugin):
     def valid(self, data: dict) -> bool:
         return False
 
-    def gather_pep_612(self, data: dict) -> dict:
+    def gather_pep_612(self, validator: Validator, data: dict) -> dict:
         return PEP621()
