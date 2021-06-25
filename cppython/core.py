@@ -33,7 +33,8 @@ class PEP621:
             "keywords": {"type": "string"},  # TODO:  specification
             "classifiers": {"type": "string"},  # TODO:  specification
             "urls": {"type": "string"},  # TODO:  specification
-        }
+        },
+        purge_unknown=True,
     )
     name: str
     version: str
@@ -57,6 +58,9 @@ class PEP621:
             msg = f"'{type(self).__name__}' validation failed: {PEP621._validator.errors}"
             raise AttributeError(msg)
 
+    @staticmethod
+    def validator():
+        return PEP621._validator
 
 @dataclass
 class Metadata:
@@ -167,7 +171,8 @@ class Project:
         # Pass-through initialization ends here
         self.enabled = True
 
-        self.info = project_plugin.gather_pep_612(data)
+
+        self.info = project_plugin.gather_pep_612(PEP621.validator(), data)
 
         normalized_data = Metadata.validator().normalized(data["tool"]["conan"])
         self.metadata = Metadata(**normalized_data)

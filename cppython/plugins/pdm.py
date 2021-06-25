@@ -1,6 +1,7 @@
 
 # CPPython
 from cppython.core import PEP621, Plugin
+from cerberus.validator import Validator
 
 class CPPythonPlugin():
     def __init__(self):
