@@ -1,6 +1,3 @@
-from cerberus.validator import Validator
-import toml
-
 from pathlib import Path
 
 # Plugin
@@ -68,10 +65,7 @@ class PoetryPlugin(Plugin):
     def valid(self, data: dict) -> bool:
         return data["build-system"]["build-backend"] == "poetry.core.masonry.api"
 
-    def gather_pep_612(self, validator: Validator, data: dict) -> dict:
+    def gather_pep_612(self, data: dict) -> dict:
 
         poetry_data = data["tool"]["poetry"]
-
-        data = validator.normalized(poetry_data)
-
-        return PEP621(**data)
+        return PEP621(**poetry_data)

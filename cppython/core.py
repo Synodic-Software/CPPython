@@ -1,8 +1,7 @@
 from pathlib import Path
-from cerberus import Validator
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict
-from typing import ClassVar
+from pydantic import BaseModel, AnyUrl, ValidationError
+from pathlib import Path
 
 import importlib
 import pkgutil
@@ -12,98 +11,38 @@ import inspect
 import cppython.plugins
 
 
-@dataclass(frozen=True)
-class PEP621:
+class Remote(BaseModel):
+    name: str
+    url = AnyUrl
+
+class Version(BaseModel):
+    version: str
+
+class Dependency(BaseModel):
+    name: str
+    version = Version
+
+class PEP621(BaseModel):
     """
     Subset of PEP 621
         The entirety of PEP 621 is not relevant for this plugin
         Link: https://www.python.org/dev/peps/pep-0621/
+        TODO: Add additional info
     """
 
-    # TODO: Unify with dataclass definition with Cerberus 2.0
-    _validator: ClassVar[Validator] = Validator(
-        {
-            "name": {"type": "string"},  # TODO: Normalize for internal consumption - PEP 503
-            "version": {"type": "string"},  # TODO:  Make Version type
-            "description": {"type": "string"},
-            "readme": {"type": "string"},  # TODO: String or table
-            "license": {"type": "string"},  # TODO: Table specification
-            "authors": {"type": "string"},  # TODO:  specification
-            "maintainers": {"type": "string"},  # TODO:  specification
-            "keywords": {"type": "string"},  # TODO:  specification
-            "classifiers": {"type": "string"},  # TODO:  specification
-            "urls": {"type": "string"},  # TODO:  specification
-        },
-        purge_unknown=True,
-    )
     name: str
     version: str
-    description: str
-    readme: str
-    requires_python: str
-    license: str
-    authors: str
-    maintainers: str
-    keywords: str
-    classifiers: str
-    urls: str
+    description: str = ""
 
-    def __post_init__(self):
-        """
-        Manual validation
-            TODO: Remove with Cerberus 2.0
-        """
 
-        if not PEP621._validator.validate(asdict(self)):
-            msg = f"'{type(self).__name__}' validation failed: {PEP621._validator.errors}"
-            raise AttributeError(msg)
-
-    @staticmethod
-    def validator():
-        return PEP621._validator
-
-@dataclass
-class Metadata:
+class Metadata(BaseModel):
     """
     TODO: Description
     """
 
-    # TODO: Unify with dataclass definition with Cerberus 2.0
-    _validator: ClassVar[Validator] = Validator(
-        {
-            "remotes": {
-                "type": "list",
-                "empty": True,
-                "schema": {"type": "list", "items": [{"type": "string"}, {"type": "string"}]},  # TODO: Make URL type
-            },
-            "dependencies": {
-                "type": "dict",
-                "keysrules": {"type": "string"},  # TODO Proper PyPi names?
-                "valuesrules": {"type": "string"},  # TODO:  Make Version type
-            },
-            "install-path": {"rename": "install_path"},
-            "install_path": {"type": "string"},  # TODO: Make Path type
-        },
-        purge_unknown=True,
-    )
-    remotes: str
-    dependencies: str
-    install_path: str
-
-    def __post_init__(self):
-        """
-        Manual validation
-            TODO: Remove with Cerberus 2.0
-        """
-
-        if not Metadata._validator.validate(asdict(self)):
-            msg = f"'{type(self).__name__}' validation failed: {Metadata._validator.errors}"
-            raise AttributeError(msg)
-
-    @staticmethod
-    def validator():
-        return Metadata._validator
-
+    remotes: list[Remote] = []
+    dependencies: list[Dependency] = []
+    install_path: Path
 
 class Plugin(ABC):
     def __init__(self) -> None:
@@ -114,7 +53,7 @@ class Plugin(ABC):
         raise NotImplementedError()
 
     @abstractmethod
-    def gather_pep_612(self, validator: Validator, data: dict) -> PEP621:
+    def gather_pep_612(self, data: dict) -> PEP621:
         raise NotImplementedError()
 
 
@@ -171,11 +110,8 @@ class Project:
         # Pass-through initialization ends here
         self.enabled = True
 
-
-        self.info = project_plugin.gather_pep_612(PEP621.validator(), data)
-
-        normalized_data = Metadata.validator().normalized(data["tool"]["conan"])
-        self.metadata = Metadata(**normalized_data)
+        self.info = project_plugin.gather_pep_612(data)
+        self.metadata = Metadata(**data["tool"]["conan"])
 
 
 class _BaseGenerator:
@@ -197,7 +133,7 @@ class ConanGenerator(_BaseGenerator):
             name = self._project.info.name
             name = name.replace("-", "")
 
-            dependencies = ["/".join(tup) for tup in self._project["dependencies"].items()]
+            dependencies = ["/".join(tup) for tup in self._project.metadata.dependencies.items()]
             dependencies = ",".join(f'"{dep}"' for dep in dependencies)
 
             # Write the Conan data to file
