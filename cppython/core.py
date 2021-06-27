@@ -15,13 +15,6 @@ class Remote(BaseModel):
     name: str
     url = AnyUrl
 
-class Version(BaseModel):
-    version: str
-
-class Dependency(TypedDict):
-    name: str
-    version = Version
-
 class PEP621(BaseModel):
     """
     Subset of PEP 621
@@ -41,8 +34,8 @@ class Metadata(BaseModel):
     """
 
     remotes: list[Remote] = []
-    dependencies: dict[Dependency] = []
-    install_path: Path
+    dependencies: dict[str, str] = []
+    installation: Path
 
 class Plugin(ABC):
     def __init__(self) -> None:
