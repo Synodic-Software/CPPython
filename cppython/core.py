@@ -18,7 +18,7 @@ class Remote(BaseModel):
 class Version(BaseModel):
     version: str
 
-class Dependency(BaseModel):
+class Dependency(TypedDict):
     name: str
     version = Version
 
@@ -41,7 +41,7 @@ class Metadata(BaseModel):
     """
 
     remotes: list[Remote] = []
-    dependencies: list[Dependency] = []
+    dependencies: dict[Dependency] = []
     install_path: Path
 
 class Plugin(ABC):
@@ -111,7 +111,9 @@ class Project:
         self.enabled = True
 
         self.info = project_plugin.gather_pep_612(data)
-        self.metadata = Metadata(**data["tool"]["conan"])
+
+        conan_data = data["tool"]["conan"]
+        self.metadata = Metadata(**conan_data)
 
 
 class _BaseGenerator:
