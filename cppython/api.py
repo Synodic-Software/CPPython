@@ -13,13 +13,13 @@ class CPPythonAPI:
     def install(self):
         self._generator.write_file(self._root)
 
-        for remote_name, url in self._project['remotes']:
+        for remote_name, url in self._project.metadata.remotes:
              ConanAPI().remote_add(remote_name, url)
 
         ConanAPI().install(
             path=str(self._root),
-            name=self._project.name,
-            version=self._project.version,
+            name=self._project.info.name,
+            version=self._project.info.version,
             user=None,
             channel=None,
             settings=None,
@@ -34,8 +34,8 @@ class CPPythonAPI:
             update=False,
             generators=None,
             no_imports=False,
-            install_folder=str(self._project['install_directory']),
-            cwd=str(self._project['install_directory']),
+            install_folder=str(self._project.metadata.installation),
+            cwd=str(self._project.metadata.installation),
             lockfile=None,
             lockfile_out=None,
             profile_build=None,
@@ -44,13 +44,13 @@ class CPPythonAPI:
     def update(self):
         self._generator.write_file(self._root)
 
-        for remote_name, url in self._project['remotes']:
+        for remote_name, url in self._project.metadata.remotes:
              ConanAPI().remote_add(remote_name, url)
 
         ConanAPI().install(
             path=str(self._root),
-            name=self._project.name,
-            version=self._project.version,
+            name=self._project.info.name,
+            version=self._project.info.version,
             user=None,
             channel=None,
             settings=None,
@@ -65,8 +65,8 @@ class CPPythonAPI:
             update=True,
             generators=None,
             no_imports=False,
-            install_folder=str(self._project['install_directory']),
-            cwd=str(self._project['install_directory']),
+            install_folder=str(self._project.metadata.installation),
+            cwd=str(self._project.metadata.installation),
             lockfile=None,
             lockfile_out=None,
             profile_build=None,
