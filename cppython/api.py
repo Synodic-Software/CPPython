@@ -71,6 +71,3 @@ class CPPythonAPI:
             lockfile_out=None,
             profile_build=None,
         )
-
-    def validate(self):
-        self._project.validate()

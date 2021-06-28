@@ -42,8 +42,6 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path):
 
 
 class TestWorkflow:
-    def test_validation_workflow(self, tmp_workspace):
-        CPPythonAPI(tmp_workspace.path, tmp_workspace.project).validate()
 
     def test_development_workflow(self, tmp_workspace):
 

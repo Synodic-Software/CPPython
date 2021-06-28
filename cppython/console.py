@@ -18,11 +18,6 @@ def cli(context):
 
 @cli.command()
 @click.pass_obj
-def validate(obj):
-    CPPythonAPI(obj.cwd, obj.project).validate()
-
-@cli.command()
-@click.pass_obj
 def install(obj):
     CPPythonAPI(obj.cwd, obj.project).install()
 
