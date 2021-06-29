@@ -16,12 +16,12 @@ repository = "https://github.com/Synodic-Software/CPPython"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-conan = "^1.37.2"
-poetry = { version = "^1.2.0a1", allow-prereleases = true }
+conan = "^1.37.2" # Plugin Dependency
+poetry = { version = "^1.2.0a1", allow-prereleases = true } # Plugin Dependency
 tomlkit = "^0.7.2"
 click = "^7.1.2"
 pydantic = "^1.8.2"
-pdm = "^1.6.4"
+pdm = "^1.6.4" # Plugin Dependency
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.6b0", allow-prereleases = true}
@@ -31,14 +31,16 @@ pytest-xdist = "^2.3.0"
 pytest-cov = "^2.12.1"
 pylint = "^2.8.3"
 
+# Plugin Entrypoint
 [tool.poetry.plugins."poetry.application.plugin"]
 cppython = "cppython.plugins.poetry:CPPythonPlugin"
 
-[tool.poetry.scripts]
-cppython = 'cppython.console:cli'
-
+# Plugin Entrypoint
 [project.entry-points.pdm]
 hello = "cppython.plugins.pdm:CPPythonPlugin"
+
+[tool.poetry.scripts]
+cppython = 'cppython.console:cli'
 
 [tool.pytest.ini_options]
 addopts = "-n auto"

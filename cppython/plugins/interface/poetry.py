@@ -1,5 +1,3 @@
-from pathlib import Path
-
 # Plugin
 from cleo.events.console_events import COMMAND
 from cleo.events.console_command_event import ConsoleCommandEvent
@@ -13,11 +11,15 @@ from poetry.console.commands.update import UpdateCommand
 from poetry.console.commands.check import CheckCommand
 
 # CPPython
-from cppython.core import PEP621, Project, Plugin
-from cppython.api import CPPythonAPI
+from cppython.schema import PEP621, Plugin
+from cppython.project import Project
 
 
 class CPPythonPlugin(ApplicationPlugin):
+    """
+    Entrypoint when running the poetry CLI
+    """
+
     def __init__(self):
 
         self._available_commands = {
@@ -46,26 +48,26 @@ class CPPythonPlugin(ApplicationPlugin):
 
         application.event_dispatcher.add_listener(COMMAND, self._command_dispatch)
 
-        self._api = CPPythonAPI(application.poetry.pyproject.file, self._project)
-
     def _install(self, command: InstallCommand) -> None:
         pass
-        self._api.install()
+        self._project.install()
 
     def _update(self, command: UpdateCommand) -> None:
         pass
-        self._api.update()
+        self._project.update()
 
     def _check(self, command: CheckCommand) -> None:
         pass
-        self._api.validate()
+        self._project.validate()
 
 
 class PoetryPlugin(Plugin):
-    def valid(self, data: dict) -> bool:
-        return data["build-system"]["build-backend"] == "poetry.core.masonry.api"
 
-    def gather_pep_612(self, data: dict) -> dict:
+    @staticmethod
+    def valid(data: dict) -> bool:
+        return "tool" in data and "poetry" in data["tool"]
+
+    def gather_pep_612(self, data: dict) -> PEP621:
 
         poetry_data = data["tool"]["poetry"]
         return PEP621(**poetry_data)

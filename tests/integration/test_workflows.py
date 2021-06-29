@@ -2,8 +2,7 @@ import pytest
 import contextlib
 import os
 
-from cppython.api import CPPythonAPI
-from cppython.core import Project
+from cppython.project import Project
 
 from pathlib import Path
 from distutils.dir_util import copy_tree
@@ -43,9 +42,4 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path):
 
 class TestWorkflow:
 
-    def test_development_workflow(self, tmp_workspace):
-
-        api = CPPythonAPI(tmp_workspace.path, tmp_workspace.project)
-
-        api.install()
-        api.update()
+    pass

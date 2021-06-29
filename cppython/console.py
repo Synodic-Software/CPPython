@@ -1,7 +1,6 @@
 import click
 
-from cppython.api import CPPythonAPI
-from cppython.core import Project
+from cppython.project import Project
 
 from pathlib import Path
 
@@ -19,12 +18,12 @@ def cli(context):
 @cli.command()
 @click.pass_obj
 def install(obj):
-    CPPythonAPI(obj.cwd, obj.project).install()
+    obj.project.install()
 
 @cli.command()
 @click.pass_obj
 def update(obj):
-    CPPythonAPI(obj.cwd, obj.project).update()
+    obj.project.update()
 
 @cli.resultcallback()
 @click.pass_obj

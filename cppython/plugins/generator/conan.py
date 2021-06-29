@@ -1,7 +1,53 @@
+from cppython.schema import Generator, Metadata
 from conans.client.conan_api import ConanAPIV1 as ConanAPI
 from cppython.core import Project, ConanGenerator
 
 from pathlib import Path
+
+
+class ConanMetadata(Metadata):
+    """
+    Additional metadata required by Conan generator
+    """
+
+    generator: str # TODO: Give a proper type
+
+class ConanGenerator(Generator):
+    """
+    Conan generator plugin
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+    def write_file(self, path: Path) -> None:
+        #     Generate a conanfile.py with the given path.
+        #     The resulting recipe is TODO
+        path.mkdir(parents=True, exist_ok=True)
+        with open(path / "conanfile.py", "w+") as file:
+
+            # Process the Conan data into a Conan format
+            name = self._project.info.name
+            name = name.replace("-", "")
+
+            dependencies = ["/".join(tup) for tup in self._project.metadata.dependencies.items()]
+            dependencies = ",".join(f'"{dep}"' for dep in dependencies)
+
+            # Write the Conan data to file
+            # TODO: Require the conan version that this plugin depends on
+            contents = (
+                f"from conans import ConanFile, CMake\n"
+                f"\n"
+                f"required_conan_version = '>=1.37.1'\n"
+                f"\n"
+                f"class {name}Conan(ConanFile):\n"
+                f"    settings = 'os', 'compiler', 'build_type', 'arch'\n"
+                f"    requires = {dependencies}\n"
+                f"    generators = ['cmake_find_package', 'cmake_paths']\n"
+            )
+
+            print(contents, file=file)
+
 
 
 class CPPythonAPI:

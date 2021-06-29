@@ -1,6 +1,7 @@
 
 # CPPython
-from cppython.core import PEP621, Plugin
+from os import stat
+from cppython.schema import PEP621, Plugin
 
 class CPPythonPlugin():
     def __init__(self):
@@ -10,8 +11,9 @@ class PDMPlugin(Plugin):
     def __init__(self):
         pass
 
-    def valid(self, data: dict) -> bool:
+    @staticmethod
+    def valid(data: dict) -> bool:
         return False
 
-    def gather_pep_612(self, data: dict) -> dict:
+    def gather_pep_612(self, data: dict) -> PEP621:
         return PEP621()
