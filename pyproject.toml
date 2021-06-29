@@ -16,12 +16,9 @@ repository = "https://github.com/Synodic-Software/CPPython"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-conan = "^1.37.2" # Plugin Dependency
-poetry = { version = "^1.2.0a1", allow-prereleases = true } # Plugin Dependency
 tomlkit = "^0.7.2"
 click = "^7.1.2"
 pydantic = "^1.8.2"
-pdm = "^1.6.4" # Plugin Dependency
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.6b0", allow-prereleases = true}

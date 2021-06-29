@@ -42,4 +42,5 @@ def tmp_workspace(tmp_path: Path, test_workspace: Path):
 
 class TestWorkflow:
 
-    pass
+    def test_nothing(self):
+        pass
