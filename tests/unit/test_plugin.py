@@ -1,25 +1,9 @@
-import pytest
-
-from pathlib import Path
-
-
-# Fixtures
-@pytest.fixture
-def plugin_workspace(test_workspace: Path):
-    """
-    @returns - TODO
-    """
-
-    yield test_workspace
-
-
-# Tests
 class TestPlugin:
-    def test_validate(self, plugin_workspace):
+    def test_validate(self):
         pass
 
-    def test_install(self, plugin_workspace):
+    def test_install(self):
         pass
 
-    def test_update(self, plugin_workspace):
+    def test_update(self):
         pass
