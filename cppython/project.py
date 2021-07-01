@@ -1,37 +1,28 @@
 from pathlib import Path
 
-from cppython.schema import API, Interface
+from cppython.schema import API, Interface, Generator
+
+import cppython.plugins.generator
+import cppython.plugins.interface
+
+import pkgutil
+import importlib
+import inspect
 
 
 class Project(API):
     def __init__(self, path: Path, interface_type: Interface = None, data: dict = {}) -> None:
         """
         data - The top level dictionary of the pyproject.toml file
-                    If not provided, pyproject.toml will be loaded directly
+                    If not provided, a pyproject.toml will be discovered and loaded directly
         """
 
         self.enabled = False
         self.dirty = False
 
-        # TODO: If data is loaded directly it needs to be written out
+        # TODO: Data writing
         if not data:
-
-            if path.is_file():
-                path = path.parent
-
-            while not path.glob("pyproject.toml"):
-                if path.is_absolute():
-                    assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
-
-            # TODO: Use tomlkit
-            import toml
-
-            data = toml.load(path / "pyproject.toml")
-
-        # Prepare for plugin loading
-        import pkgutil
-        import importlib
-        import inspect
+            data = self._find_pyproject(path)
 
         def extract_plugin(namespace_package, plugin_type):
             """
@@ -52,27 +43,16 @@ class Project(API):
 
         # Load the interface plugin if it is not defined by the entrypoint
         if interface_type is None:
-
-            import cppython.plugins.interface
-
             interface_type = extract_plugin(cppython.plugins.interface, Interface)
 
-        # This is not a valid project.
-        if interface_type is None:
-            return
-
         # Load the generator plugin
-        import cppython.plugins.generator
-
-        from cppython.schema import Generator
-
         generator_type = extract_plugin(cppython.plugins.generator, Generator)
 
-        # This is not a valid project.
+        # Check validity
         if interface_type is None or generator_type is None:
             return
 
-        # Pass-through initialization ends here
+        # No-op construction ends here.
         self.enabled = True
 
         # Construct and extract the interface data
@@ -82,6 +62,22 @@ class Project(API):
         # Extract and construct the generator data
         metadata = generator_type.extract_metadata(data)
         self._generator = generator_type(info, metadata)
+
+    def _find_pyproject(self, path: Path) -> dict:
+        """
+        Finds and reads the first pyproject.toml file starting with the given directory, travelling upward.
+        """
+
+        if path.is_file():
+            path = path.parent
+
+        while not path.glob("pyproject.toml"):
+            if path.is_absolute():
+                assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
+
+        import tomlkit
+
+        return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
 
     def install(self) -> None:
         self._generator.install()

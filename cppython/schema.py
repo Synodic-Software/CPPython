@@ -27,7 +27,8 @@ class Metadata(BaseModel):
 
     remotes: list[Remote] = []
     dependencies: dict[str, str] = []
-    install_path: Path = Field(alias='install-path')
+    install_path: Path = Field(alias="install-path")
+
 
 class API(ABC):
     """
@@ -45,6 +46,7 @@ class API(ABC):
     def update(self) -> None:
         raise NotImplementedError()
 
+
 class Plugin(ABC):
     """
     Abstract plugin type
@@ -56,7 +58,8 @@ class Plugin(ABC):
     @staticmethod
     @abstractmethod
     def valid(self, data: dict) -> bool:
-        raise NotImplementedError()   
+        raise NotImplementedError()
+
 
 class Interface(Plugin):
     """
@@ -82,4 +85,4 @@ class Generator(Plugin, API):
     @staticmethod
     @abstractmethod
     def metadata(self, data: dict) -> Metadata:
-        raise NotImplementedError()   
+        raise NotImplementedError()
