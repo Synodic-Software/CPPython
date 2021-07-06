@@ -30,6 +30,24 @@ class Metadata(BaseModel):
     install_path: Path = Field(alias="install-path")
 
 
+class API(ABC):
+    """
+    API
+    """
+
+    @abstractmethod
+    def install(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def update(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def build(self) -> None:
+        raise NotImplementedError()
+
+
 class Plugin(ABC):
     """
     Abstract plugin type
@@ -57,7 +75,7 @@ class Interface(Plugin):
         raise NotImplementedError()
 
 
-class Generator(Plugin):
+class Generator(Plugin, API):
     """
     Abstract type to be inherited by CPPython Generator plugins
     """
@@ -68,12 +86,4 @@ class Generator(Plugin):
     @staticmethod
     @abstractmethod
     def metadata(self, data: dict) -> Metadata:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def install(self) -> None:
-        raise NotImplementedError()
-
-    @abstractmethod
-    def update(self) -> None:
         raise NotImplementedError()

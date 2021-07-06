@@ -8,9 +8,9 @@ import cppython.plugins.interface
 import pkgutil
 import importlib
 import inspect
+import cmake
 
-
-class Project:
+class Project(API):
     def __init__(self, path: Path, interface_type: Interface = None, data: dict = {}) -> None:
         """
         data - The top level dictionary of the pyproject.toml file
@@ -79,6 +79,12 @@ class Project:
 
         return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
 
-    @property
-    def generator(self):
-        return self._generator
+    def install(self) -> None:
+        self._generator.install()
+
+    def update(self) -> None:
+        self._generator.update()
+
+    def build(self) -> None:
+        self._generator.build()
+        cmake.cmake.
