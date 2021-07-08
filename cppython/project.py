@@ -1,6 +1,8 @@
 from pathlib import Path
+from typing import Any
 
-from cppython.schema import API, Interface, Generator
+from cppython.schema import API, Interface, Generator, Plugin
+from cppython.exceptions import ConfigError
 
 import cppython.plugins.generator
 import cppython.plugins.interface
@@ -9,6 +11,7 @@ import pkgutil
 import importlib
 import inspect
 import cmake
+
 
 class Project(API):
     def __init__(self, path: Path) -> None:
@@ -19,7 +22,26 @@ class Project(API):
 
         self.enabled = False
 
-        def extract_plugin(namespace_package, plugin_type) -> list:
+        interface_type, generator_type = self._load_plugins()
+
+        # No-op construction ends here.
+        self.enabled = True
+
+        # Construct and extract the interface data
+        self._interface = interface_type()
+        data = self._interface.read_pyproject()
+        info = self._interface.pep_612()
+
+        # Extract and construct the generator data
+        metadata = generator_type.extract_metadata(data)
+        self._generator = generator_type(info, metadata)
+
+    def _load_plugins(self) -> tuple[Any, Any]:
+        """
+        TODO: Load all the plugin Types
+        """
+
+        def extract_plugin(namespace_package, plugin_type: Plugin) -> list[Any]:
             """
             Import all plugins from a namespace
             """
@@ -37,7 +59,15 @@ class Project(API):
                             if value.valid():
                                 plugin_types.append(value)
 
-            return plugin_types
+            if plugin_types is None:
+                raise ConfigError("")
+
+            if len(plugin_types) > 1:
+                raise ConfigError("")
+
+            plugin_type = plugin_types.pop()
+
+            return plugin_type
 
         # Load the interface plugin
         interface_type = extract_plugin(cppython.plugins.interface, Interface)
@@ -45,33 +75,7 @@ class Project(API):
         # Load the generator plugin
         generator_type = extract_plugin(cppython.plugins.generator, Generator)
 
-        # Plugin error checking
-        if interface_type is None:
-            return
-
-        if generator_type is None:
-            return
-
-        if len(interface_type) > 1:
-            return
-
-        if len(generator_type) > 1:
-            return
-
-        interface_type = interface_type.pop()
-        generator_type = generator_type.pop()
-
-        # No-op construction ends here.
-        self.enabled = True
-
-        # Construct and extract the interface data
-        self._interface = interface_type()
-        data = self._interface.read_pyproject()
-        info = self._interface.pep_612()
-
-        # Extract and construct the generator data
-        metadata = generator_type.extract_metadata(data)
-        self._generator = generator_type(info, metadata)
+        return interface_type, generator_type
 
     def install(self) -> None:
         self._generator.install()
