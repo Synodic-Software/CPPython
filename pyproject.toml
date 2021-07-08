@@ -30,7 +30,7 @@ pytest-mock = "^3.6.1"
 pytest-xdist = "^2.3.0"
 
 [tool.poetry.scripts]
-cppython = 'cppython.console:cli'
+cppython = 'cppython.plugins.interface.console:cli'
 
 [tool.pytest.ini_options]
 addopts = "-n auto"
@@ -49,4 +49,4 @@ max-line-length = "120"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
-requires = ["poetry>=1.1.6"]
+requires = ["poetry>=1.1.7"]

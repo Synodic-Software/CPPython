@@ -58,7 +58,7 @@ class Plugin(ABC):
 
     @staticmethod
     @abstractmethod
-    def valid(self, data: dict) -> bool:
+    def valid(self) -> bool:
         raise NotImplementedError()
 
 
@@ -71,7 +71,15 @@ class Interface(Plugin):
         pass
 
     @abstractmethod
-    def gather_pep_612(self, data: dict) -> PEP621:
+    def gather_pep_612(self) -> PEP621:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def write_pyproject(self, data: dict) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def read_pyproject(self) -> dict:
         raise NotImplementedError()
 
 
