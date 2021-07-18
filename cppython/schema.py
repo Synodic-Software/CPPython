@@ -1,6 +1,14 @@
 from abc import ABC, abstractmethod
-from pydantic import BaseModel, Field, AnyUrl
 from pathlib import Path
+from enum import Enum
+
+from pydantic import BaseModel, Field, AnyUrl
+
+
+class TargetEnum(Enum):
+    exe = "executable"
+    static = "static"
+    shared = "shared"
 
 
 class Remote(BaseModel):
@@ -28,6 +36,7 @@ class Metadata(BaseModel):
     remotes: list[Remote] = []
     dependencies: dict[str, str] = []
     install_path: Path = Field(alias="install-path")
+    target: TargetEnum
 
 
 class API(ABC):

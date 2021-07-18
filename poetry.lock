@@ -42,7 +42,7 @@ tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>
 
 [[package]]
 name = "black"
-version = "21.6b0"
+version = "21.7b0"
 description = "The uncompromising code formatter."
 category = "dev"
 optional = false
@@ -54,7 +54,7 @@ click = ">=7.1.2"
 mypy-extensions = ">=0.4.3"
 pathspec = ">=0.8.1,<1"
 regex = ">=2020.1.8"
-toml = ">=0.10.1"
+tomli = ">=0.2.6,<2.0.0"
 
 [package.extras]
 colorama = ["colorama (>=0.4.3)"]
@@ -72,7 +72,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "cmake"
-version = "3.20.5"
+version = "3.21.0"
 description = "CMake is an open-source, cross-platform family of tools designed to build, test and package software"
 category = "main"
 optional = false
@@ -330,6 +330,14 @@ optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
+name = "tomli"
+version = "1.0.4"
+description = "A lil' TOML parser"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "tomlkit"
 version = "0.7.2"
 description = "Style preserving TOML library"
@@ -356,7 +364,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b5dd628f2c5fdc8c4b7bf48323e870209b96defb117b01fed6095cec87365530"
+content-hash = "0409523c6d3b0522a19522f7f2165fcf28c76e2bcb12bc55ec28fb6648126489"
 
 [metadata.files]
 appdirs = [
@@ -376,22 +384,23 @@ attrs = [
     {file = "attrs-21.2.0.tar.gz", hash = "sha256:ef6aaac3ca6cd92904cdd0d83f629a15f18053ec84e6432106f7a4d04ae4f5fb"},
 ]
 black = [
-    {file = "black-21.6b0-py3-none-any.whl", hash = "sha256:dfb8c5a069012b2ab1e972e7b908f5fb42b6bbabcba0a788b86dc05067c7d9c7"},
-    {file = "black-21.6b0.tar.gz", hash = "sha256:dc132348a88d103016726fe360cb9ede02cecf99b76e3660ce6c596be132ce04"},
+    {file = "black-21.7b0-py3-none-any.whl", hash = "sha256:1c7aa6ada8ee864db745b22790a32f94b2795c253a75d6d9b5e439ff10d23116"},
+    {file = "black-21.7b0.tar.gz", hash = "sha256:c8373c6491de9362e39271630b65b964607bc5c79c83783547d76c839b3aa219"},
 ]
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
     {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
 ]
 cmake = [
-    {file = "cmake-3.20.5-py2.py3-none-macosx_10_10_universal2.macosx_10_10_x86_64.macosx_11_0_arm64.macosx_11_0_universal2.whl", hash = "sha256:938d3162112f8e3a5cdb29e9a026133846efe346f00735b54215c7d42f996929"},
-    {file = "cmake-3.20.5-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:79d4c182ff14872f42b4392545972ba045ed816d3d85892ca959af253604bcae"},
-    {file = "cmake-3.20.5-py2.py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:6e8a3828691241fe176642735937bfb9068c2a4188a5c2580c0c817fa65f1019"},
-    {file = "cmake-3.20.5-py2.py3-none-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:3999a1f44b40126833eff01532ef84324c7fc33fd1ed64652e34870ade11b966"},
-    {file = "cmake-3.20.5-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:6c66b37e20246daf01886ee42287f27b182aac0dddd397a370e0988406fc3bf9"},
-    {file = "cmake-3.20.5-py2.py3-none-win32.whl", hash = "sha256:7075aca48e0581cfcb51c7689800f06832bccf1f71533d93b8323a10215198bf"},
-    {file = "cmake-3.20.5-py2.py3-none-win_amd64.whl", hash = "sha256:4423792e963ec258ce5980d22e3174e36f6814daaa96427d7cc544b43986f699"},
-    {file = "cmake-3.20.5.tar.gz", hash = "sha256:5e7e528a68a89eb5c6195441ec5b70b4c8b2d48eee673d1ec23f3db6ae2cf819"},
+    {file = "cmake-3.21.0-py2.py3-none-macosx_10_10_universal2.macosx_10_10_x86_64.macosx_11_0_arm64.macosx_11_0_universal2.whl", hash = "sha256:e1f96e8ef7776d413669cec93e07437e201a0b84b325974fc3563edec4f2ad20"},
+    {file = "cmake-3.21.0-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cd51962b6021760bc5ac2eea5eaa5a8d8bec5820d6e299dee084f133c3440bba"},
+    {file = "cmake-3.21.0-py2.py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:0a02fb58d782f403587f119535ef0905941308494547053b97cd7cb4df181a07"},
+    {file = "cmake-3.21.0-py2.py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:cbc1768df88daee24ecdf98f263422a6d8862bbd126084287d80017f7e7af34c"},
+    {file = "cmake-3.21.0-py2.py3-none-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:10247eced45fd7cd82f8f45700a764822c7a768cbb53d54169ea9a9a79252b84"},
+    {file = "cmake-3.21.0-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:68889247d5f78848bb87d3dec5716169f918c04b11a900084b3259ddeee64dba"},
+    {file = "cmake-3.21.0-py2.py3-none-win32.whl", hash = "sha256:76e87e27e889f57cf5a2553754b16a6f16edcb8eadaa638506842c4324bdf4eb"},
+    {file = "cmake-3.21.0-py2.py3-none-win_amd64.whl", hash = "sha256:73be00791abbf85a482417f10cd7fd9d352b25a5fbc89ab635a571578042278c"},
+    {file = "cmake-3.21.0.tar.gz", hash = "sha256:6e6083d95872124beea93c3abd405f353ad2d870902866f7c92cdb370621c379"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
@@ -609,6 +618,10 @@ regex = [
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
     {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
+]
+tomli = [
+    {file = "tomli-1.0.4-py3-none-any.whl", hash = "sha256:0713b16ff91df8638a6a694e295c8159ab35ba93e3424a626dd5226d386057be"},
+    {file = "tomli-1.0.4.tar.gz", hash = "sha256:be670d0d8d7570fd0ea0113bd7bb1ba3ac6706b4de062cc4c952769355c9c268"},
 ]
 tomlkit = [
     {file = "tomlkit-0.7.2-py2.py3-none-any.whl", hash = "sha256:173ad840fa5d2aac140528ca1933c29791b79a374a0861a80347f42ec9328117"},
