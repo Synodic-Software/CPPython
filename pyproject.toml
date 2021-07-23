@@ -23,7 +23,7 @@ cmake = "^3.21.0"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^21.7b0", allow-prereleases = true}
-pylint = "^2.9.4"
+pylint = "^2.9.5"
 pytest = "^6.2.4"
 pytest-cov = "^2.12.1"
 pytest-mock = "^3.6.1"
@@ -46,6 +46,9 @@ disable = "C0330, C0326"
 
 [tool.pylint.format]
 max-line-length = "120"
+
+[tool.pylint.'MESSAGES CONTROL']
+extension-pkg-whitelist = "pydantic"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

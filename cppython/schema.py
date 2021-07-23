@@ -2,18 +2,13 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from enum import Enum
 
-from pydantic import BaseModel, Field, AnyUrl
+from pydantic import BaseModel, Field
 
 
 class TargetEnum(Enum):
     exe = "executable"
     static = "static"
     shared = "shared"
-
-
-class Remote(BaseModel):
-    name: str
-    url = AnyUrl
 
 
 class PEP621(BaseModel):
@@ -33,10 +28,10 @@ class Metadata(BaseModel):
     Metadata required by a generator plugin
     """
 
-    remotes: list[Remote] = []
+    generator: str
+    target: TargetEnum
     dependencies: dict[str, str] = []
     install_path: Path = Field(alias="install-path")
-    target: TargetEnum
 
 
 class API(ABC):
@@ -81,14 +76,23 @@ class Interface(Plugin):
 
     @abstractmethod
     def gather_pep_612(self) -> PEP621:
+        """
+        Requests PEP 612 information from the plugin
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def write_pyproject(self, data: dict) -> None:
+        """
+        Called when CPPoetry requires the plugin to write out pyproject.toml changes
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def read_pyproject(self) -> dict:
+        """
+        Called when CPPoetry requires the plugin to supply the pyproject.toml data
+        """
         raise NotImplementedError()
 
 
@@ -100,7 +104,25 @@ class Generator(Plugin, API):
     def __init__(self) -> None:
         pass
 
+    @property
     @staticmethod
     @abstractmethod
-    def metadata(self, data: dict) -> Metadata:
+    def name(self) -> str:
+        """
+        The name of the generator
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def populate_metadata(self, data: dict):
+        """
+        data - The CPPoetry data taken from pyproject.toml
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def populate_plugin(self, data: dict):
+        """
+        data - The data taken from pyproject.toml that belongs to this generator
+        """
         raise NotImplementedError()

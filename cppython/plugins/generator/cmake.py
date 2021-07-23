@@ -1,5 +1,10 @@
 from cppython.schema import Generator, Metadata
 
+cmakelists_template = (
+    f'{sdate} - {time}\n'
+    f'Tags: {tags}\n'
+    f'Text: {text}'
+)
 
 class CMakeGenerator(Generator):
     """
