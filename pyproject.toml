@@ -15,7 +15,7 @@ homepage = "https://github.com/Synodic-Software/CPPython"
 repository = "https://github.com/Synodic-Software/CPPython"
 
 [tool.poetry.dependencies]
-click = "^7.1.2"
+click = "^8.0.1"
 pydantic = "^1.8.2"
 python = "^3.9"
 tomlkit = "^0.7.2"
