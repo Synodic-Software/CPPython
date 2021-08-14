@@ -1,11 +1,11 @@
 import pytest
 
-from cppython.plugins.test.pytest import GeneratorSuite
-from cppython.plugins.generator import cmake
+from cppython.plugins.test.pytest import BaseGenerator
+from cppython.plugins.generator.cmake import CMakeGenerator
 
 
-@pytest.mark.parametrize("generator", [cmake])
-class TestCMakeGenerator(GeneratorSuite):
+@pytest.mark.parametrize("generator", [CMakeGenerator])
+class TestCMakeGenerator(BaseGenerator):
     """
     The tests for our CMake generator
     """

@@ -6,7 +6,7 @@ def generator():
     raise NotImplementedError
 
 
-class GeneratorSuite:
+class BaseGenerator:
     def test_todo(self, generator):
         pass
 
@@ -16,6 +16,6 @@ def interface():
     raise NotImplementedError
 
 
-class InterfaceSuite:
+class BaseInterface:
     def test_todo(self, interface):
         pass
