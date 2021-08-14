@@ -28,7 +28,7 @@ def update(obj):
     obj.project.generator.update()
 
 
-@cli.resultcallback()
+@cli.result_callback()
 @click.pass_obj
 def cleanup(obj, result):
     if obj.project.dirty:
