@@ -5,18 +5,7 @@ from pathlib import Path
 import click
 import tomlkit
 
-
-class Config(object):
-    """
-    The data object that will be expanded alongside 'pass_obj'
-    """
-
-    def __init__(self):
-        data = self._read_data()
-        interface = ConsoleInterface(data)
-        self.project = Project(interface)
-
-    def _read_data(self):
+def _read_data():
         path = Path.cwd()
 
         while not path.glob("pyproject.toml"):
@@ -25,6 +14,14 @@ class Config(object):
 
         return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
 
+class Config(object):
+    """
+    The data object that will be expanded alongside 'pass_obj'
+    """
+
+    def __init__(self, data: dict = _read_data()):
+        interface = ConsoleInterface(data)
+        self.project = Project(interface)
 
 pass_config = click.make_pass_decorator(Config)
 

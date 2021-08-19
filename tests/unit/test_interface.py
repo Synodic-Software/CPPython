@@ -15,8 +15,8 @@ class TestCLIInterface(BaseInterface):
     @pytest.mark.parametrize("command", ["install", "update"])
     def test_command(self, interface, command, mocker):
 
-        # P
-        obj = Config()
+        # Pass in empty data
+        obj = Config({})
 
         # Patch out the non-plugin implementation
         mocker.patch(f"config.project.{command}")
