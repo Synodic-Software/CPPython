@@ -88,17 +88,17 @@ class Interface(Plugin):
 
     @staticmethod
     @abstractmethod
-    def parse_pep_612(self, data: dict) -> PEP621:
+    def parse_pep_621(data: dict) -> PEP621:
         """
-        Requests the plugin to read the available PEP 612 information. Only requested if the plugin is not the entrypoint
+        Requests the plugin to read the available PEP 621 information. Only requested if the plugin is not the entrypoint
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def pep_612_data(self) -> PEP621:
+    def pep_621(self) -> PEP621:
         """
-        Requests PEP 612 information from the pyproject
-        Probably uses 'parse_pep_612' internally
+        Requests PEP 621 information from the pyproject
+        Probably uses 'parse_pep_621' internally
         """
         raise NotImplementedError()
 

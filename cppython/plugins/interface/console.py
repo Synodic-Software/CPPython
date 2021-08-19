@@ -16,6 +16,7 @@ class Config(object):
 
 pass_config = click.make_pass_decorator(Config)
 
+
 @click.group()
 @click.pass_context
 def cli(context):
@@ -46,7 +47,15 @@ class ConsoleInterface(Interface):
     """
 
     def __init__(self) -> None:
-        pass
+        path = Path.cwd()
+
+        while not path.glob("pyproject.toml"):
+            if path.is_absolute():
+                assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
+
+        import tomlkit
+
+        self._data = tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
 
     """
     Plugin Contract
@@ -73,28 +82,20 @@ class ConsoleInterface(Interface):
         return False
 
     @staticmethod
-    def parse_pep_612(self, data: dict) -> PEP621:
+    def parse_pep_621(data: dict) -> PEP621:
         """
-        Requests the plugin to read the available PEP 612 information. Only requested if the plugin is not the entrypoint
+        Requests the plugin to read the available PEP 621 information. Only requested if the plugin is not the entrypoint
         """
         raise NotImplementedError()
 
-    def pep_612_data(self) -> PEP621:
+    def pep_621(self) -> PEP621:
         """
-        Requests PEP 612 information from the pyproject
+        Requests PEP 621 information from the pyproject
         """
-        raise NotImplementedError()
+        return self.parse_pep_621(self._data)
 
     def write_pyproject(self) -> None:
         raise NotImplementedError()
 
     def read_pyproject(self) -> dict:
-        path = Path.cwd()
-
-        while not path.glob("pyproject.toml"):
-            if path.is_absolute():
-                assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
-
-        import tomlkit
-
-        return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
+        return self._data
