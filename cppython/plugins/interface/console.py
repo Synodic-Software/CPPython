@@ -6,9 +6,15 @@ import click
 
 
 class Config(object):
-    def __init__(self):
-        self.project = Project(Path.cwd())
+    """
+    The data object that will be expanded alongside 'pass_obj'
+    """
 
+    def __init__(self):
+        self.project = Project(ConsoleInterface)
+
+
+pass_config = click.make_pass_decorator(Config)
 
 @click.group()
 @click.pass_context
@@ -17,22 +23,21 @@ def cli(context):
 
 
 @cli.command()
-@click.pass_obj
-def install(obj):
-    obj.project.generator.install()
+@pass_config
+def install(config):
+    config.project.install()
 
 
 @cli.command()
-@click.pass_obj
-def update(obj):
-    obj.project.generator.update()
+@pass_config
+def update(config):
+    config.project.update()
 
 
 @cli.result_callback()
-@click.pass_obj
-def cleanup(obj, result):
-    if obj.project.dirty:
-        obj.projectFile.write(obj.document)
+@pass_config
+def cleanup(config, result):
+    pass
 
 
 class ConsoleInterface(Interface):
@@ -83,9 +88,8 @@ class ConsoleInterface(Interface):
     def write_pyproject(self) -> None:
         raise NotImplementedError()
 
-    def read_pyproject(self, path: Path) -> dict:
-        if path.is_file():
-            path = path.parent
+    def read_pyproject(self) -> dict:
+        path = Path.cwd()
 
         while not path.glob("pyproject.toml"):
             if path.is_absolute():
