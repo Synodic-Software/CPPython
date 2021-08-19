@@ -43,10 +43,44 @@ class ConsoleInterface(Interface):
     def __init__(self) -> None:
         pass
 
-    def gather_pep_612(self, data: dict) -> PEP621:
+    """
+    Plugin Contract
+    """
+
+    @staticmethod
+    def name() -> str:
+        """
+        The name of the generator
+        """
+        return "console"
+
+    """
+    Interface Contract
+    """
+
+    @staticmethod
+    def external_config() -> bool:
+        """
+        True if the plugin can read its own configuration.
+        False otherwise
+        """
+
+        return False
+
+    @staticmethod
+    def parse_pep_612(self, data: dict) -> PEP621:
+        """
+        Requests the plugin to read the available PEP 612 information. Only requested if the plugin is not the entrypoint
+        """
         raise NotImplementedError()
 
-    def write_pyproject(self, data: dict) -> None:
+    def pep_612_data(self) -> PEP621:
+        """
+        Requests PEP 612 information from the pyproject
+        """
+        raise NotImplementedError()
+
+    def write_pyproject(self) -> None:
         raise NotImplementedError()
 
     def read_pyproject(self, path: Path) -> dict:

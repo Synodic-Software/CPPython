@@ -14,7 +14,7 @@ class TargetEnum(Enum):
 class PEP621(BaseModel):
     """
     Subset of PEP 621
-        The entirety of PEP 621 is not relevant for 'interface' plugins
+        The entirety of PEP 621 is not relevant for interface plugins
         Schema: https://www.python.org/dev/peps/pep-0621/
     """
 
@@ -25,7 +25,7 @@ class PEP621(BaseModel):
 
 class Metadata(BaseModel):
     """
-    Metadata required by a generator plugin
+    Data required by the tool
     """
 
     generator: str
@@ -62,7 +62,10 @@ class Plugin(ABC):
 
     @staticmethod
     @abstractmethod
-    def valid(self) -> bool:
+    def name(self) -> str:
+        """
+        The name of the generator
+        """
         raise NotImplementedError()
 
 
@@ -74,24 +77,41 @@ class Interface(Plugin):
     def __init__(self) -> None:
         pass
 
-    @abstractmethod
-    def gather_pep_612(self) -> PEP621:
+    @staticmethod
+    def external_config() -> bool:
         """
-        Requests PEP 612 information from the plugin
+        True if the plugin can read its own configuration.
+        False otherwise
+        """
+
+        return True
+
+    @staticmethod
+    @abstractmethod
+    def parse_pep_612(self, data: dict) -> PEP621:
+        """
+        Requests the plugin to read the available PEP 612 information. Only requested if the plugin is not the entrypoint
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def write_pyproject(self, data: dict) -> None:
+    def pep_612_data(self) -> PEP621:
         """
-        Called when CPPoetry requires the plugin to write out pyproject.toml changes
+        Requests PEP 612 information from the pyproject
         """
         raise NotImplementedError()
 
     @abstractmethod
     def read_pyproject(self) -> dict:
         """
-        Called when CPPoetry requires the plugin to supply the pyproject.toml data
+        Called when CPPoetry requires the content of pyproject.toml
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def write_pyproject(self) -> None:
+        """
+        Called when CPPoetry requires the plugin to write out pyproject.toml changes
         """
         raise NotImplementedError()
 
@@ -101,28 +121,6 @@ class Generator(Plugin, API):
     Abstract type to be inherited by CPPython Generator plugins
     """
 
-    def __init__(self) -> None:
+    @abstractmethod
+    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: dict) -> None:
         pass
-
-    @property
-    @staticmethod
-    @abstractmethod
-    def name(self) -> str:
-        """
-        The name of the generator
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def populate_metadata(self, data: dict):
-        """
-        data - The CPPoetry data taken from pyproject.toml
-        """
-        raise NotImplementedError()
-
-    @abstractmethod
-    def populate_plugin(self, data: dict):
-        """
-        data - The data taken from pyproject.toml that belongs to this generator
-        """
-        raise NotImplementedError()

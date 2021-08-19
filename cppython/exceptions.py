@@ -1,3 +1,7 @@
+"""
+Custom exceptions used by CPPython
+"""
+
 class ConfigError(Exception):
     def __init__(self, error: Exception) -> None:
         self._error = error

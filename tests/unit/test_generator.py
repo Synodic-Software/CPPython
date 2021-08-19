@@ -10,4 +10,8 @@ class TestCMakeGenerator(BaseGenerator):
     The tests for our CMake generator
     """
 
-    pass
+    def test_name(self, generator):
+        """
+        Tests that the generators name is expected
+        """
+        assert generator.name() == "cmake"
