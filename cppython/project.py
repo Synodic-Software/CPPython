@@ -58,7 +58,7 @@ class Project(API):
                 module = importlib.import_module(name)
                 class_members = inspect.getmembers(module, inspect.isclass)
                 for (_, value) in class_members:
-                    if issubclass(value, Interface) & (value is not Interface):
+                    if issubclass(value, plugin_type) & (value is not plugin_type):
                         if condition(value.name()):
                             return value
 
