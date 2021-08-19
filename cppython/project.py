@@ -31,12 +31,19 @@ class Project(API):
         else:
             pep_612 = self._interface.pep_612()
 
+        # Remove the unnecessary data
         cppython_data = self._parse_cppython_data(pyproject_data)
 
+        # Load the generator type
         generator_type = self._load_generator(cppython_data.generator)
 
-        generator_data = self._interface.generator_data(generator_type.name())
+        if generator_type is None:
+            raise ConfigError("")
 
+        # Pull out the raw generator specific data
+        generator_data = cppython_data[cppython_data.generator]
+
+        # Construct the generator
         self._generator = generator_type(pep_612, cppython_data, generator_data)
 
     def _parse_cppython_data(self, data: dict) -> Metadata:
@@ -56,6 +63,9 @@ class Project(API):
                             return value
 
     def _load_interface(self, potential_keys: list) -> Type[Interface]:
+        """
+        TODO:
+        """
 
         import cppython.plugins.interface
 
