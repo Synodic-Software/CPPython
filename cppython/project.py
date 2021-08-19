@@ -40,14 +40,17 @@ class Project(API):
         if generator_type is None:
             raise ConfigError("")
 
-        # Pull out the raw generator specific data
-        generator_data = cppython_data[cppython_data.generator]
+        generator_data = self._parse_generator_data(pyproject_data, generator_type)
 
         # Construct the generator
         self._generator = generator_type(pep_612, cppython_data, generator_data)
 
     def _parse_cppython_data(self, data: dict) -> Metadata:
         return Metadata(**data["tool"]["cppython"])
+
+    def _parse_generator_data(self, data: dict, generator_type):
+        generator_config_type = generator_type.data_type()
+        return generator_config_type(**data[generator_type.name()])
 
     def _find_first_plugin(self, namespace_package, plugin_type: Type[Plugin], condition: Callable[[str], bool]) -> Type[Plugin]:
         """

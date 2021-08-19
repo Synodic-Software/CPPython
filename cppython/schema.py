@@ -98,6 +98,7 @@ class Interface(Plugin):
     def pep_612_data(self) -> PEP621:
         """
         Requests PEP 612 information from the pyproject
+        Probably uses 'parse_pep_612' internally
         """
         raise NotImplementedError()
 
@@ -124,3 +125,11 @@ class Generator(Plugin, API):
     @abstractmethod
     def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: dict) -> None:
         pass
+
+    @staticmethod
+    @abstractmethod
+    def data_type(self):
+        """
+        Returns the pydantic type to cast the generator configuration data to
+        """
+        raise NotImplementedError()
