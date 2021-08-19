@@ -9,31 +9,27 @@ import inspect
 
 
 class Project(API):
-    def __init__(self, interface_type: Type[Interface]) -> None:
+    def __init__(self, interface: Interface) -> None:
 
-        # Construct the interface
-        self._interface = interface_type()
+        self._interface = interface
 
         # Read the raw configuration data
         pyproject_data = self._interface.read_pyproject()
         cppython_data = self._parse_cppython_data(pyproject_data)
-
-
-
 
         # Load the generator type
         generator_type = self._load_generator(cppython_data.generator)
 
         if generator_type is None:
             raise ConfigError("")
-            
-        pep_621 = self._parse_PEP621_data(pyproject_data, interface_type)
+
+        pep_621 = self._parse_PEP621_data(pyproject_data, self._interface)
         generator_data = self._parse_generator_data(pyproject_data, generator_type)
 
         # Construct the generator
         self._generator = generator_type(pep_621, cppython_data, generator_data)
 
-    def _parse_PEP621_data(self, data: dict, interface_type) -> PEP621:
+    def _parse_PEP621_data(self, data: dict, interface_type: Interface) -> PEP621:
         """
         Extracts the PEP621 metadata from the various possible project formats
         """

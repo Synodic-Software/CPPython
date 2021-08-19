@@ -12,18 +12,16 @@ class TestCLIInterface(BaseInterface):
     The tests for our CLI interface
     """
 
-    def test_install(self, interface):
+    @pytest.mark.parametrize("command", ["install", "update"])
+    def test_command(self, interface, command, mocker):
+
+        # P
         obj = Config()
 
-        runner = CliRunner()
-        result = runner.invoke(cli, ['install'], obj=obj, catch_exceptions=False)
-
-        assert result.exit_code == 0
-
-    def test_update(self, interface):
-        obj = Config()
+        # Patch out the non-plugin implementation
+        mocker.patch(f"config.project.{command}")
 
         runner = CliRunner()
-        result = runner.invoke(cli, ['update'], obj=obj, catch_exceptions=False)
+        result = runner.invoke(cli, [command], obj=obj, catch_exceptions=False)
 
         assert result.exit_code == 0

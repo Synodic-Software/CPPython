@@ -3,6 +3,7 @@ from cppython.schema import Interface, PEP621
 from pathlib import Path
 
 import click
+import tomlkit
 
 
 class Config(object):
@@ -11,7 +12,18 @@ class Config(object):
     """
 
     def __init__(self):
-        self.project = Project(ConsoleInterface)
+        data = self._read_data()
+        interface = ConsoleInterface(data)
+        self.project = Project(interface)
+
+    def _read_data(self):
+        path = Path.cwd()
+
+        while not path.glob("pyproject.toml"):
+            if path.is_absolute():
+                assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
+
+        return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
 
 
 pass_config = click.make_pass_decorator(Config)
@@ -20,7 +32,7 @@ pass_config = click.make_pass_decorator(Config)
 @click.group()
 @click.pass_context
 def cli(context):
-    context.obj = Config()
+    context.ensure_object(Config)
 
 
 @cli.command()
@@ -46,16 +58,8 @@ class ConsoleInterface(Interface):
     TODO: Description
     """
 
-    def __init__(self) -> None:
-        path = Path.cwd()
-
-        while not path.glob("pyproject.toml"):
-            if path.is_absolute():
-                assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
-
-        import tomlkit
-
-        self._data = tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
+    def __init__(self, data: dict) -> None:
+        self._data = data
 
     """
     Plugin Contract

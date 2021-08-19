@@ -3,19 +3,31 @@ import pytest
 
 @pytest.fixture
 def generator():
+    """
+    A hook allowing implementations to override the fixture with a parameterization
+    """
     raise NotImplementedError
 
 
 class BaseGenerator:
-    def test_todo(self, generator):
-        pass
+    """
+    Implementations of the Generator class should inherit from this class for its tests
+    """
+
+    pass
 
 
 @pytest.fixture
 def interface():
+    """
+    A hook allowing implementations to override the fixture with a parameterization
+    """
     raise NotImplementedError
 
 
 class BaseInterface:
-    def test_todo(self, interface):
-        pass
+    """
+    Implementations of the Interface class should inherit from this class for its tests
+    """
+
+    pass
