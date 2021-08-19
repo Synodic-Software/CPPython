@@ -2,7 +2,7 @@ import pytest
 
 from cppython.plugins.test.pytest import BaseInterface
 from cppython.plugins.interface.console import ConsoleInterface, Config, cli
-
+from cppython.project import Project
 from click.testing import CliRunner
 
 
@@ -14,6 +14,9 @@ class TestCLIInterface(BaseInterface):
 
     @pytest.mark.parametrize("command", ["install", "update"])
     def test_command(self, interface, command, mocker):
+
+        # Patch the project
+        mocker.patch.object(Project, '__init__', autospec=True)
 
         # Pass in empty data
         obj = Config({})

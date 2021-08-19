@@ -5,14 +5,18 @@ from pathlib import Path
 import click
 import tomlkit
 
+
 def _read_data():
-        path = Path.cwd()
+    path = Path.cwd()
 
-        while not path.glob("pyproject.toml"):
-            if path.is_absolute():
-                assert "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
+    while not path.glob("pyproject.toml"):
+        if path.is_absolute():
+            assert (
+                "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
+            )
 
-        return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
+    return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
+
 
 class Config(object):
     """
@@ -22,6 +26,7 @@ class Config(object):
     def __init__(self, data: dict = _read_data()):
         interface = ConsoleInterface(data)
         self.project = Project(interface)
+
 
 pass_config = click.make_pass_decorator(Config)
 
