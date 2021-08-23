@@ -16,15 +16,15 @@ class TestCLIInterface(BaseInterface):
     def test_command(self, interface, command, mocker):
 
         # Patch the project
-        mocker.patch.object(Project, '__init__', autospec=True)
+        mocker.patch('cppython.plugins.interface.console.Config.load', None)
 
         # Pass in empty data
-        obj = Config({})
+        config = Config({})
 
         # Patch out the non-plugin implementation
-        mocker.patch(f"config.project.{command}")
+        mocker.patch(f"cppython.project.Project.{command}")
 
         runner = CliRunner()
-        result = runner.invoke(cli, [command], obj=obj, catch_exceptions=False)
+        result = runner.invoke(cli, [command], obj=config, catch_exceptions=False)
 
         assert result.exit_code == 0

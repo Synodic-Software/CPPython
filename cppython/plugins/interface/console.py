@@ -24,8 +24,15 @@ class Config(object):
     """
 
     def __init__(self, data: dict = _read_data()):
+
+        # Initialize the object hook into CPPython
         interface = ConsoleInterface(data)
+
+        # Initialize the CPPython context
         self.project = Project(interface)
+
+    def load(self):
+        self.project.load()
 
 
 pass_config = click.make_pass_decorator(Config)
