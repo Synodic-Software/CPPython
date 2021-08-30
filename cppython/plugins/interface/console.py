@@ -23,7 +23,9 @@ class Config(object):
     The data object that will be expanded alongside 'pass_obj'
     """
 
-    def __init__(self, data: dict = _read_data()):
+    def __init__(self):
+
+        data = _read_data()
 
         # Initialize the object hook into CPPython
         interface = ConsoleInterface(data)
