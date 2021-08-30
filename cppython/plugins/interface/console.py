@@ -45,6 +45,9 @@ pass_config = click.make_pass_decorator(Config)
 def cli(context):
     context.ensure_object(Config)
 
+    # Initialize cppoetry
+    context.obj.load()
+
 
 @cli.command()
 @pass_config
