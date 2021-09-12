@@ -3,18 +3,20 @@ tag-template: 'v$NEXT_PATCH_VERSION'
 categories:
   - title: 'Features'
     labels:
-      - 'Feature'
+      - 'feature'
   - title: 'Optimizations'
     labels:
-      - 'Optimization'    
+      - 'optimization'    
   - title: 'Bug Fixes'
     labels:
-      - 'Bug'
+      - 'fix'
+      - 'bug'
   - title: 'Maintenance'
     labels:
-      - 'Chore'
-      - 'Cleanup'
-      - 'Documentation'
+      - 'chore'
+      - 'cleanup'
+      - 'doc'
+      - 'documentation'
 template: |
   ## Changes
 

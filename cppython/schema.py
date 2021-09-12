@@ -28,7 +28,9 @@ class Metadata(BaseModel):
     Data required by the tool
     """
 
-    generator: str
+    from cppython.plugins.generator.cmake import CMakeGenerator
+
+    generator: str = CMakeGenerator.name()
     target: TargetEnum
     dependencies: dict[str, str] = []
     install_path: Path = Field(alias="install-path")
