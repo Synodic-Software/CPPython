@@ -1,0 +1,8 @@
+name: Publish
+on:
+  release:
+    types: [published]
+
+jobs:
+  call_synodic_workflow:
+      uses: synodic-software/.github/workflows/publish@stable
