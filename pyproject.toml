@@ -1,35 +1,62 @@
 [tool.poetry]
-name = "poetic-conan"
+description = " A Python package manager agnostic plugin integrating a transparent Conan and CMake workflow."
+name = "cppython"
 version = "0.1.0"
-description = " A Poetry plugin integrating a transparent Conan and CMake workflow."
 
 license = "MIT"
 
 authors = [
-    "Synodic Software"
+  "Synodic Software",
 ]
 
 readme = "README.md"
 
-repository = "https://github.com/Synodic-Software/Synodic-Poetry"
-homepage = "https://github.com/Synodic-Software/Synodic-Poetry"
-
+homepage = "https://github.com/Synodic-Software/CPPython"
+repository = "https://github.com/Synodic-Software/CPPython"
 
 [tool.poetry.dependencies]
-python  = "^3.8"
-poetry = "^1.0"
-conan = "^1.22"
-tomlkit = "^0.5.8"
+click = "^8.0.1"
+cmake = "^3.21.2"
+pydantic = "^1.8.2"
+pytest = "^6.2.5"
+python = "^3.9"
+tomlkit = "^0.7.2"
 
+[tool.poetry.group.dev.dependencies]
+black = {version = "^21.8b0", allow-prereleases = true}
+pylint = "^2.10.2"
 
-[tool.poetry.dev-dependencies]
-flake8 = "^3.7.9"
-pytest = "^5.3.2"
-coverage = "^5.0"
-black = {version = "^19.10b0", allow-prereleases = true}
-pytest-xdist = "^1.31.0"
+[tool.poetry.group.test.dependencies]
 
+pytest-cov = "^2.12.1"
+pytest-mock = "^3.6.1"
+pytest-xdist = "^2.3.0"
+
+[tool.poetry.scripts]
+cppython = 'cppython.plugins.interface.console:cli'
+
+# Register the testing information with pytest
+[tool.poetry.plugins.pytest11]
+pytest_cppython = "cppython.plugins.test.pytest"
+
+[tool.pytest.ini_options]
+addopts = "-n auto"
+testpaths = [
+  "tests",
+]
+
+[tool.black]
+line-length = 120
+
+[tool.pylint.messages_control]
+disable = "C0330, C0326"
+
+[tool.pylint.format]
+max-line-length = "120"
+
+[tool.pylint.'MESSAGES CONTROL']
+extension-pkg-whitelist = "pydantic"
 
 [build-system]
-requires        = ["poetry>=1.0.0"]
-build-backend   = "poetry.masonry.api"
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry>=1.1.7"]

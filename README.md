@@ -1,2 +1,2 @@
-# Poetic Conan
-A Plugin for Poetry that enables a transparent Conan and CMake workflow.
+# CPPython
+A library for managing dependencies with CMake for C++ projects.
