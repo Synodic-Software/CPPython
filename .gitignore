@@ -11,3 +11,7 @@ TestResults/
 dist/
 .vs/
 .vscode/
+
+#PDM
+.pdm.toml
+__pypackages__/

@@ -5,4 +5,4 @@ on:
 
 jobs:
   call_synodic_workflow:
-      uses: synodic-software/.github/workflows/publish@stable
+      uses: synodic-software/.github/workflows/publish.yml@stable

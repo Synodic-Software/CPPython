@@ -1,7 +1,6 @@
-[tool.poetry]
+[project]
 description = " A Python package manager agnostic plugin integrating a transparent Conan and CMake workflow."
 name = "cppython"
-version = "0.1.0"
 
 license = "MIT"
 
@@ -14,29 +13,37 @@ readme = "README.md"
 homepage = "https://github.com/Synodic-Software/CPPython"
 repository = "https://github.com/Synodic-Software/CPPython"
 
-[tool.poetry.dependencies]
-click = "^8.0.1"
-cmake = "^3.21.2"
-pydantic = "^1.8.2"
-pytest = "^6.2.5"
-python = "^3.9"
-tomlkit = "^0.7.2"
+dynamic = ["version"]
 
-[tool.poetry.group.dev.dependencies]
-black = {version = "^21.8b0", allow-prereleases = true}
-pylint = "^2.10.2"
+requires-python = ">=3.10"
 
-[tool.poetry.group.test.dependencies]
+dependencies = [
+  "click~=8.0",
+  "cmake~=3.22",
+  "pydantic~=1.8",
+  "tomlkit~=0.7",
+]
 
-pytest-cov = "^2.12.1"
-pytest-mock = "^3.6.1"
-pytest-xdist = "^2.3.0"
+[tool.pdm]
+version = {use_scm = true}
 
-[tool.poetry.scripts]
-cppython = 'cppython.plugins.interface.console:cli'
+[tool.pdm.dev-dependencies]
+lint = [
+  "black<22,>=21.11b1",
+  "pylint~=2.12",
+]
+test = [
+  "pytest~=6.2",
+  "pytest-cov~=3.0",
+  "pytest-mock~=3.6",
+  "pytest-xdist~=2.4",
+]
+
+[project.scripts]
+cppython = "cppython.plugins.interface.console:cli"
 
 # Register the testing information with pytest
-[tool.poetry.plugins.pytest11]
+[tool.entry-points.pytest11]
 pytest_cppython = "cppython.plugins.test.pytest"
 
 [tool.pytest.ini_options]
@@ -58,5 +65,5 @@ max-line-length = "120"
 extension-pkg-whitelist = "pydantic"
 
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry>=1.1.7"]
+build-backend = "pdm.pep517.api"
+requires = ["pdm-pep517"]
