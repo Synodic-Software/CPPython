@@ -18,10 +18,10 @@ dynamic = ["version"]
 requires-python = ">=3.10"
 
 dependencies = [
-    "click~=8.0",
-    "cmake~=3.22",
-    "pydantic~=1.8",
-    "tomlkit~=0.7",
+  "click~=8.0",
+  "cmake~=3.22",
+  "pydantic~=1.8",
+  "tomlkit~=0.7",
 ]
 
 [tool.pdm]
@@ -39,11 +39,11 @@ test = [
   "pytest-xdist~=2.4",
 ]
 
-[tool.poetry.scripts]
-cppython = 'cppython.plugins.interface.console:cli'
+[project.scripts]
+cppython = "cppython.plugins.interface.console:cli"
 
 # Register the testing information with pytest
-[tool.poetry.plugins.pytest11]
+[tool.entry-points.pytest11]
 pytest_cppython = "cppython.plugins.test.pytest"
 
 [tool.pytest.ini_options]
