@@ -1,0 +1,10 @@
+name: Publish
+on:
+  push:
+    branches:
+      - release-*
+      - development
+
+jobs:
+  call_synodic_workflow:
+      uses: synodic-software/.github/.github/workflows/draft.yml@stable
