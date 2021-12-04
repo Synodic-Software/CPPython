@@ -4,5 +4,4 @@ on:
 
 jobs:
   check:
-    steps:
-    - uses: synodic-software/.github/.github/workflows/python-check.yml@stable
+    uses: synodic-software/.github/.github/workflows/python-check.yml@stable
