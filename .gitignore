@@ -10,8 +10,14 @@ TestResults/
 *.pyc
 dist/
 .vs/
-.vscode/
 
 #PDM
 .pdm.toml
 __pypackages__/
+
+#VisualStudioCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
