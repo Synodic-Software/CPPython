@@ -16,10 +16,10 @@ class TestCLIInterface(BaseInterface):
     def test_command(self, interface, command, mocker):
 
         # Patch the project
-        mocker.patch('cppython.plugins.interface.console.Config.load')
+        mocker.patch("cppython.plugins.interface.console.Config.load")
 
         # Patch the file IO
-        mocker.patch('cppython.plugins.interface.console._read_data')
+        mocker.patch("cppython.plugins.interface.console._read_data")
 
         config = Config()
 
