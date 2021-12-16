@@ -28,9 +28,8 @@ class Metadata(BaseModel):
     Data required by the tool
     """
 
-    from cppython.plugins.generator.cmake import CMakeGenerator
-
-    generator: str = CMakeGenerator.name()
+    # TODO: Grab default from plugin without circular import
+    generator: str = "CMake"
     target: TargetEnum
     dependencies: dict[str, str] = []
     install_path: Path = Field(alias="install-path")
