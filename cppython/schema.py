@@ -154,6 +154,13 @@ class Generator(Plugin, API):
     def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: dict) -> None:
         pass
 
+    @abstractmethod
+    def install_generator(self):
+        """
+        Installs the external tooling required by the generator if the generator is not a python library
+        """
+        pass
+
     @staticmethod
     @abstractmethod
     def data_type():
