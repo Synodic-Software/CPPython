@@ -1,7 +1,7 @@
-﻿import pytest
-
-from pathlib import Path
+﻿from pathlib import Path
 from shutil import copytree
+
+import pytest
 
 
 @pytest.fixture

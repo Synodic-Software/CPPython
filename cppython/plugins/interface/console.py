@@ -1,9 +1,14 @@
-from cppython.project import Project
-from cppython.schema import Interface, PEP621
+"""
+TODO: 
+"""
+
 from pathlib import Path
 
 import click
 import tomlkit
+
+from cppython.project import Project
+from cppython.schema import PEP621, Interface
 
 
 def _read_data():
@@ -12,13 +17,13 @@ def _read_data():
     while not path.glob("pyproject.toml"):
         if path.is_absolute():
             assert (
-                "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
-            )
+                False
+            ), "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
 
     return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
 
 
-class Config(object):
+class Config:
     """
     The data object that will be expanded alongside 'pass_obj'
     """
@@ -75,9 +80,7 @@ class ConsoleInterface(Interface):
     def __init__(self, data: dict) -> None:
         self._data = data
 
-    """
-    Plugin Contract
-    """
+    # Plugin Contract
 
     @staticmethod
     def name() -> str:
@@ -86,9 +89,7 @@ class ConsoleInterface(Interface):
         """
         return "console"
 
-    """
-    Interface Contract
-    """
+    # Interface Contract
 
     @staticmethod
     def external_config() -> bool:

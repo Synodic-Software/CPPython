@@ -5,8 +5,18 @@
     "python.testing.pytestArgs": [
         "tests"
     ],
+    "python.formatting.provider": "black",
+    "python.formatting.blackPath": "${workspaceRoot}/__pypackages__/3.10/Scripts/black",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.autoComplete.extraPaths": ["__pypackages__/<major.minor>/lib"],
-    "python.analysis.extraPaths": ["__pypackages__/<major.minor>/lib"]
+    "python.autoComplete.extraPaths": [
+        "__pypackages__/3.10/lib"
+    ],
+    "python.analysis.extraPaths": [
+        "__pypackages__/3.10/lib"
+    ],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
 }

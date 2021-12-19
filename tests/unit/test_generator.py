@@ -1,7 +1,7 @@
 import pytest
 
-from cppython.plugins.test.pytest import BaseGenerator
 from cppython.plugins.generator.cmake import CMakeGenerator
+from cppython.plugins.test.pytest import BaseGenerator
 
 
 @pytest.mark.parametrize("generator", [CMakeGenerator])

@@ -1,9 +1,9 @@
 import pytest
-
-from cppython.plugins.test.pytest import BaseInterface
-from cppython.plugins.interface.console import ConsoleInterface, Config, cli
-from cppython.project import Project
 from click.testing import CliRunner
+
+from cppython.plugins.interface.console import Config, ConsoleInterface, cli
+from cppython.plugins.test.pytest import BaseInterface
+from cppython.project import Project
 
 
 @pytest.mark.parametrize("interface", [ConsoleInterface])

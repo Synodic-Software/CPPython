@@ -1,4 +1,4 @@
-from cppython.schema import Generator, Metadata
+from cppython.schema import PEP621, Generator, Metadata
 
 
 class CMakeGenerator(Generator):
@@ -6,12 +6,10 @@ class CMakeGenerator(Generator):
     A CPPython generator implementing a CMake backend
     """
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: dict) -> None:
+        super().__init__(pep_612, cppython_data, generator_data)
 
-    """
-    Plugin Contract
-    """
+    # Plugin Contract
 
     @staticmethod
     def name() -> str:
@@ -20,9 +18,7 @@ class CMakeGenerator(Generator):
         """
         return "cmake"
 
-    """
-    Generator Contract
-    """
+    # Generator Contract
 
     def populate_metadata(self, data: dict):
         """
@@ -36,9 +32,7 @@ class CMakeGenerator(Generator):
         """
         pass
 
-    """
-    API Contract
-    """
+    # API Contract
 
     def install(self) -> None:
         raise NotImplementedError()

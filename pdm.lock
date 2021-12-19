@@ -225,8 +225,8 @@ dependencies = [
 
 [[package]]
 name = "setuptools"
-version = "59.6.0"
-requires_python = ">=3.6"
+version = "59.7.0"
+requires_python = ">=3.7"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
 
 [[package]]
@@ -261,7 +261,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:9c52d28eff0b966cb0ddf5369b3af743ec10571db88414c654993a1dba023c1e"
+content_hash = "sha256:69f8ff5f1b08e27c2f183103206892654e1d6707780ed49f22572650e001b4f0"
 
 [metadata.files]
 "astroid 2.9.0" = [
@@ -486,9 +486,9 @@ content_hash = "sha256:9c52d28eff0b966cb0ddf5369b3af743ec10571db88414c654993a1db
     {file = "pytest_xdist-2.5.0-py3-none-any.whl", hash = "sha256:6fe5c74fec98906deb8f2d2b616b5c782022744978e7bd4695d39c8f42d0ce65"},
     {file = "pytest-xdist-2.5.0.tar.gz", hash = "sha256:4580deca3ff04ddb2ac53eba39d76cb5dd5edeac050cb6fbc768b0dd712b4edf"},
 ]
-"setuptools 59.6.0" = [
-    {file = "setuptools-59.6.0-py3-none-any.whl", hash = "sha256:4ce92f1e1f8f01233ee9952c04f6b81d1e02939d6e1b488428154974a4d0783e"},
-    {file = "setuptools-59.6.0.tar.gz", hash = "sha256:22c7348c6d2976a52632c67f7ab0cdf40147db7789f9aed18734643fe9cf3373"},
+"setuptools 59.7.0" = [
+    {file = "setuptools-59.7.0-py3-none-any.whl", hash = "sha256:0c8d5c36aea600828875ab751c03e2c52624edc8382a88a127e31bd8d860e34b"},
+    {file = "setuptools-59.7.0.tar.gz", hash = "sha256:a426c5ce42242404fecb1cbce07af79c10b820ab2f684109e8129040413faaa1"},
 ]
 "toml 0.10.2" = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

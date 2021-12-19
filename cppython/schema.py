@@ -1,14 +1,22 @@
+"""
+Data types for CPPython that encapsulate the requirements between the plugins and the core library
+"""
+
 from abc import ABC, abstractmethod
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 
 from pydantic import BaseModel, Field
 
 
 class TargetEnum(Enum):
-    exe = "executable"
-    static = "static"
-    shared = "shared"
+    """
+    The C++ build target type
+    """
+
+    EXE = "executable"
+    STATIC = "static"
+    SHARED = "shared"
 
 
 class PEP621(BaseModel):
@@ -42,14 +50,32 @@ class API(ABC):
 
     @abstractmethod
     def install(self) -> None:
+        """
+        Called when dependencies need to be installed from a lock file.
+
+        Raises:
+            NotImplementedError: [description]
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def update(self) -> None:
+        """
+        Called when dependencies need to be updated and written to the lock file.
+
+        Raises:
+            NotImplementedError: [description]
+        """
         raise NotImplementedError()
 
     @abstractmethod
     def build(self) -> None:
+        """
+        Called when the C++ target needs to be produced.
+
+        Raises:
+            NotImplementedError: [description]
+        """
         raise NotImplementedError()
 
 
@@ -63,7 +89,7 @@ class Plugin(ABC):
 
     @staticmethod
     @abstractmethod
-    def name(self) -> str:
+    def name() -> str:
         """
         The name of the generator
         """
@@ -76,7 +102,7 @@ class Interface(Plugin):
     """
 
     def __init__(self) -> None:
-        pass
+        super().__init__()
 
     @staticmethod
     def external_config() -> bool:
@@ -91,7 +117,8 @@ class Interface(Plugin):
     @abstractmethod
     def parse_pep_621(data: dict) -> PEP621:
         """
-        Requests the plugin to read the available PEP 621 information. Only requested if the plugin is not the entrypoint
+        Requests the plugin to read the available PEP 621 information. Only requested
+            if the plugin is not the entrypoint
         """
         raise NotImplementedError()
 
@@ -129,7 +156,7 @@ class Generator(Plugin, API):
 
     @staticmethod
     @abstractmethod
-    def data_type(self):
+    def data_type():
         """
         Returns the pydantic type to cast the generator configuration data to
         """

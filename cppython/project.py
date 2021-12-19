@@ -1,11 +1,10 @@
-from typing import Type, Callable
-
-from cppython.schema import API, Interface, Generator, Metadata, PEP621, Plugin
-from cppython.exceptions import ConfigError
-
-import pkgutil
 import importlib
 import inspect
+import pkgutil
+from typing import Callable, Type
+
+from cppython.exceptions import ConfigError
+from cppython.schema import API, PEP621, Generator, Interface, Metadata, Plugin
 
 
 class Project(API):
@@ -21,20 +20,16 @@ class Project(API):
 
         # Each plugin reads its own configuration file, interfaces without external data need a helping hand parsing it
         if not interface_type.external_config():
-            """
-            If the interface doesn't support an external configuration, search for a plugin that does
-            """
+            # If the interface doesn't support an external configuration, search for a plugin that does
 
             temporary_interface_type = self._load_interface([*data["tool"]])
 
             if temporary_interface_type is None:
-                """
-                If there is no applicable plugin, we are interfaceing the toml project without a python buildsystem
-                """
+                # If there is no applicable plugin, we are interfaceing the toml project without a python buildsystem
+
                 return self._interface.pep_621()
 
-            else:
-                return temporary_interface_type.parse_pep_621(data)
+            return temporary_interface_type.parse_pep_621(data)
 
         else:
             return self._interface.pep_621()
@@ -104,9 +99,7 @@ class Project(API):
 
         self.loaded = True
 
-    """
-    API Contract
-    """
+    # API Contract
 
     def install(self) -> None:
         self._generator.install()

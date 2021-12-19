@@ -22,6 +22,7 @@ dependencies = [
   "cmake~=3.22",
   "pydantic~=1.8",
   "tomlkit~=0.7",
+  "pytest~=6.2", # Required for testing injection
 ]
 
 [tool.pdm]
@@ -31,9 +32,9 @@ version = {use_scm = true}
 lint = [
   "black<22,>=21.11b1",
   "pylint~=2.12",
+  "isort",
 ]
 test = [
-  "pytest~=6.2",
   "pytest-cov~=3.0",
   "pytest-mock~=3.6",
   "pytest-xdist~=2.5",
@@ -53,16 +54,18 @@ testpaths = [
 ]
 
 [tool.black]
+experimental-string-processing = true
 line-length = 120
+
+[tool.isort]
+profile = "black"
 
 [tool.pylint.messages_control]
 disable = "C0330, C0326"
+extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.format]
 max-line-length = "120"
-
-[tool.pylint.'MESSAGES CONTROL']
-extension-pkg-whitelist = "pydantic"
 
 [build-system]
 build-backend = "pdm.pep517.api"
