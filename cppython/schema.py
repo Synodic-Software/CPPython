@@ -157,7 +157,7 @@ class Generator(Plugin, API):
     @abstractmethod
     def install_generator(self):
         """
-        Installs the external tooling required by the generator if the generator is not a python library
+        Installs the external tooling required by the generator if necessary
         """
         pass
 
