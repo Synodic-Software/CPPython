@@ -21,7 +21,7 @@ class BaseGenerator(ABC):
     This class provides a generic test suite that all custom types must function with.
     """
 
-    def test_construction(self):
+    def test_construction(self, generator):
         """
         Test the __init__ call of the generator object
         """
