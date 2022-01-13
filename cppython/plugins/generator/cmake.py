@@ -1,4 +1,19 @@
+"""
+TODO:
+"""
+from pathlib import Path
+
+from pydantic import BaseModel
+
 from cppython.schema import PEP621, Generator, Metadata
+
+
+class CMakeData(BaseModel):
+    """
+    TODO:
+    """
+
+    installation_location: Path
 
 
 class CMakeGenerator(Generator):
@@ -6,7 +21,7 @@ class CMakeGenerator(Generator):
     A CPPython generator implementing a CMake backend
     """
 
-    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: dict) -> None:
+    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: CMakeData) -> None:
         super().__init__(pep_612, cppython_data, generator_data)
 
     # Plugin Contract
@@ -20,17 +35,19 @@ class CMakeGenerator(Generator):
 
     # Generator Contract
 
-    def populate_metadata(self, data: dict):
+    def install_generator(self) -> bool:
         """
-        data - The CPPoetry data taken from pyproject.toml
+        Installs the external tooling required by the generator if necessary
+        Returns whether anything was installed or not
         """
-        pass
+        return False
 
-    def populate_plugin(self, data: dict):
+    @staticmethod
+    def data_type() -> BaseModel:
         """
-        data - The data taken from pyproject.toml that belongs to this generator
+        Returns the pydantic type to cast the generator configuration data to
         """
-        pass
+        return CMakeData
 
     # API Contract
 

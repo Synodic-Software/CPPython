@@ -152,18 +152,19 @@ class Generator(Plugin, API):
 
     @abstractmethod
     def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: dict) -> None:
-        pass
+        super().__init__()
 
     @abstractmethod
-    def install_generator(self):
+    def install_generator(self) -> bool:
         """
         Installs the external tooling required by the generator if necessary
+        Returns whether anything was installed or not
         """
         pass
 
     @staticmethod
     @abstractmethod
-    def data_type():
+    def data_type() -> BaseModel:
         """
         Returns the pydantic type to cast the generator configuration data to
         """

@@ -7,12 +7,20 @@ import pytest
 
 
 @pytest.fixture
-def generator():
+def generator_type():
     """
     A hook allowing implementations to override the fixture with a parameterization
-        @pytest.mark.parametrize("generator", [CustomGenerator])
+        @pytest.mark.parametrize("generator_type", [CustomGenerator])
     """
     raise NotImplementedError
+
+
+@pytest.fixture
+def generator(generator_type):
+    """
+    TODO:
+    """
+    return generator_type()
 
 
 class BaseGenerator(ABC):
@@ -21,20 +29,29 @@ class BaseGenerator(ABC):
     This class provides a generic test suite that all custom types must function with.
     """
 
-    def test_construction(self, generator):
+    def test_construction(self, generator_type):
         """
         Test the __init__ call of the generator object
         """
-        pass
+        generator_type()
 
 
 @pytest.fixture
-def interface():
+def interface_type():
+    """
+    A hook allowing implementations to override the fixture with a parameterization
+        @pytest.mark.parametrize("interface_type", [CustomInterface])
+    """
+    raise NotImplementedError
+
+
+@pytest.fixture
+def interface(interface_type):
     """
     A hook allowing implementations to override the fixture with a parameterization
         @pytest.mark.parametrize("interface", [CustomInterface])
     """
-    raise NotImplementedError
+    return interface_type()
 
 
 class BaseInterface(ABC):
