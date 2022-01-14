@@ -6,12 +6,11 @@ import pytest
 from click.testing import CliRunner
 
 from cppython.plugins.interface.console import Config, ConsoleInterface, cli
-from cppython.plugins.test.pytest import BaseInterface
-from cppython.project import Project
+from cppython.plugins.test.pytest import BaseInterfaceSuite
 
 
 @pytest.mark.parametrize("interface", [ConsoleInterface])
-class TestCLIInterface(BaseInterface):
+class TestCLIInterface(BaseInterfaceSuite):
     """
     The tests for our CLI interface
     """
