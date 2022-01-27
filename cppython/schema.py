@@ -145,6 +145,10 @@ class Interface(Plugin):
         raise NotImplementedError()
 
 
+class GeneratorData(BaseModel):
+    pass
+
+
 class Generator(Plugin, API):
     """
     Abstract type to be inherited by CPPython Generator plugins
