@@ -2,13 +2,12 @@
 TODO:
 """
 from pathlib import Path
+from typing import Type
 
-from pydantic import BaseModel
-
-from cppython.schema import PEP621, Generator, Metadata
+from cppython.schema import PEP621, Generator, GeneratorData, Metadata
 
 
-class CMakeData(BaseModel):
+class CMakeData(GeneratorData):
     """
     TODO:
     """
@@ -43,7 +42,7 @@ class CMakeGenerator(Generator):
         return False
 
     @staticmethod
-    def data_type() -> BaseModel:
+    def data_type() -> Type[GeneratorData]:
         """
         Returns the pydantic type to cast the generator configuration data to
         """

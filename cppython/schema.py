@@ -5,6 +5,7 @@ Data types for CPPython that encapsulate the requirements between the plugins an
 from abc import ABC, abstractmethod
 from enum import Enum
 from pathlib import Path
+from typing import Any, Type
 
 from pydantic import BaseModel, Field
 
@@ -39,7 +40,7 @@ class Metadata(BaseModel):
     # TODO: Grab default from plugin without circular import
     generator: str = "CMake"
     target: TargetEnum
-    dependencies: dict[str, str] = []
+    dependencies: dict[str, str] = {}
     install_path: Path = Field(alias="install-path")
 
 
@@ -115,7 +116,7 @@ class Interface(Plugin):
 
     @staticmethod
     @abstractmethod
-    def parse_pep_621(data: dict) -> PEP621:
+    def parse_pep_621(data: dict[str, Any]) -> PEP621:
         """
         Requests the plugin to read the available PEP 621 information. Only requested
             if the plugin is not the entrypoint
@@ -131,7 +132,7 @@ class Interface(Plugin):
         raise NotImplementedError()
 
     @abstractmethod
-    def read_pyproject(self) -> dict:
+    def read_pyproject(self) -> dict[str, Any]:
         """
         Called when CPPoetry requires the content of pyproject.toml
         """
@@ -146,6 +147,10 @@ class Interface(Plugin):
 
 
 class GeneratorData(BaseModel):
+    """
+    Base class for the configuration data that will be given to the generator constructor
+    """
+
     pass
 
 
@@ -155,7 +160,7 @@ class Generator(Plugin, API):
     """
 
     @abstractmethod
-    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: dict) -> None:
+    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: GeneratorData) -> None:
         super().__init__()
 
     @abstractmethod
@@ -168,7 +173,7 @@ class Generator(Plugin, API):
 
     @staticmethod
     @abstractmethod
-    def data_type() -> BaseModel:
+    def data_type() -> Type[GeneratorData]:
         """
         Returns the pydantic type to cast the generator configuration data to
         """

@@ -2,9 +2,7 @@
 TODO:
 """
 
-import pytest
-
-from cppython.plugins.generator.cmake import CMakeGenerator
+from cppython.plugins.generator.cmake import CMakeData, CMakeGenerator
 from cppython.plugins.test.pytest import BaseGeneratorSuite
 
 
@@ -14,10 +12,10 @@ class TestCMakeGenerator(BaseGeneratorSuite):
     """
 
     def __init__(self) -> None:
-        super().__init__(CMakeGenerator)
+        super().__init__(CMakeGenerator, CMakeData)
 
-    def test_name(self, generator):
+    def test_type(self, generator: CMakeGenerator):
         """
         Tests that the generators name is expected
         """
-        assert generator.name() == "cmake"
+        assert generator.data_type == CMakeGenerator
