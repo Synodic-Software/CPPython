@@ -4,20 +4,27 @@ TODO:
 
 import pytest
 from click.testing import CliRunner
+from pytest_mock.plugin import MockerFixture
 
 from cppython.plugins.interface.console import Config, ConsoleInterface, cli
 from cppython.plugins.test.pytest import BaseInterfaceSuite
 
 
-@pytest.mark.parametrize("interface", [ConsoleInterface])
 class TestCLIInterface(BaseInterfaceSuite):
     """
     The tests for our CLI interface
     """
 
     @pytest.mark.parametrize("command", ["install", "update"])
-    def test_command(self, interface, command, mocker):
+    def test_command(self, interface: ConsoleInterface, command: str, mocker: MockerFixture):
+        """
+        TODO
 
+        Arguments:
+            interface {ConsoleInterface} -- [description]
+            command {str} -- [description]
+            mocker {[type]} -- [description]
+        """
         # Patch the project
         mocker.patch("cppython.plugins.interface.console.Config.load")
 

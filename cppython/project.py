@@ -1,13 +1,21 @@
 import importlib
 import inspect
 import pkgutil
-from typing import Callable, Type
+from typing import Callable, Optional, Type, TypeVar
 
+import cppython.plugins.generator
+import cppython.plugins.interface
 from cppython.exceptions import ConfigError
 from cppython.schema import API, PEP621, Generator, Interface, Metadata, Plugin
 
 
 class Project(API):
+    """
+    TODO
+
+
+    """
+
     def __init__(self, interface: Interface) -> None:
 
         self._interface = interface
@@ -47,9 +55,11 @@ class Project(API):
         generator_config_type = generator_type.data_type()
         return generator_config_type(**data[generator_type.name()])
 
+    _PluginType = TypeVar("_PluginType", bound=Type[Plugin])
+
     def _find_first_plugin(
-        self, namespace_package, plugin_type: Type[Plugin], condition: Callable[[str], bool]
-    ) -> Type[Plugin]:
+        self, namespace_package, plugin_type: _PluginType, condition: Callable[[str], bool]
+    ) -> Optional[_PluginType]:
         """
         Finds the first plugin that satisfies the given condition
         """
@@ -61,22 +71,19 @@ class Project(API):
                     if issubclass(value, plugin_type) & (value is not plugin_type):
                         if condition(value.name()):
                             return value
+        return None
 
-    def _load_interface(self, potential_keys: list) -> Type[Interface]:
+    def _load_interface(self, potential_keys: list) -> Optional[Type[Interface]]:
         """
         TODO:
         """
-
-        import cppython.plugins.interface
 
         return self._find_first_plugin(cppython.plugins.interface, Interface, lambda name: name in potential_keys)
 
-    def _load_generator(self, generator: str) -> Type[Generator]:
+    def _load_generator(self, generator: str) -> Optional[Type[Generator]]:
         """
         TODO:
         """
-
-        import cppython.plugins.generator
 
         return self._find_first_plugin(cppython.plugins.generator, Generator, lambda name: name == generator)
 

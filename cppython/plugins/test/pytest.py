@@ -1,12 +1,12 @@
 """
 TODO:
 """
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Type
 
 import pytest
 
-from cppython.schema import Generator, GeneratorData, Interface
+from cppython.schema import Generator, Interface
 
 
 class BaseGeneratorSuite(ABC):
@@ -14,10 +14,6 @@ class BaseGeneratorSuite(ABC):
     Custom implementations of the Generator class should inherit from this class for its tests.
     This class provides a generic test suite that all custom types must function with.
     """
-
-    @abstractmethod
-    def __init__(self, generator_type: Type[Generator], generator_data_type: Type[GeneratorData]) -> None:
-        super().__init__()
 
     @pytest.fixture
     def generator(self) -> Type[Generator]:
