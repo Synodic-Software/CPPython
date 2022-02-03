@@ -21,7 +21,7 @@ class Project(API):
         self._interface = interface
         self.loaded = False
 
-    def _parse_PEP621_data(self, data: dict, interface_type: Interface) -> PEP621:
+    def _parse_pep621_data(self, data: dict, interface_type: Interface) -> PEP621:
         """
         Extracts the PEP621 metadata from the various possible project formats
         """
@@ -88,6 +88,10 @@ class Project(API):
         return self._find_first_plugin(cppython.plugins.generator, Generator, lambda name: name == generator)
 
     def load(self):
+        """
+        TODO
+        """
+
         # Read the raw configuration data
         pyproject_data = self._interface.read_pyproject()
         cppython_data = self._parse_cppython_data(pyproject_data)
@@ -98,7 +102,7 @@ class Project(API):
         if generator_type is None:
             raise ConfigError("")
 
-        pep_621 = self._parse_PEP621_data(pyproject_data, self._interface)
+        pep_621 = self._parse_pep621_data(pyproject_data, self._interface)
         generator_data = self._parse_generator_data(pyproject_data, generator_type)
 
         # Construct the generator
