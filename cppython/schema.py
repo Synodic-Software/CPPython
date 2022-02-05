@@ -20,6 +20,14 @@ class TargetEnum(Enum):
     SHARED = "shared"
 
 
+class PyProject(BaseModel):
+    """
+    TODO
+    """
+
+    data: dict[str, str]
+
+
 class PEP621(BaseModel):
     """
     Subset of PEP 621
@@ -41,7 +49,7 @@ class Metadata(BaseModel):
     generator: str = "CMake"
     target: TargetEnum
     dependencies: dict[str, str] = {}
-    install_path: Path = Field(alias="install-path")
+    install_path: Path
 
 
 class API(ABC):
@@ -85,6 +93,7 @@ class Plugin(ABC):
     Abstract plugin type
     """
 
+    @abstractmethod
     def __init__(self) -> None:
         pass
 
@@ -102,8 +111,10 @@ class Interface(Plugin):
     Abstract type to be inherited by CPPython Interface plugins
     """
 
-    def __init__(self) -> None:
+    @abstractmethod
+    def __init__(self, pyproject: PyProject) -> None:
         super().__init__()
+        self._pyproject = pyproject
 
     @staticmethod
     def external_config() -> bool:
@@ -151,8 +162,6 @@ class GeneratorData(BaseModel):
     Base class for the configuration data that will be given to the generator constructor
     """
 
-    pass
-
 
 class Generator(Plugin, API):
     """
@@ -169,7 +178,6 @@ class Generator(Plugin, API):
         Installs the external tooling required by the generator if necessary
         Returns whether anything was installed or not
         """
-        pass
 
     @staticmethod
     @abstractmethod

@@ -2,16 +2,20 @@
 TODO: 
 """
 
+from mimetypes import init
 from pathlib import Path
 
 import click
 import tomlkit
 
 from cppython.project import Project
-from cppython.schema import PEP621, Interface
+from cppython.schema import PEP621, Interface, PyProject
 
 
 def _read_data():
+    """
+    TODO
+    """
     path = Path.cwd()
 
     while not path.glob("pyproject.toml"):
@@ -32,13 +36,18 @@ class Config:
 
         data = _read_data()
 
+        pyproject = PyProject(data=data)
+
         # Initialize the object hook into CPPython
-        interface = ConsoleInterface(data)
+        interface = ConsoleInterface(pyproject)
 
         # Initialize the CPPython context
         self.project = Project(interface)
 
     def load(self):
+        """
+        TODO
+        """
         self.project.load()
 
 
@@ -48,6 +57,9 @@ pass_config = click.make_pass_decorator(Config)
 @click.group()
 @click.pass_context
 def cli(context):
+    """
+    TODO
+    """
     context.ensure_object(Config)
 
     # Initialize cppython
@@ -57,19 +69,27 @@ def cli(context):
 @cli.command()
 @pass_config
 def install(config):
+    """
+    TODO
+    """
     config.project.install()
 
 
 @cli.command()
 @pass_config
 def update(config):
+    """
+    TODO
+    """
     config.project.update()
 
 
 @cli.result_callback()
 @pass_config
 def cleanup(config, result):
-    pass
+    """
+    TODO
+    """
 
 
 class ConsoleInterface(Interface):
@@ -77,8 +97,8 @@ class ConsoleInterface(Interface):
     TODO: Description
     """
 
-    def __init__(self, data: dict) -> None:
-        self._data = data
+    def __init__(self, pyproject: PyProject) -> None:
+        super().__init__(pyproject)
 
     # Plugin Contract
 
@@ -101,7 +121,7 @@ class ConsoleInterface(Interface):
         return False
 
     @staticmethod
-    def parse_pep_621(data: dict) -> PEP621:
+    def parse_pep_621(data: PyProject) -> PEP621:
         """
         Requests the plugin to read the available PEP 621 information. Only requested if the plugin is not the entrypoint
         """
@@ -111,10 +131,10 @@ class ConsoleInterface(Interface):
         """
         Requests PEP 621 information from the pyproject
         """
-        return self.parse_pep_621(self._data)
+        return self.parse_pep_621(self._pyproject)
 
     def write_pyproject(self) -> None:
         raise NotImplementedError()
 
-    def read_pyproject(self) -> dict:
-        return self._data
+    def read_pyproject(self) -> PyProject:
+        return self._pyproject

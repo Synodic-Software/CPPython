@@ -12,7 +12,7 @@ class CMakeData(GeneratorData):
     TODO:
     """
 
-    installation_location: Path
+    pass
 
 
 class CMakeGenerator(Generator):
