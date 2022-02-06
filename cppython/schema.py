@@ -7,7 +7,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Type
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class TargetEnum(Enum):
@@ -22,10 +22,11 @@ class TargetEnum(Enum):
 
 class PyProject(BaseModel):
     """
-    TODO
+    The data required from a PyProject.toml
     """
 
     data: dict[str, str]
+    path: Path
 
 
 class PEP621(BaseModel):

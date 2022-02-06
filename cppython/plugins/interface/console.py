@@ -4,15 +4,17 @@ TODO:
 
 from mimetypes import init
 from pathlib import Path
+from typing import Tuple
 
 import click
 import tomlkit
+from tomlkit.api import TOMLDocument
 
 from cppython.project import Project
 from cppython.schema import PEP621, Interface, PyProject
 
 
-def _read_data():
+def _path_search() -> Path:
     """
     TODO
     """
@@ -24,7 +26,15 @@ def _read_data():
                 False
             ), "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
 
-    return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
+    return Path(path / "pyproject.toml")
+
+
+def _read_data(path: Path) -> TOMLDocument:
+    """
+    TODO
+    """
+
+    return tomlkit.loads(path.read_text(encoding="utf-8"))
 
 
 class Config:
@@ -34,9 +44,10 @@ class Config:
 
     def __init__(self):
 
-        data = _read_data()
+        path = _path_search()
+        data = _read_data(path)
 
-        pyproject = PyProject(data=data)
+        pyproject = PyProject(data=data, path=path)
 
         # Initialize the object hook into CPPython
         interface = ConsoleInterface(pyproject)
