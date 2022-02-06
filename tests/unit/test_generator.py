@@ -18,9 +18,3 @@ class TestCMakeGenerator(BaseGeneratorSuite):
     def fixture_generator(self):
         cmake_data = CMakeData()
         return CMakeGenerator(default_pep621, default_metadata, cmake_data)
-
-    def test_type(self, generator: CMakeGenerator):
-        """
-        Tests that the generators name is expected
-        """
-        assert generator.data_type == CMakeGenerator
