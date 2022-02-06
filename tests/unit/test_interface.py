@@ -21,7 +21,7 @@ class TestCLIInterface(BaseInterfaceSuite):
         return ConsoleInterface(default_pyproject)
 
     @pytest.mark.parametrize("command", ["install", "update"])
-    def test_command(self, interface: ConsoleInterface, command: str, mocker: MockerFixture):
+    def test_command(self, command: str, mocker: MockerFixture):
         """
         TODO
 
