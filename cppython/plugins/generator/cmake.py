@@ -1,7 +1,6 @@
 """
 TODO:
 """
-from pathlib import Path
 from typing import Type
 
 from cppython.schema import PEP621, Generator, GeneratorData, Metadata
@@ -11,8 +10,6 @@ class CMakeData(GeneratorData):
     """
     TODO:
     """
-
-    pass
 
 
 class CMakeGenerator(Generator):

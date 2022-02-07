@@ -43,12 +43,18 @@ test = [
 [project.scripts]
 cppython = "cppython.plugins.interface.console:cli"
 
-# Register the testing information with pytest
+# CPPython plugins
+[project.entry-points.cppython.generator]
+cmake = "cppython.plugins.generator:CMakeGenerator"
+
+[project.entry-points.cppython.interface]
+console = "cppython.plugins.interface:ConsoleInterface"
+
+# Pytest plugins
 [tool.entry-points.pytest11]
 pytest_cppython = "cppython.plugins.test.pytest"
 
 [tool.pytest.ini_options]
-addopts = "-n auto"
 testpaths = [
   "tests",
 ]
