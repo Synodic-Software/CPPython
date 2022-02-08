@@ -43,11 +43,11 @@ test = [
 cppython = "cppython.plugins.interface.console:cli"
 
 # CPPython plugins
-[project.entry-points.cppython.generator]
-cmake = "cppython.plugins.generator:CMakeGenerator"
+[project.entry-points."cppython.generator_plugins"]
+cmake = "cppython.plugins.generator.cmake:CMakeGenerator"
 
-[project.entry-points.cppython.interface]
-console = "cppython.plugins.interface:ConsoleInterface"
+[project.entry-points."cppython.interface_plugins"]
+console = "cppython.plugins.interface.console:ConsoleInterface"
 
 # Pytest plugins
 [tool.entry-points.pytest11]

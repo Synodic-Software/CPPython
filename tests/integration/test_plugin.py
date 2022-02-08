@@ -2,7 +2,7 @@
 TODO:
 """
 
-from importlib import metadata
+from importlib.metadata import entry_points
 
 
 class TestPlugin:
@@ -14,14 +14,12 @@ class TestPlugin:
         """
         TODO
         """
-        entries = metadata.entry_points()
-        plugin_entries = entries["cppython.generator"]
-        assert len(plugin_entries) > 1
+        plugin_entries = entry_points(group="cppython.generator_plugins")
+        assert len(plugin_entries) > 0
 
     def test_interface(self):
         """
         TODO
         """
-        entries = metadata.entry_points()
-        plugin_entries = entries["cppython.interface"]
-        assert len(plugin_entries) > 1
+        plugin_entries = entry_points(group="cppython.interface_plugins")
+        assert len(plugin_entries) > 0
