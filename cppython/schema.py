@@ -100,16 +100,16 @@ class Plugin(ABC):
 
     @staticmethod
     @abstractmethod
-    def name() -> str:
+    def plugin_group() -> str:
         """
-        The name of the generator
+        TODO
         """
         raise NotImplementedError()
 
 
-class Interface(Plugin):
+class Interface:
     """
-    Abstract type to be inherited by CPPython Interface plugins
+    Abstract type to be inherited by CPPython interfaces
     """
 
     @abstractmethod
@@ -172,6 +172,21 @@ class Generator(Plugin, API):
     @abstractmethod
     def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: GeneratorData) -> None:
         super().__init__()
+
+    @staticmethod
+    def plugin_group() -> str:
+        """
+        TODO
+        """
+        return "generator_plugins"
+
+    @staticmethod
+    @abstractmethod
+    def name() -> str:
+        """
+        TODO
+        """
+        raise NotImplementedError()
 
     @abstractmethod
     def install_generator(self) -> bool:

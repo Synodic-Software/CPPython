@@ -1,6 +1,7 @@
 import importlib
 import inspect
 import pkgutil
+from importlib.metadata import entry_points
 from typing import Callable, Optional, Type, TypeVar
 
 import cppython.plugins.generator
@@ -21,13 +22,13 @@ class Project(API):
         self._interface = interface
         self.loaded = False
 
-    def _parse_pep621_data(self, data: dict, interface_type: Interface) -> PEP621:
+    def _parse_pep621_data(self, data: dict, interface: Interface) -> PEP621:
         """
         Extracts the PEP621 metadata from the various possible project formats
         """
 
         # Each plugin reads its own configuration file, interfaces without external data need a helping hand parsing it
-        if not interface_type.external_config():
+        if not interface.external_config():
             # If the interface doesn't support an external configuration, search for a plugin that does
 
             temporary_interface_type = self._load_interface([*data["tool"]])
@@ -63,22 +64,17 @@ class Project(API):
         """
         Finds the first plugin that satisfies the given condition
         """
-        for _, name, is_package in pkgutil.iter_modules(namespace_package.__path__, namespace_package.__name__ + "."):
-            if not is_package:
-                module = importlib.import_module(name)
-                class_members = inspect.getmembers(module, inspect.isclass)
-                for (_, value) in class_members:
-                    if issubclass(value, plugin_type) & (value is not plugin_type):
-                        if condition(value.name()):
-                            return value
+
+        plugins = entry_points(group=f"cppython.{plugin_type.plugin_group()}")
+
+        plugins[""].load()
+
+        for (_, value) in class_members:
+            if issubclass(value, plugin_type) & (value is not plugin_type):
+                if condition(value.name()):
+                    return value
+
         return None
-
-    def _load_interface(self, potential_keys: list) -> Optional[Type[Interface]]:
-        """
-        TODO:
-        """
-
-        return self._find_first_plugin(cppython.plugins.interface, Interface, lambda name: name in potential_keys)
 
     def _load_generator(self, generator: str) -> Optional[Type[Generator]]:
         """
