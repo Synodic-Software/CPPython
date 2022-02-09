@@ -7,7 +7,6 @@ from click.testing import CliRunner
 from pytest_mock.plugin import MockerFixture
 
 from cppython.plugins.interface.console import Config, ConsoleInterface, cli
-from cppython.plugins.test.data import default_pyproject
 from cppython.plugins.test.pytest import BaseInterfaceSuite
 
 
@@ -18,7 +17,7 @@ class TestCLIInterface(BaseInterfaceSuite):
 
     @pytest.fixture(name="interface")
     def fixture_interface(self):
-        return ConsoleInterface(default_pyproject)
+        return ConsoleInterface()
 
     @pytest.mark.parametrize("command", ["install", "update"])
     def test_command(self, command: str, mocker: MockerFixture):

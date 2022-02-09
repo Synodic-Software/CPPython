@@ -3,7 +3,7 @@ TODO:
 """
 from typing import Type
 
-from cppython.schema import PEP621, Generator, GeneratorData, Metadata
+from cppython.schema import PEP621, CPPythonData, Generator, GeneratorData
 
 
 class CMakeData(GeneratorData):
@@ -17,7 +17,7 @@ class CMakeGenerator(Generator):
     A CPPython generator implementing a CMake backend
     """
 
-    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: CMakeData) -> None:
+    def __init__(self, pep_612: PEP621, cppython_data: CPPythonData, generator_data: CMakeData) -> None:
         super().__init__(pep_612, cppython_data, generator_data)
 
     # Plugin Contract
