@@ -2,7 +2,7 @@ from importlib import metadata
 from typing import Callable, Optional, Type, TypeVar
 
 from cppython.exceptions import ConfigError
-from cppython.schema import API, PEP621, CPPythonData, Generator, Interface, Plugin
+from cppython.schema import API, Generator, Interface, Plugin
 
 
 class Project(API):
@@ -38,9 +38,9 @@ class Project(API):
         plugin_type = find_plugin_type(Generator, lambda name: name == self._cppython_data.generator)
 
         if plugin_type is None:
-            raise Exception(f"No generator plugin with the name '{self._cppython_data.generator}' was found.")
+            raise ConfigError(f"No generator plugin with the name '{self._cppython_data.generator}' was found.")
 
-        self._generator_data = interface.generator_data(plugin_type)
+        self._generator_data = interface.generator_data(plugin_type.data_type())
         self._generator = plugin_type(self._pep621, self._cppython_data, self._generator_data)
 
     # API Contract

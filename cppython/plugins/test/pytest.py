@@ -2,6 +2,7 @@
 TODO:
 """
 from abc import ABC
+from importlib.metadata import entry_points
 
 import pytest
 
@@ -22,11 +23,12 @@ class BaseGeneratorSuite(ABC):
         """
         raise NotImplementedError
 
-    def test_construction(self, generator: Generator):
+    def test_plugin_registration(self, generator: Generator):
         """
-        Test the __init__ call of the generator object
+        TODO
         """
-        pass
+        plugin_entries = entry_points(group=f"cppython.{generator.plugin_group()}")
+        assert len(plugin_entries) > 0
 
 
 class BaseInterfaceSuite(ABC):
@@ -42,8 +44,3 @@ class BaseInterfaceSuite(ABC):
             @pytest.mark.parametrize("interface", [CustomInterface])
         """
         raise NotImplementedError
-
-    def test_construction(self, interface: Interface):
-        """
-        Test the __init__ call of the interface object
-        """
