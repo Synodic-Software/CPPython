@@ -9,7 +9,7 @@ import tomlkit
 from tomlkit.api import TOMLDocument
 
 from cppython.project import Project
-from cppython.schema import PEP621, Interface, PyProject
+from cppython.schema import PEP621, Interface
 
 
 def _path_search() -> Path:
@@ -45,19 +45,11 @@ class Config:
         path = _path_search()
         data = _read_data(path)
 
-        pyproject = PyProject(data=data, path=path)
-
         # Initialize the object hook into CPPython
-        interface = ConsoleInterface(pyproject)
+        interface = ConsoleInterface()
 
         # Initialize the CPPython context
         self.project = Project(interface)
-
-    def load(self):
-        """
-        TODO
-        """
-        self.project.load()
 
 
 pass_config = click.make_pass_decorator(Config)
@@ -106,8 +98,8 @@ class ConsoleInterface(Interface):
     TODO: Description
     """
 
-    def __init__(self, pyproject: PyProject) -> None:
-        super().__init__(pyproject)
+    def __init__(self) -> None:
+        super().__init__()
 
     # Plugin Contract
 
@@ -130,7 +122,7 @@ class ConsoleInterface(Interface):
         return False
 
     @staticmethod
-    def parse_pep_621(data: PyProject) -> PEP621:
+    def parse_pep_621() -> PEP621:
         """
         Requests the plugin to read the available PEP 621 information. Only requested if the plugin is not the entrypoint
         """
@@ -140,10 +132,7 @@ class ConsoleInterface(Interface):
         """
         Requests PEP 621 information from the pyproject
         """
-        return self.parse_pep_621(self._pyproject)
+        return self.parse_pep_621()
 
     def write_pyproject(self) -> None:
         raise NotImplementedError()
-
-    def read_pyproject(self) -> PyProject:
-        return self._pyproject

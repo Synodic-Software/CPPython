@@ -109,9 +109,8 @@ class Interface:
     """
 
     @abstractmethod
-    def __init__(self, pyproject: PyProject) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self._pyproject = pyproject
 
     @abstractmethod
     def pep_621(self) -> PEP621:

@@ -5,7 +5,7 @@ TODO:
 import pytest
 
 from cppython.plugins.generator.cmake import CMakeData, CMakeGenerator
-from cppython.plugins.test.data import default_metadata, default_pep621
+from cppython.plugins.test.data import default_cppython_data, default_pep621
 from cppython.plugins.test.pytest import BaseGeneratorSuite
 
 
@@ -17,4 +17,4 @@ class TestCMakeGenerator(BaseGeneratorSuite):
     @pytest.fixture(name="generator")
     def fixture_generator(self):
         cmake_data = CMakeData()
-        return CMakeGenerator(default_pep621, default_metadata, cmake_data)
+        return CMakeGenerator(default_pep621, default_cppython_data, cmake_data)
