@@ -20,15 +20,6 @@ class TargetEnum(Enum):
     SHARED = "shared"
 
 
-class PyProject(BaseModel):
-    """
-    The data required from a PyProject.toml
-    """
-
-    data: dict[str, str]
-    path: Path
-
-
 class PEP621(BaseModel):
     """
     Subset of PEP 621
@@ -41,13 +32,12 @@ class PEP621(BaseModel):
     description: str = ""
 
 
-class Metadata(BaseModel):
+class CPPythonData(BaseModel):
     """
     Data required by the tool
     """
 
-    # TODO: Grab default from plugin without circular import
-    generator: str = "CMake"
+    generator: str
     target: TargetEnum
     dependencies: dict[str, str] = {}
     install_path: Path
@@ -107,6 +97,12 @@ class Plugin(ABC):
         raise NotImplementedError()
 
 
+class GeneratorData(BaseModel):
+    """
+    Base class for the configuration data that will be given to the generator constructor
+    """
+
+
 class Interface:
     """
     Abstract type to be inherited by CPPython interfaces
@@ -117,51 +113,33 @@ class Interface:
         super().__init__()
         self._pyproject = pyproject
 
-    @staticmethod
-    def external_config() -> bool:
-        """
-        True if the plugin can read its own configuration.
-        False otherwise
-        """
-
-        return True
-
-    @staticmethod
-    @abstractmethod
-    def parse_pep_621(data: dict[str, Any]) -> PEP621:
-        """
-        Requests the plugin to read the available PEP 621 information. Only requested
-            if the plugin is not the entrypoint
-        """
-        raise NotImplementedError()
-
     @abstractmethod
     def pep_621(self) -> PEP621:
         """
-        Requests PEP 621 information from the pyproject
-        Probably uses 'parse_pep_621' internally
+        Requests PEP 621 information
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def read_pyproject(self) -> dict[str, Any]:
+    def cppython_data(self) -> CPPythonData:
         """
-        Called when CPPoetry requires the content of pyproject.toml
+        Requests CPPython information
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def generator_data(self, generator_data: Type[GeneratorData]) -> GeneratorData:
+        """
+        Requests generator information
         """
         raise NotImplementedError()
 
     @abstractmethod
     def write_pyproject(self) -> None:
         """
-        Called when CPPoetry requires the plugin to write out pyproject.toml changes
+        Called when CPPython requires the plugin to write out pyproject.toml changes
         """
         raise NotImplementedError()
-
-
-class GeneratorData(BaseModel):
-    """
-    Base class for the configuration data that will be given to the generator constructor
-    """
 
 
 class Generator(Plugin, API):
@@ -170,7 +148,7 @@ class Generator(Plugin, API):
     """
 
     @abstractmethod
-    def __init__(self, pep_612: PEP621, cppython_data: Metadata, generator_data: GeneratorData) -> None:
+    def __init__(self, pep_612: PEP621, cppython_data: CPPythonData, generator_data: GeneratorData) -> None:
         super().__init__()
 
     @staticmethod
