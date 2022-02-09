@@ -29,11 +29,8 @@ class TestCLIInterface(BaseInterfaceSuite):
             command {str} -- [description]
             mocker {[type]} -- [description]
         """
-        # Patch the project
-        mocker.patch("cppython.plugins.interface.console.Config.load")
-
-        # Patch the file IO
-        mocker.patch("cppython.plugins.interface.console._read_data")
+        # Patch the project initialization
+        mocker.patch("cppython.project.Project.__init__", return_value=None)
 
         config = Config()
 

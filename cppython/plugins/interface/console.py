@@ -63,9 +63,6 @@ def cli(context):
     """
     context.ensure_object(Config)
 
-    # Initialize cppython
-    context.obj.load()
-
 
 @cli.command()
 @pass_config
