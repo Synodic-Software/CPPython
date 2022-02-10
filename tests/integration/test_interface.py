@@ -15,4 +15,5 @@ class TestCLIInterface(InterfaceIntegrationTests):
 
     @pytest.fixture(name="interface")
     def fixture_interface(self):
-        return ConsoleInterface()
+
+        return ConsoleInterface(default_pyproject)

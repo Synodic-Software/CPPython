@@ -43,6 +43,12 @@ class CPPythonData(BaseModel):
     install_path: Path
 
 
+class PyProject(BaseModel):
+    """
+    TODO
+    """
+
+
 class API(ABC):
     """
     API
@@ -109,34 +115,30 @@ class Interface:
     """
 
     @abstractmethod
-    def __init__(self) -> None:
+    def __init__(self, pyproject: PyProject) -> None:
         super().__init__()
 
-    @abstractmethod
-    def pep_621(self) -> PEP621:
-        """
-        Requests PEP 621 information
-        """
-        raise NotImplementedError()
+        self.pyproject = pyproject
 
-    @abstractmethod
-    def cppython_data(self) -> CPPythonData:
+    @property
+    def pyproject(self) -> PyProject:
         """
-        Requests CPPython information
+        TODO
         """
-        raise NotImplementedError()
+        return self._pyproject
 
-    @abstractmethod
-    def generator_data(self, generator_data: Type[GeneratorData]) -> GeneratorData:
+    @pyproject.setter
+    def pyproject(self, value: PyProject):
         """
-        Requests generator information
+        TODO
         """
-        raise NotImplementedError()
+
+        self._pyproject = value
 
     @abstractmethod
     def write_pyproject(self) -> None:
         """
-        Called when CPPython requires the plugin to write out pyproject.toml changes
+        Called when CPPython requires the interface to write out pyproject.toml changes
         """
         raise NotImplementedError()
 
@@ -165,13 +167,6 @@ class Generator(Plugin, API):
         """
         raise NotImplementedError()
 
-    @abstractmethod
-    def install_generator(self) -> bool:
-        """
-        Installs the external tooling required by the generator if necessary
-        Returns whether anything was installed or not
-        """
-
     @staticmethod
     @abstractmethod
     def data_type() -> Type[GeneratorData]:
@@ -179,3 +174,10 @@ class Generator(Plugin, API):
         Returns the pydantic type to cast the generator configuration data to
         """
         raise NotImplementedError()
+
+    @abstractmethod
+    def install_generator(self) -> bool:
+        """
+        Installs the external tooling required by the generator if necessary
+        Returns whether anything was installed or not
+        """

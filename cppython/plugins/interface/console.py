@@ -3,13 +3,14 @@ TODO:
 """
 
 from pathlib import Path
+from typing import Any, Type
 
 import click
 import tomlkit
 from tomlkit.api import TOMLDocument
 
 from cppython.project import Project
-from cppython.schema import PEP621, Interface
+from cppython.schema import PEP621, CPPythonData, GeneratorData, Interface
 
 
 def _path_search() -> Path:
@@ -95,41 +96,32 @@ class ConsoleInterface(Interface):
     TODO: Description
     """
 
-    def __init__(self) -> None:
+    def __init__(self, data: dict) -> None:
         super().__init__()
 
-    # Plugin Contract
-
-    @staticmethod
-    def name() -> str:
-        """
-        The name of the generator
-        """
-        return "console"
+        self.data = data
 
     # Interface Contract
 
-    @staticmethod
-    def external_config() -> bool:
-        """
-        True if the plugin can read its own configuration.
-        False otherwise
-        """
-
-        return False
-
-    @staticmethod
-    def parse_pep_621() -> PEP621:
-        """
-        Requests the plugin to read the available PEP 621 information. Only requested if the plugin is not the entrypoint
-        """
-        raise NotImplementedError()
-
+    @property
     def pep_621(self) -> PEP621:
         """
         Requests PEP 621 information from the pyproject
         """
-        return self.parse_pep_621()
+        return PEP621(**self.data["project"])
+
+    @property
+    def cppython_data(self) -> CPPythonData:
+        """
+        Requests CPPython information
+        """
+        raise NotImplementedError()
+
+    def generator_data(self, generator_data: Type[GeneratorData]) -> GeneratorData:
+        """
+        Requests generator information
+        """
+        raise NotImplementedError()
 
     def write_pyproject(self) -> None:
         raise NotImplementedError()

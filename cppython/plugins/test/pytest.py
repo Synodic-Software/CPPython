@@ -29,6 +29,13 @@ class GeneratorIntegrationTests(GeneratorTests):
     TODO
     """
 
+    def test_plugin_registration(self, generator: Generator):
+        """
+        TODO
+        """
+        plugin_entries = entry_points(group=f"cppython.{generator.plugin_group()}")
+        assert len(plugin_entries) > 0
+
 
 class GeneratorUnitTests(GeneratorTests):
     """
@@ -36,12 +43,21 @@ class GeneratorUnitTests(GeneratorTests):
     This class provides a generic test suite that all custom types must function with.
     """
 
-    def test_plugin_registration(self, generator: Generator):
+    def test_name(self, generator: Generator):
         """
         TODO
         """
-        plugin_entries = entry_points(group=f"cppython.{generator.plugin_group()}")
-        assert len(plugin_entries) > 0
+        name = generator.name()
+
+        assert name != ""
+
+    def test_data_type(self, generator: Generator):
+        """
+        TODO
+        """
+        data_type = generator.data_type()
+
+        assert data_type != ""
 
 
 class InterfaceTests(ABC):
@@ -75,3 +91,17 @@ class InterfaceUnitTests(InterfaceTests):
     Custom implementations of the Interface class should inherit from this class for its tests.
     This class provides a generic test suite that all custom types must function with.
     """
+
+    def test_pep612(self, interface: Interface):
+        """
+        TODO
+        """
+
+        pep_621 = interface.pep_621
+
+    def test_cppython_data(self, interface: Interface):
+        """
+        TODO
+        """
+
+        cppython_data = interface.cppython_data
