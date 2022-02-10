@@ -7,10 +7,10 @@ from click.testing import CliRunner
 from pytest_mock.plugin import MockerFixture
 
 from cppython.plugins.interface.console import Config, ConsoleInterface, cli
-from cppython.plugins.test.pytest import BaseInterfaceSuite
+from cppython.plugins.test.pytest import InterfaceUnitTests
 
 
-class TestCLIInterface(BaseInterfaceSuite):
+class TestCLIInterface(InterfaceUnitTests):
     """
     The tests for our CLI interface
     """

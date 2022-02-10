@@ -6,10 +6,10 @@ import pytest
 
 from cppython.plugins.generator.cmake import CMakeData, CMakeGenerator
 from cppython.plugins.test.data import default_cppython_data, default_pep621
-from cppython.plugins.test.pytest import GeneratorUnitTests
+from cppython.plugins.test.pytest import GeneratorIntegrationTests
 
 
-class TestCMakeGenerator(GeneratorUnitTests):
+class TestCMakeGenerator(GeneratorIntegrationTests):
     """
     The tests for our CMake generator
     """

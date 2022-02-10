@@ -6,13 +6,13 @@ from importlib.metadata import entry_points
 
 import pytest
 
+from cppython.project import Project
 from cppython.schema import Generator, Interface
 
 
-class BaseGeneratorSuite(ABC):
+class GeneratorTests(ABC):
     """
-    Custom implementations of the Generator class should inherit from this class for its tests.
-    This class provides a generic test suite that all custom types must function with.
+    TODO
     """
 
     @pytest.fixture(name="generator")
@@ -23,6 +23,19 @@ class BaseGeneratorSuite(ABC):
         """
         raise NotImplementedError
 
+
+class GeneratorIntegrationTests(GeneratorTests):
+    """
+    TODO
+    """
+
+
+class GeneratorUnitTests(GeneratorTests):
+    """
+    Custom implementations of the Generator class should inherit from this class for its tests.
+    This class provides a generic test suite that all custom types must function with.
+    """
+
     def test_plugin_registration(self, generator: Generator):
         """
         TODO
@@ -31,10 +44,9 @@ class BaseGeneratorSuite(ABC):
         assert len(plugin_entries) > 0
 
 
-class BaseInterfaceSuite(ABC):
+class InterfaceTests(ABC):
     """
-    Custom implementations of the Interface class should inherit from this class for its tests.
-    This class provides a generic test suite that all custom types must function with.
+    TODO
     """
 
     @pytest.fixture(name="interface")
@@ -44,3 +56,22 @@ class BaseInterfaceSuite(ABC):
             @pytest.mark.parametrize("interface", [CustomInterface])
         """
         raise NotImplementedError
+
+
+class InterfaceIntegrationTests(InterfaceTests):
+    """
+    TODO
+    """
+
+    def test_project(self, interface: Interface):
+        """
+        TODO
+        """
+        Project(interface)
+
+
+class InterfaceUnitTests(InterfaceTests):
+    """
+    Custom implementations of the Interface class should inherit from this class for its tests.
+    This class provides a generic test suite that all custom types must function with.
+    """
