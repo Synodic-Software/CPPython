@@ -15,8 +15,6 @@ class Project(API):
     def __init__(self, interface: Interface) -> None:
 
         self._interface = interface
-        self._pep621 = interface.pep_621()
-        self._cppython_data = interface.cppython_data()
 
         _PluginType = TypeVar("_PluginType", bound=Type[Plugin])
 
@@ -35,13 +33,14 @@ class Project(API):
 
             return None
 
-        plugin_type = find_plugin_type(Generator, lambda name: name == self._cppython_data.generator)
+        plugin_type = find_plugin_type(Generator, lambda name: name == interface.pyproject.cppython_data.generator)
 
         if plugin_type is None:
-            raise ConfigError(f"No generator plugin with the name '{self._cppython_data.generator}' was found.")
+            raise ConfigError(
+                f"No generator plugin with the name '{interface.pyproject.cppython_data.generator}' was found."
+            )
 
-        self._generator_data = interface.generator_data(plugin_type.data_type())
-        self._generator = plugin_type(self._pep621, self._cppython_data, self._generator_data)
+        self._generator = plugin_type(interface.pyproject)
 
     # API Contract
 

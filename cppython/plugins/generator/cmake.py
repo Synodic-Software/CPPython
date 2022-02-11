@@ -3,7 +3,7 @@ TODO:
 """
 from typing import Type
 
-from cppython.schema import PEP621, CPPythonData, Generator, GeneratorData
+from cppython.schema import Generator, GeneratorData, PyProject
 
 
 class CMakeData(GeneratorData):
@@ -17,10 +17,8 @@ class CMakeGenerator(Generator):
     A CPPython generator implementing a CMake backend
     """
 
-    def __init__(self, pep_612: PEP621, cppython_data: CPPythonData, generator_data: CMakeData) -> None:
-        super().__init__(pep_612, cppython_data, generator_data)
-
-    # Plugin Contract
+    def __init__(self, pyproject: PyProject) -> None:
+        super().__init__(pyproject)
 
     @staticmethod
     def name() -> str:
@@ -29,15 +27,6 @@ class CMakeGenerator(Generator):
         """
         return "cmake"
 
-    # Generator Contract
-
-    def install_generator(self) -> bool:
-        """
-        Installs the external tooling required by the generator if necessary
-        Returns whether anything was installed or not
-        """
-        return False
-
     @staticmethod
     def data_type() -> Type[GeneratorData]:
         """
@@ -45,7 +34,12 @@ class CMakeGenerator(Generator):
         """
         return CMakeData
 
-    # API Contract
+    def install_generator(self) -> bool:
+        """
+        Installs the external tooling required by the generator if necessary
+        Returns whether anything was installed or not
+        """
+        return False
 
     def install(self) -> None:
         raise NotImplementedError()

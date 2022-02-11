@@ -10,7 +10,7 @@ import tomlkit
 from tomlkit.api import TOMLDocument
 
 from cppython.project import Project
-from cppython.schema import PEP621, CPPythonData, GeneratorData, Interface, PyProject
+from cppython.schema import GeneratorData, Interface, PyProject
 
 
 def _path_search() -> Path:
@@ -46,8 +46,10 @@ class Config:
         path = _path_search()
         data = _read_data(path)
 
+        pyproject = PyProject(**data)
+
         # Initialize the object hook into CPPython
-        interface = ConsoleInterface()
+        interface = ConsoleInterface(pyproject)
 
         # Initialize the CPPython context
         self.project = Project(interface)
@@ -95,8 +97,6 @@ class ConsoleInterface(Interface):
     """
     TODO: Description
     """
-
-    # Interface Contract
 
     def generator_data(self, generator_data: Type[GeneratorData]) -> GeneratorData:
         """

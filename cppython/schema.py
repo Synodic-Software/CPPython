@@ -5,7 +5,7 @@ Data types for CPPython that encapsulate the requirements between the plugins an
 from abc import ABC, abstractmethod
 from enum import Enum
 from pathlib import Path
-from typing import Any, Type
+from typing import Type
 
 from pydantic import BaseModel
 
@@ -47,6 +47,9 @@ class PyProject(BaseModel):
     """
     TODO
     """
+
+    pep_621: PEP621
+    cppython_data: CPPythonData
 
 
 class API(ABC):
@@ -146,6 +149,10 @@ class Generator(Plugin, API):
     """
     Abstract type to be inherited by CPPython Generator plugins
     """
+
+    @abstractmethod
+    def __init__(self, pyproject: PyProject) -> None:
+        super().__init__()
 
     @staticmethod
     def plugin_group() -> str:
