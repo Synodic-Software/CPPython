@@ -114,7 +114,6 @@ class Interface:
     Abstract type to be inherited by CPPython interfaces
     """
 
-    @abstractmethod
     def __init__(self, pyproject: PyProject) -> None:
         super().__init__()
 
@@ -147,10 +146,6 @@ class Generator(Plugin, API):
     """
     Abstract type to be inherited by CPPython Generator plugins
     """
-
-    @abstractmethod
-    def __init__(self, pep_612: PEP621, cppython_data: CPPythonData, generator_data: GeneratorData) -> None:
-        super().__init__()
 
     @staticmethod
     def plugin_group() -> str:

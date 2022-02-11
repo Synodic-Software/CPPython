@@ -10,7 +10,7 @@ import tomlkit
 from tomlkit.api import TOMLDocument
 
 from cppython.project import Project
-from cppython.schema import PEP621, CPPythonData, GeneratorData, Interface
+from cppython.schema import PEP621, CPPythonData, GeneratorData, Interface, PyProject
 
 
 def _path_search() -> Path:
@@ -96,26 +96,7 @@ class ConsoleInterface(Interface):
     TODO: Description
     """
 
-    def __init__(self, data: dict) -> None:
-        super().__init__()
-
-        self.data = data
-
     # Interface Contract
-
-    @property
-    def pep_621(self) -> PEP621:
-        """
-        Requests PEP 621 information from the pyproject
-        """
-        return PEP621(**self.data["project"])
-
-    @property
-    def cppython_data(self) -> CPPythonData:
-        """
-        Requests CPPython information
-        """
-        raise NotImplementedError()
 
     def generator_data(self, generator_data: Type[GeneratorData]) -> GeneratorData:
         """

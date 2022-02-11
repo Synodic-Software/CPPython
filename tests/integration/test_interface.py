@@ -5,6 +5,7 @@ TODO:
 import pytest
 
 from cppython.plugins.interface.console import ConsoleInterface
+from cppython.plugins.test.data import default_pyproject
 from cppython.plugins.test.pytest import InterfaceIntegrationTests
 
 
