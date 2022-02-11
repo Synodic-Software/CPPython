@@ -5,7 +5,7 @@ Data types for CPPython that encapsulate the requirements between the plugins an
 from abc import ABC, abstractmethod
 from enum import Enum
 from pathlib import Path
-from typing import Type
+from typing import Type, TypeVar
 
 from pydantic import BaseModel
 
@@ -112,6 +112,9 @@ class GeneratorData(BaseModel):
     """
 
 
+GeneratorDataType = TypeVar("GeneratorDataType", bound=GeneratorData)
+
+
 class Interface:
     """
     Abstract type to be inherited by CPPython interfaces
@@ -136,6 +139,12 @@ class Interface:
         """
 
         self._pyproject = value
+
+    @abstractmethod
+    def read_generator_data(self, generator_data_type: Type[GeneratorDataType]) -> GeneratorDataType:
+        """
+        TODO
+        """
 
     @abstractmethod
     def write_pyproject(self) -> None:
