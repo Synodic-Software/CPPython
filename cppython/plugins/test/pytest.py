@@ -91,17 +91,3 @@ class InterfaceUnitTests(InterfaceTests):
     Custom implementations of the Interface class should inherit from this class for its tests.
     This class provides a generic test suite that all custom types must function with.
     """
-
-    def test_pep612(self, interface: Interface):
-        """
-        TODO
-        """
-
-        pep_621 = interface.pep_621
-
-    def test_cppython_data(self, interface: Interface):
-        """
-        TODO
-        """
-
-        cppython_data = interface.cppython_data
