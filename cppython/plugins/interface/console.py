@@ -36,17 +36,31 @@ def _read_data(path: Path) -> TOMLDocument:
     return tomlkit.loads(path.read_text(encoding="utf-8"))
 
 
+def _create_pyproject():
+
+    # Search for a path upward
+    path = Path.cwd()
+
+    while not path.glob("pyproject.toml"):
+        if path.is_absolute():
+            assert (
+                False
+            ), "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
+
+    path = Path(path / "pyproject.toml")
+
+    data = tomlkit.loads(path.read_text(encoding="utf-8"))
+
+    return PyProject(**data)
+
+
 class Config:
     """
     The data object that will be expanded alongside 'pass_obj'
     """
 
     def __init__(self):
-
-        path = _path_search()
-        data = _read_data(path)
-
-        pyproject = PyProject(**data)
+        pyproject = _create_pyproject()
 
         # Initialize the object hook into CPPython
         interface = ConsoleInterface(pyproject)

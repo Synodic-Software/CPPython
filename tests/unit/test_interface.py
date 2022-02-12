@@ -33,6 +33,9 @@ class TestCLIInterface(InterfaceUnitTests):
         # Patch the project initialization
         mocker.patch("cppython.project.Project.__init__", return_value=None)
 
+        # Patch the reading of data
+        mocker.patch("cppython.plugins.interface.console._create_pyproject", return_value=default_pyproject)
+
         config = Config()
 
         # Patch out the non-plugin implementation
