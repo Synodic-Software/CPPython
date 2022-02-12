@@ -49,8 +49,10 @@ def _create_pyproject():
 
     path = Path(path / "pyproject.toml")
 
+    # Load file
     data = tomlkit.loads(path.read_text(encoding="utf-8"))
 
+    # Interpret and validate data
     return PyProject(**data)
 
 
