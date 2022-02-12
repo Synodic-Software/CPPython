@@ -160,7 +160,7 @@ class Generator(Plugin, API):
     """
 
     @abstractmethod
-    def __init__(self, pyproject: PyProject) -> None:
+    def __init__(self, pyproject: PyProject, generator_data: GeneratorData) -> None:
         super().__init__()
 
     @staticmethod

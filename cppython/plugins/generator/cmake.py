@@ -17,8 +17,8 @@ class CMakeGenerator(Generator):
     A CPPython generator implementing a CMake backend
     """
 
-    def __init__(self, pyproject: PyProject) -> None:
-        super().__init__(pyproject)
+    def __init__(self, pyproject: PyProject, cmake_data: CMakeData) -> None:
+        super().__init__(pyproject, cmake_data)
 
     @staticmethod
     def name() -> str:

@@ -16,9 +16,9 @@ class Project(API):
 
         self._interface = interface
 
-        _PluginType = TypeVar("_PluginType", bound=Type[Plugin])
+        PluginType = TypeVar("PluginType", bound=Type[Plugin])
 
-        def find_plugin_type(plugin_type: _PluginType, condition: Callable[[str], bool]) -> Optional[_PluginType]:
+        def find_plugin_type(plugin_type: PluginType, condition: Callable[[str], bool]) -> Optional[PluginType]:
             """
             Finds the first plugin that satisfies the given condition
             """
@@ -40,7 +40,8 @@ class Project(API):
                 f"No generator plugin with the name '{interface.pyproject.cppython_data.generator}' was found."
             )
 
-        self._generator = plugin_type(interface.pyproject)
+        generator_data = interface.read_generator_data(plugin_type.data_type())
+        self._generator = plugin_type(interface.pyproject, generator_data)
 
     # API Contract
 
