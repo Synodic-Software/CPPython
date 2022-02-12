@@ -17,4 +17,4 @@ class TestCMakeGenerator(GeneratorIntegrationTests):
     @pytest.fixture(name="generator")
     def fixture_generator(self):
         cmake_data = CMakeData()
-        return CMakeGenerator(default_pyproject)
+        return CMakeGenerator(default_pyproject, cmake_data)
