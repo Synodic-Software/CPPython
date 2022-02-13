@@ -42,6 +42,7 @@ class Project(API):
 
         generator_data = interface.read_generator_data(plugin_type.data_type())
         self._generator = plugin_type(interface.pyproject, generator_data)
+        self._generator.install_generator()
 
     # API Contract
 
