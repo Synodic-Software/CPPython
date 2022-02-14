@@ -101,6 +101,15 @@ def update(config):
     config.project.update()
 
 
+@cli.command()
+@pass_config
+def build(config):
+    """
+    TODO
+    """
+    config.project.build()
+
+
 @cli.result_callback()
 @pass_config
 def cleanup(config, result):

@@ -9,6 +9,7 @@ from pytest_mock.plugin import MockerFixture
 from cppython.plugins.interface.console import Config, ConsoleInterface, cli
 from cppython.plugins.test.data import default_pyproject
 from cppython.plugins.test.pytest import InterfaceUnitTests
+from cppython.schema import API
 
 
 class TestCLIInterface(InterfaceUnitTests):
@@ -26,7 +27,9 @@ class TestCLIInterface(InterfaceUnitTests):
         """
         return ConsoleInterface(default_pyproject)
 
-    @pytest.mark.parametrize("command", ["install", "update"])
+    method_list = [func for func in dir(API) if callable(getattr(API, func)) and not func.startswith("__")]
+
+    @pytest.mark.parametrize("command", method_list)
     def test_command(self, command: str, mocker: MockerFixture):
         """
         _summary_
@@ -44,9 +47,10 @@ class TestCLIInterface(InterfaceUnitTests):
         config = Config()
 
         # Patch out the implementation
-        mocker.patch(f"cppython.project.Project.{command}")
+        mocked_command = mocker.patch(f"cppython.project.Project.{command}")
 
         runner = CliRunner()
         result = runner.invoke(cli, [command], obj=config, catch_exceptions=False)
 
         assert result.exit_code == 0
+        mocked_command.assert_called_once()
