@@ -27,6 +27,7 @@ class TestCLIInterface(InterfaceUnitTests):
         """
         return ConsoleInterface(default_pyproject)
 
+    # Grab the API methods and parameterize them for automatic testing of the entry_points
     method_list = [func for func in dir(API) if callable(getattr(API, func)) and not func.startswith("__")]
 
     @pytest.mark.parametrize("command", method_list)
@@ -35,8 +36,8 @@ class TestCLIInterface(InterfaceUnitTests):
         _summary_
 
         Arguments:
-            command {str} -- _description_
-            mocker {MockerFixture} -- _description_
+            command {str} -- The CLI command with the same name as the CPPython API call
+            mocker {MockerFixture} -- pytest-mock fixture
         """
         # Patch the project initialization
         mocker.patch("cppython.project.Project.__init__", return_value=None)
