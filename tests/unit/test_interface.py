@@ -17,18 +17,23 @@ class TestCLIInterface(InterfaceUnitTests):
     """
 
     @pytest.fixture(name="interface")
-    def fixture_interface(self):
+    def fixture_interface(self) -> ConsoleInterface:
+        """
+        Override of the plugin provided interface fixture.
+
+        Returns:
+            ConsoleInterface -- The Interface object to use for the plugin defined tests
+        """
         return ConsoleInterface(default_pyproject)
 
     @pytest.mark.parametrize("command", ["install", "update"])
     def test_command(self, command: str, mocker: MockerFixture):
         """
-        TODO
+        _summary_
 
         Arguments:
-            interface {ConsoleInterface} -- [description]
-            command {str} -- [description]
-            mocker {[type]} -- [description]
+            command {str} -- _description_
+            mocker {MockerFixture} -- _description_
         """
         # Patch the project initialization
         mocker.patch("cppython.project.Project.__init__", return_value=None)
@@ -38,7 +43,7 @@ class TestCLIInterface(InterfaceUnitTests):
 
         config = Config()
 
-        # Patch out the non-plugin implementation
+        # Patch out the implementation
         mocker.patch(f"cppython.project.Project.{command}")
 
         runner = CliRunner()
