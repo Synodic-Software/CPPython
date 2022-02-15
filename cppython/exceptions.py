@@ -15,4 +15,10 @@ class ConfigError(Exception):
 
     @property
     def error(self) -> str:
+        """
+        Returns the underlying error
+
+        Returns:
+            str -- The underlying error
+        """
         return self._error

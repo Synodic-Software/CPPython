@@ -1,5 +1,6 @@
 """
-TODO:
+Helper fixtures and plugin definitions for pytest
+TODO: Should by a pytest plugin, removing the need for this module in production code.
 """
 from abc import ABC
 from importlib.metadata import entry_points
@@ -12,7 +13,7 @@ from cppython.schema import Generator, Interface
 
 class GeneratorTests(ABC):
     """
-    TODO
+    Shared functionality between the different Generator testing categories
     """
 
     @pytest.fixture(name="generator")
@@ -26,7 +27,7 @@ class GeneratorTests(ABC):
 
 class GeneratorIntegrationTests(GeneratorTests):
     """
-    TODO
+    Base class for all generator integration tests that test plugin agnostic behavior
     """
 
     def test_plugin_registration(self, generator: Generator):
@@ -40,12 +41,13 @@ class GeneratorIntegrationTests(GeneratorTests):
 class GeneratorUnitTests(GeneratorTests):
     """
     Custom implementations of the Generator class should inherit from this class for its tests.
-    This class provides a generic test suite that all custom types must function with.
+    Base class for all generator unit tests that test plugin agnostic behavior
     """
 
     def test_name(self, generator: Generator):
         """
-        TODO
+        Test name restrictions
+        TODO: This should be a pydantic schema
         """
         name = generator.name()
 
@@ -53,7 +55,8 @@ class GeneratorUnitTests(GeneratorTests):
 
     def test_data_type(self, generator: Generator):
         """
-        TODO
+        Test data_type restrictions
+        TODO: This should be a pydantic schema
         """
         data_type = generator.data_type()
 
@@ -62,7 +65,7 @@ class GeneratorUnitTests(GeneratorTests):
 
 class InterfaceTests(ABC):
     """
-    TODO
+    Shared functionality between the different Interface testing categories
     """
 
     @pytest.fixture(name="interface")
@@ -76,12 +79,12 @@ class InterfaceTests(ABC):
 
 class InterfaceIntegrationTests(InterfaceTests):
     """
-    TODO
+    Base class for all interface integration tests that test plugin agnostic behavior
     """
 
     def test_project(self, interface: Interface):
         """
-        TODO
+        Test that the project can be constructed from the given interface
         """
         Project(interface)
 
@@ -89,5 +92,5 @@ class InterfaceIntegrationTests(InterfaceTests):
 class InterfaceUnitTests(InterfaceTests):
     """
     Custom implementations of the Interface class should inherit from this class for its tests.
-    This class provides a generic test suite that all custom types must function with.
+    Base class for all interface unit tests that test plugin agnostic behavior
     """

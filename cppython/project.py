@@ -1,3 +1,7 @@
+"""
+The central delegation of the CPPython project
+"""
+
 from importlib import metadata
 from typing import Callable, Optional, Type, TypeVar
 
@@ -7,9 +11,7 @@ from cppython.schema import API, Generator, Interface, Plugin
 
 class Project(API):
     """
-    TODO
-
-
+    The object constructed at each entry_point
     """
 
     def __init__(self, interface: Interface) -> None:
