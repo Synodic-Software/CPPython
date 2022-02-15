@@ -1,5 +1,5 @@
 """
-TODO:
+Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
 import pytest

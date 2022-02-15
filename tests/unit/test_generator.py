@@ -1,5 +1,5 @@
 """
-TODO:
+Test the functions related to the internal generator implementation and the 'Generator' interface itself
 """
 
 import pytest
@@ -15,6 +15,12 @@ class TestCMakeGenerator(GeneratorUnitTests):
     """
 
     @pytest.fixture(name="generator")
-    def fixture_generator(self):
+    def fixture_generator(self) -> CMakeGenerator:
+        """
+        Override of the plugin provided generator fixture.
+
+        Returns:
+            CMakeGenerator -- The Generator object to use for the CPPython defined tests
+        """
         cmake_data = CMakeData()
         return CMakeGenerator(default_pyproject, cmake_data)
