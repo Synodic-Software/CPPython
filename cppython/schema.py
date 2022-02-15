@@ -22,7 +22,7 @@ class TargetEnum(Enum):
 
 class PEP621(BaseModel):
     """
-    Subset of PEP 621
+    PEP 621 conforming data
         The entirety of PEP 621 is not relevant for interface plugins
         Schema: https://www.python.org/dev/peps/pep-0621/
     """
@@ -45,7 +45,7 @@ class CPPythonData(BaseModel):
 
 class PyProject(BaseModel):
     """
-    TODO
+    pyproject.toml schema
     """
 
     pep_621: PEP621
@@ -101,14 +101,14 @@ class Plugin(ABC):
     @abstractmethod
     def plugin_group() -> str:
         """
-        TODO
+        The plugin group name as used by 'setuptools'
         """
         raise NotImplementedError()
 
 
 class GeneratorData(BaseModel):
     """
-    Base class for the configuration data that will be given to the generator constructor
+    Base class for the configuration data that will be read by the interface and given to the generator
     """
 
 
@@ -128,14 +128,14 @@ class Interface:
     @property
     def pyproject(self) -> PyProject:
         """
-        TODO
+        PyProject getter
         """
         return self._pyproject
 
     @pyproject.setter
     def pyproject(self, value: PyProject):
         """
-        TODO
+        PyProject setter
         """
 
         self._pyproject = value
@@ -143,8 +143,10 @@ class Interface:
     @abstractmethod
     def read_generator_data(self, generator_data_type: Type[GeneratorDataType]) -> GeneratorDataType:
         """
-        TODO
+        Dynamic pyproject.toml data that is determined by the generator plugin requested by [tool.cppython.generator]
+            The Schema defined by 'generator_data_type' must be filled by the [tool.cppython.{generator_value}] slot.
         """
+        raise NotImplementedError()
 
     @abstractmethod
     def write_pyproject(self) -> None:
@@ -166,7 +168,7 @@ class Generator(Plugin, API):
     @staticmethod
     def plugin_group() -> str:
         """
-        TODO
+        The plugin group name as used by 'setuptools'
         """
         return "generator_plugins"
 
@@ -174,7 +176,7 @@ class Generator(Plugin, API):
     @abstractmethod
     def name() -> str:
         """
-        TODO
+        The string that is matched with the [tool.cppython.generator] string
         """
         raise NotImplementedError()
 
