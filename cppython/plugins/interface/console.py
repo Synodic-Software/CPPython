@@ -1,40 +1,50 @@
-from cppython.project import Project
-from cppython.schema import Interface, PEP621
+"""
+A click CLI for CPPython interfacing
+"""
+
 from pathlib import Path
+from typing import Type
 
 import click
 import tomlkit
 
+from cppython.project import Project
+from cppython.schema import GeneratorData, GeneratorDataType, Interface, PyProject
 
-def _read_data():
+
+def _create_pyproject():
+
+    # Search for a path upward
     path = Path.cwd()
 
     while not path.glob("pyproject.toml"):
         if path.is_absolute():
             assert (
-                "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
-            )
+                False
+            ), "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
 
-    return tomlkit.loads(Path(path / "pyproject.toml").read_text(encoding="utf-8"))
+    path = Path(path / "pyproject.toml")
+
+    # Load file
+    data = tomlkit.loads(path.read_text(encoding="utf-8"))
+
+    # Interpret and validate data
+    return PyProject(**data)
 
 
-class Config(object):
+class Config:
     """
     The data object that will be expanded alongside 'pass_obj'
     """
 
     def __init__(self):
-
-        data = _read_data()
+        pyproject = _create_pyproject()
 
         # Initialize the object hook into CPPython
-        interface = ConsoleInterface(data)
+        interface = ConsoleInterface(pyproject)
 
         # Initialize the CPPython context
         self.project = Project(interface)
-
-    def load(self):
-        self.project.load()
 
 
 pass_config = click.make_pass_decorator(Config)
@@ -43,77 +53,60 @@ pass_config = click.make_pass_decorator(Config)
 @click.group()
 @click.pass_context
 def cli(context):
+    """
+    entry_point group for the CLI commands
+    """
     context.ensure_object(Config)
-
-    # Initialize cppython
-    context.obj.load()
 
 
 @cli.command()
 @pass_config
 def install(config):
+    """
+    Fulfills the 'install' API requirement
+    """
     config.project.install()
 
 
 @cli.command()
 @pass_config
 def update(config):
+    """
+    Fulfills the 'update' API requirement
+    """
     config.project.update()
+
+
+@cli.command()
+@pass_config
+def build(config):
+    """
+    Fulfills the 'build' API requirement
+    """
+    config.project.build()
 
 
 @cli.result_callback()
 @pass_config
 def cleanup(config, result):
-    pass
+    """
+    Post-command cleanup
+    """
 
 
 class ConsoleInterface(Interface):
     """
-    TODO: Description
+    Interface implementation to pass to the project
     """
 
-    def __init__(self, data: dict) -> None:
-        self._data = data
-
-    """
-    Plugin Contract
-    """
-
-    @staticmethod
-    def name() -> str:
+    def read_generator_data(self, generator_data_type: Type[GeneratorDataType]) -> GeneratorDataType:
         """
-        The name of the generator
+        Requests generator information
         """
-        return "console"
-
-    """
-    Interface Contract
-    """
-
-    @staticmethod
-    def external_config() -> bool:
-        """
-        True if the plugin can read its own configuration.
-        False otherwise
-        """
-
-        return False
-
-    @staticmethod
-    def parse_pep_621(data: dict) -> PEP621:
-        """
-        Requests the plugin to read the available PEP 621 information. Only requested if the plugin is not the entrypoint
-        """
-        raise NotImplementedError()
-
-    def pep_621(self) -> PEP621:
-        """
-        Requests PEP 621 information from the pyproject
-        """
-        return self.parse_pep_621(self._data)
+        return generator_data_type()
 
     def write_pyproject(self) -> None:
-        raise NotImplementedError()
-
-    def read_pyproject(self) -> dict:
-        return self._data
+        """
+        Write output
+        """
+        pass

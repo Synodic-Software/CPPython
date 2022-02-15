@@ -1,21 +1,21 @@
 """
-Test the functions related to the internal generator implementation and the 'Generator' interface itself
+Test the integrations related to the internal generator implementation and the 'Generator' interface itself
 """
 
 import pytest
 
 from cppython.plugins.generator.cmake import CMakeData, CMakeGenerator
 from cppython.plugins.test.data import default_pyproject
-from cppython.plugins.test.pytest import GeneratorUnitTests
+from cppython.plugins.test.pytest import GeneratorIntegrationTests
 
 
-class TestCMakeGenerator(GeneratorUnitTests):
+class TestCMakeGenerator(GeneratorIntegrationTests):
     """
     The tests for our CMake generator
     """
 
     @pytest.fixture(name="generator")
-    def fixture_generator(self) -> CMakeGenerator:
+    def fixture_generator(self):
         """
         Override of the plugin provided generator fixture.
 

@@ -1,32 +1,57 @@
+"""
+Test the functions related to the internal interface implementation and the 'Interface' interface itself
+"""
+
 import pytest
-
-from cppython.plugins.test.pytest import BaseInterface
-from cppython.plugins.interface.console import ConsoleInterface, Config, cli
-from cppython.project import Project
 from click.testing import CliRunner
+from pytest_mock.plugin import MockerFixture
+
+from cppython.plugins.interface.console import Config, ConsoleInterface, cli
+from cppython.plugins.test.data import default_pyproject
+from cppython.plugins.test.pytest import InterfaceUnitTests
+from cppython.schema import API
 
 
-@pytest.mark.parametrize("interface", [ConsoleInterface])
-class TestCLIInterface(BaseInterface):
+class TestCLIInterface(InterfaceUnitTests):
     """
     The tests for our CLI interface
     """
 
-    @pytest.mark.parametrize("command", ["install", "update"])
-    def test_command(self, interface, command, mocker):
+    @pytest.fixture(name="interface")
+    def fixture_interface(self) -> ConsoleInterface:
+        """
+        Override of the plugin provided interface fixture.
 
-        # Patch the project
-        mocker.patch("cppython.plugins.interface.console.Config.load")
+        Returns:
+            ConsoleInterface -- The Interface object to use for the CPPython defined tests
+        """
+        return ConsoleInterface(default_pyproject)
 
-        # Patch the file IO
-        mocker.patch("cppython.plugins.interface.console._read_data")
+    # Grab the API methods and parameterize them for automatic testing of the entry_points
+    method_list = [func for func in dir(API) if callable(getattr(API, func)) and not func.startswith("__")]
+
+    @pytest.mark.parametrize("command", method_list)
+    def test_command(self, command: str, mocker: MockerFixture):
+        """
+        _summary_
+
+        Arguments:
+            command {str} -- The CLI command with the same name as the CPPython API call
+            mocker {MockerFixture} -- pytest-mock fixture
+        """
+        # Patch the project initialization
+        mocker.patch("cppython.project.Project.__init__", return_value=None)
+
+        # Patch the reading of data
+        mocker.patch("cppython.plugins.interface.console._create_pyproject", return_value=default_pyproject)
 
         config = Config()
 
-        # Patch out the non-plugin implementation
-        mocker.patch(f"cppython.project.Project.{command}")
+        # Patch out the implementation
+        mocked_command = mocker.patch(f"cppython.project.Project.{command}")
 
         runner = CliRunner()
         result = runner.invoke(cli, [command], obj=config, catch_exceptions=False)
 
         assert result.exit_code == 0
+        mocked_command.assert_called_once()

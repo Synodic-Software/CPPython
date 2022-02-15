@@ -1,4 +1,15 @@
-from cppython.schema import Generator, Metadata
+"""
+The default generator implementation for CPPython
+"""
+from typing import Type
+
+from cppython.schema import Generator, GeneratorData, PyProject
+
+
+class CMakeData(GeneratorData):
+    """
+    The data schema required for the CMake tooling
+    """
 
 
 class CMakeGenerator(Generator):
@@ -6,12 +17,8 @@ class CMakeGenerator(Generator):
     A CPPython generator implementing a CMake backend
     """
 
-    def __init__(self) -> None:
-        pass
-
-    """
-    Plugin Contract
-    """
+    def __init__(self, pyproject: PyProject, cmake_data: CMakeData) -> None:
+        super().__init__(pyproject, cmake_data)
 
     @staticmethod
     def name() -> str:
@@ -20,25 +27,19 @@ class CMakeGenerator(Generator):
         """
         return "cmake"
 
-    """
-    Generator Contract
-    """
+    @staticmethod
+    def data_type() -> Type[GeneratorData]:
+        """
+        Returns the pydantic type to cast the generator configuration data to
+        """
+        return CMakeData
 
-    def populate_metadata(self, data: dict):
+    def install_generator(self) -> bool:
         """
-        data - The CPPoetry data taken from pyproject.toml
+        Installs the external tooling required by the generator if necessary
+        Returns whether anything was installed or not
         """
-        pass
-
-    def populate_plugin(self, data: dict):
-        """
-        data - The data taken from pyproject.toml that belongs to this generator
-        """
-        pass
-
-    """
-    API Contract
-    """
+        return False
 
     def install(self) -> None:
         raise NotImplementedError()
