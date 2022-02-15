@@ -1,39 +1,15 @@
 """
-TODO: 
+A click CLI for CPPython interfacing
 """
 
 from pathlib import Path
-from typing import Any, Type
+from typing import Type
 
 import click
 import tomlkit
-from tomlkit.api import TOMLDocument
 
 from cppython.project import Project
-from cppython.schema import GeneratorData, Interface, PyProject
-
-
-def _path_search() -> Path:
-    """
-    TODO
-    """
-    path = Path.cwd()
-
-    while not path.glob("pyproject.toml"):
-        if path.is_absolute():
-            assert (
-                False
-            ), "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
-
-    return Path(path / "pyproject.toml")
-
-
-def _read_data(path: Path) -> TOMLDocument:
-    """
-    TODO
-    """
-
-    return tomlkit.loads(path.read_text(encoding="utf-8"))
+from cppython.schema import GeneratorData, GeneratorDataType, Interface, PyProject
 
 
 def _create_pyproject():
@@ -78,7 +54,7 @@ pass_config = click.make_pass_decorator(Config)
 @click.pass_context
 def cli(context):
     """
-    TODO
+    entry_point group for the CLI commands
     """
     context.ensure_object(Config)
 
@@ -87,7 +63,7 @@ def cli(context):
 @pass_config
 def install(config):
     """
-    TODO
+    Fulfills the 'install' API requirement
     """
     config.project.install()
 
@@ -96,7 +72,7 @@ def install(config):
 @pass_config
 def update(config):
     """
-    TODO
+    Fulfills the 'update' API requirement
     """
     config.project.update()
 
@@ -105,7 +81,7 @@ def update(config):
 @pass_config
 def build(config):
     """
-    TODO
+    Fulfills the 'build' API requirement
     """
     config.project.build()
 
@@ -114,20 +90,23 @@ def build(config):
 @pass_config
 def cleanup(config, result):
     """
-    TODO
+    Post-command cleanup
     """
 
 
 class ConsoleInterface(Interface):
     """
-    TODO: Description
+    Interface implementation to pass to the project
     """
 
-    def generator_data(self, generator_data: Type[GeneratorData]) -> GeneratorData:
+    def read_generator_data(self, generator_data_type: Type[GeneratorDataType]) -> GeneratorDataType:
         """
         Requests generator information
         """
-        raise NotImplementedError()
+        return generator_data_type()
 
     def write_pyproject(self) -> None:
-        raise NotImplementedError()
+        """
+        Write output
+        """
+        pass

@@ -23,7 +23,7 @@ class TestCLIInterface(InterfaceUnitTests):
         Override of the plugin provided interface fixture.
 
         Returns:
-            ConsoleInterface -- The Interface object to use for the plugin defined tests
+            ConsoleInterface -- The Interface object to use for the CPPython defined tests
         """
         return ConsoleInterface(default_pyproject)
 

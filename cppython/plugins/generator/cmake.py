@@ -1,5 +1,5 @@
 """
-TODO:
+The default generator implementation for CPPython
 """
 from typing import Type
 
@@ -8,7 +8,7 @@ from cppython.schema import Generator, GeneratorData, PyProject
 
 class CMakeData(GeneratorData):
     """
-    TODO:
+    The data schema required for the CMake tooling
     """
 
 
