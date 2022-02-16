@@ -7,16 +7,14 @@ on:
 jobs:
   publish_development:
     if: github.event_name == 'push'
-    steps:
-      - uses: synodic-software/.github/.github/workflows/python-publish.yml@stable
-        with:
-          repository_url: https://test.pypi.org/
-          token: ${{ secrets.TEST_PYPI_API_TOKEN }}
+    uses: synodic-software/.github/.github/workflows/python-publish.yml@stable
+    with:
+      repository_url: https://test.pypi.org/
+      token: ${{ secrets.TEST_PYPI_API_TOKEN }}
 
   publish_release:
     if: github.event_name == 'release' && github.event.action == 'published'
-    steps:
-      - uses: synodic-software/.github/.github/workflows/python-publish.yml@stable
-        with:
-          repository_url: https://pypi.org/
-          token: ${{ secrets.PYPI_API_TOKEN }}
+    uses: synodic-software/.github/.github/workflows/python-publish.yml@stable
+    with:
+      repository_url: https://pypi.org/
+      token: ${{ secrets.PYPI_API_TOKEN }}
