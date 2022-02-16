@@ -2,19 +2,12 @@ name: Publish Python Package
 on:
   release:
     types: [published]
-  push:
 
 jobs:
-  publish_development:
-    if: github.event_name == 'push'
-    uses: synodic-software/.github/.github/workflows/python-publish.yml@stable
-    with:
-      repository_url: https://test.pypi.org/
-      token: ${{ secrets.TEST_PYPI_API_TOKEN }}
-
   publish_release:
     if: github.event_name == 'release' && github.event.action == 'published'
     uses: synodic-software/.github/.github/workflows/python-publish.yml@stable
     with:
       repository_url: https://pypi.org/
+    secrets:
       token: ${{ secrets.PYPI_API_TOKEN }}
