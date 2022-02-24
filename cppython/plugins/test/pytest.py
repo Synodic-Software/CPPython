@@ -32,7 +32,7 @@ class GeneratorIntegrationTests(GeneratorTests):
 
     def test_plugin_registration(self, generator: Generator):
         """
-        TODO
+        Test the registration with setuptools entry_points
         """
         plugin_entries = entry_points(group=f"cppython.{generator.plugin_group()}")
         assert len(plugin_entries) > 0
