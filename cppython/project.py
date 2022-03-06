@@ -16,7 +16,10 @@ class Project(API):
 
     def __init__(self, interface: Interface, pyproject: PyProject) -> None:
 
-        self.enabled = pyproject.cppython != None
+        self.enabled = pyproject.cppython is not None
+
+        if not self.enabled:
+            return
 
         self._interface = interface
 
