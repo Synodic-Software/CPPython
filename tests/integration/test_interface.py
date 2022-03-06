@@ -5,7 +5,6 @@ Test the integrations related to the internal interface implementation and the '
 import pytest
 
 from cppython.plugins.interface.console import ConsoleInterface
-from cppython.plugins.test.data import default_pyproject
 from cppython.plugins.test.pytest import InterfaceIntegrationTests
 
 
@@ -22,4 +21,4 @@ class TestCLIInterface(InterfaceIntegrationTests):
         Returns:
             ConsoleInterface -- The Interface object to use for the CPPython defined tests
         """
-        return ConsoleInterface(default_pyproject)
+        return ConsoleInterface()
