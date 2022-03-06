@@ -5,9 +5,10 @@ Data types for CPPython that encapsulate the requirements between the plugins an
 from abc import ABC, abstractmethod
 from enum import Enum
 from pathlib import Path
-from typing import Type, TypeVar
+from typing import Optional, Type, TypeVar
 
 from pydantic import BaseModel
+from pydantic.fields import Field
 
 
 class TargetEnum(Enum):
@@ -40,7 +41,7 @@ class CPPythonData(BaseModel):
     generator: str
     target: TargetEnum
     dependencies: dict[str, str] = {}
-    install_path: Path
+    install_path: Path = Field(alias="install-path")
 
 
 class PyProject(BaseModel):
@@ -48,8 +49,8 @@ class PyProject(BaseModel):
     pyproject.toml schema
     """
 
-    pep_621: PEP621
-    cppython_data: CPPythonData
+    project: PEP621
+    cppython: Optional[CPPythonData]
 
 
 class API(ABC):
