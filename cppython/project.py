@@ -50,8 +50,11 @@ class Project(API):
         Download the generator tooling if required
         """
         if not self._generator.downloaded():
+            self._interface.print(f"Downloading the {self._generator.name()} tool")
 
+            # TODO: Make async with progress bar
             self._generator.download()
+            self._interface.print("Download complete")
 
     # API Contract
 
