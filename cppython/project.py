@@ -16,6 +16,8 @@ class Project(API):
 
     def __init__(self, interface: Interface, pyproject: PyProject) -> None:
 
+        self.enabled = pyproject.cppython != None
+
         self._interface = interface
 
         PluginType = TypeVar("PluginType", bound=Type[Plugin])
@@ -35,22 +37,36 @@ class Project(API):
 
             return None
 
-        plugin_type = find_plugin_type(Generator, lambda name: name == pyproject.cppython_data.generator)
+        plugin_type = find_plugin_type(Generator, lambda name: name == pyproject.cppython.generator)
 
         if plugin_type is None:
-            raise ConfigError(f"No generator plugin with the name '{pyproject.cppython_data.generator}' was found.")
+            raise ConfigError(f"No generator plugin with the name '{pyproject.cppython.generator}' was found.")
 
         generator_data = interface.read_generator_data(plugin_type.data_type())
         self._generator = plugin_type(pyproject, generator_data)
-        self._generator.install_generator()
+
+    def download(self):
+        """
+        Download the generator tooling if required
+        """
+        if not self._generator.downloaded():
+            self._interface.print(f"Downloading the {self._generator.name()} tool")
+
+            # TODO: Make async with progress bar
+            self._generator.download()
+            self._interface.print("Download complete")
 
     # API Contract
 
     def install(self) -> None:
-        self._generator.install()
+        if self.enabled:
+            self.download()
+            self._generator.install()
 
     def update(self) -> None:
-        self._generator.update()
+        if self.enabled:
+            self._generator.update()
 
     def build(self) -> None:
-        self._generator.build()
+        if self.enabled:
+            self._generator.build()

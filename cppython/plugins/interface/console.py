@@ -109,4 +109,6 @@ class ConsoleInterface(Interface):
         """
         Write output
         """
-        pass
+
+    def print(self, string: str) -> None:
+        click.echo(string)
