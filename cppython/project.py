@@ -6,7 +6,7 @@ from importlib import metadata
 from typing import Callable, Optional, Type, TypeVar
 
 from cppython.exceptions import ConfigError
-from cppython.schema import API, Generator, Interface, Plugin
+from cppython.schema import API, Generator, Interface, Plugin, PyProject
 
 
 class Project(API):
@@ -14,7 +14,7 @@ class Project(API):
     The object constructed at each entry_point
     """
 
-    def __init__(self, interface: Interface) -> None:
+    def __init__(self, interface: Interface, pyproject: PyProject) -> None:
 
         self._interface = interface
 
@@ -35,15 +35,13 @@ class Project(API):
 
             return None
 
-        plugin_type = find_plugin_type(Generator, lambda name: name == interface.pyproject.cppython_data.generator)
+        plugin_type = find_plugin_type(Generator, lambda name: name == pyproject.cppython_data.generator)
 
         if plugin_type is None:
-            raise ConfigError(
-                f"No generator plugin with the name '{interface.pyproject.cppython_data.generator}' was found."
-            )
+            raise ConfigError(f"No generator plugin with the name '{pyproject.cppython_data.generator}' was found.")
 
         generator_data = interface.read_generator_data(plugin_type.data_type())
-        self._generator = plugin_type(interface.pyproject, generator_data)
+        self._generator = plugin_type(pyproject, generator_data)
         self._generator.install_generator()
 
     # API Contract

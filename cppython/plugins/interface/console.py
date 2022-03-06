@@ -41,10 +41,10 @@ class Config:
         pyproject = _create_pyproject()
 
         # Initialize the object hook into CPPython
-        interface = ConsoleInterface(pyproject)
+        interface = ConsoleInterface()
 
         # Initialize the CPPython context
-        self.project = Project(interface)
+        self.project = Project(interface, pyproject)
 
 
 pass_config = click.make_pass_decorator(Config)

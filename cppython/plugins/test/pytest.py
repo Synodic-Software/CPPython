@@ -7,6 +7,7 @@ from importlib.metadata import entry_points
 
 import pytest
 
+from cppython.plugins.test.data import default_pyproject
 from cppython.project import Project
 from cppython.schema import Generator, Interface
 
@@ -86,7 +87,7 @@ class InterfaceIntegrationTests(InterfaceTests):
         """
         Test that the project can be constructed from the given interface
         """
-        Project(interface)
+        Project(interface, default_pyproject)
 
 
 class InterfaceUnitTests(InterfaceTests):

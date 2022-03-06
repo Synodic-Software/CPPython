@@ -93,10 +93,6 @@ class Plugin(ABC):
     Abstract plugin type
     """
 
-    @abstractmethod
-    def __init__(self) -> None:
-        pass
-
     @staticmethod
     @abstractmethod
     def plugin_group() -> str:
@@ -119,26 +115,6 @@ class Interface:
     """
     Abstract type to be inherited by CPPython interfaces
     """
-
-    def __init__(self, pyproject: PyProject) -> None:
-        super().__init__()
-
-        self.pyproject = pyproject
-
-    @property
-    def pyproject(self) -> PyProject:
-        """
-        PyProject getter
-        """
-        return self._pyproject
-
-    @pyproject.setter
-    def pyproject(self, value: PyProject):
-        """
-        PyProject setter
-        """
-
-        self._pyproject = value
 
     @abstractmethod
     def read_generator_data(self, generator_data_type: Type[GeneratorDataType]) -> GeneratorDataType:
@@ -194,3 +170,4 @@ class Generator(Plugin, API):
         Installs the external tooling required by the generator if necessary
         Returns whether anything was installed or not
         """
+        raise NotImplementedError()
