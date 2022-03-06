@@ -34,12 +34,14 @@ class CMakeGenerator(Generator):
         """
         return CMakeData
 
-    def install_generator(self) -> bool:
+    def downloaded(self) -> bool:
+        return True
+
+    def download(self) -> None:
         """
         Installs the external tooling required by the generator if necessary
         Returns whether anything was installed or not
         """
-        return False
 
     def install(self) -> None:
         raise NotImplementedError()

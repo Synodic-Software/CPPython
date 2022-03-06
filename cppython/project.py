@@ -44,13 +44,20 @@ class Project(API):
 
         generator_data = interface.read_generator_data(plugin_type.data_type())
         self._generator = plugin_type(pyproject, generator_data)
-        self._generator.install_generator()
+
+    def download(self):
+        """
+        Download the generator tooling if required
+        """
+        if not self._generator.downloaded():
+
+            self._generator.download()
 
     # API Contract
 
     def install(self) -> None:
         if self.enabled:
-            self._generator.install_generator()
+            self.download()
             self._generator.install()
 
     def update(self) -> None:
