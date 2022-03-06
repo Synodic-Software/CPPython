@@ -9,7 +9,7 @@ import click
 import tomlkit
 
 from cppython.project import Project
-from cppython.schema import GeneratorData, GeneratorDataType, Interface, PyProject
+from cppython.schema import GeneratorDataType, Interface, PyProject
 
 
 def _create_pyproject():
