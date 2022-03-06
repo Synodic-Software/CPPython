@@ -50,6 +50,7 @@ class Project(API):
 
     def install(self) -> None:
         if self.enabled:
+            self._generator.install_generator()
             self._generator.install()
 
     def update(self) -> None:
