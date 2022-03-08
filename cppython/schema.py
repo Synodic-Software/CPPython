@@ -145,10 +145,6 @@ class Generator(Plugin, API):
     Abstract type to be inherited by CPPython Generator plugins
     """
 
-    @abstractmethod
-    def __init__(self, pyproject: PyProject, generator_data: GeneratorData) -> None:
-        super().__init__()
-
     @staticmethod
     def plugin_group() -> str:
         """

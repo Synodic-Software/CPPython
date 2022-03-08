@@ -18,7 +18,9 @@ class CMakeGenerator(Generator):
     """
 
     def __init__(self, pyproject: PyProject, cmake_data: CMakeData) -> None:
-        super().__init__(pyproject, cmake_data)
+        """
+        TODO
+        """
 
     @staticmethod
     def name() -> str:
