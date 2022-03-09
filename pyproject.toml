@@ -2,16 +2,12 @@
 description = " A Python package manager agnostic plugin integrating a transparent Conan and CMake workflow."
 name = "cppython"
 
-license = "MIT"
+license-expression = "MIT"
 
 authors = [
-  "Synodic Software",
+  {name = "Synodic Software", email = "contact@synodic.software"},
 ]
-
 readme = "README.md"
-
-homepage = "https://github.com/Synodic-Software/CPPython"
-repository = "https://github.com/Synodic-Software/CPPython"
 
 dynamic = ["version"]
 
@@ -24,6 +20,13 @@ dependencies = [
   "tomlkit>=0.9",
   "pytest>=7.0.0", # Required for testing injection
 ]
+
+[project.license-files]
+paths = ["LICENSE.md"]
+
+[project.urls]
+homepage = "https://github.com/Synodic-Software/CPPython"
+repository = "https://github.com/Synodic-Software/CPPython"
 
 [tool.pdm]
 version = {use_scm = true}
