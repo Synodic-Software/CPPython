@@ -6,8 +6,8 @@ import pytest
 from click.testing import CliRunner
 from pytest_mock.plugin import MockerFixture
 
+from cppython.data import default_pyproject
 from cppython.plugins.interface.console import Config, ConsoleInterface, cli
-from cppython.plugins.test.data import default_pyproject
 from cppython.plugins.test.pytest import InterfaceUnitTests
 from cppython.schema import API
 

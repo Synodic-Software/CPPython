@@ -4,8 +4,8 @@ Test the integrations related to the internal generator implementation and the '
 
 import pytest
 
+from cppython.data import default_pyproject
 from cppython.plugins.generator.cmake import CMakeData, CMakeGenerator
-from cppython.plugins.test.data import default_pyproject
 from cppython.plugins.test.pytest import GeneratorIntegrationTests
 
 

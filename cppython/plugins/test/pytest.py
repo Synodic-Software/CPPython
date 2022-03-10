@@ -7,7 +7,7 @@ from importlib.metadata import entry_points
 
 import pytest
 
-from cppython.plugins.test.data import default_pyproject
+from cppython.data import default_pyproject
 from cppython.project import Project
 from cppython.schema import Generator, Interface
 
