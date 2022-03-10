@@ -148,7 +148,7 @@ class Generator(Plugin, API):
     @abstractmethod
     def __init__(self, pyproject: PyProject, generator_data: GeneratorData) -> None:
         """
-        TODO
+        Allows CPPython to pass the relevant data to constructed Generator plugin
         """
 
     @staticmethod
@@ -175,15 +175,22 @@ class Generator(Plugin, API):
         raise NotImplementedError()
 
     @abstractmethod
-    def downloaded(self) -> bool:
+    def generator_downloaded(self) -> bool:
         """
         Returns whether the generator needs to be downloaded
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def download(self) -> None:
+    def download_generator(self) -> None:
         """
         Installs the external tooling required by the generator
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def update_generator(self) -> None:
+        """
+        Update the tooling required by the generator
         """
         raise NotImplementedError()
