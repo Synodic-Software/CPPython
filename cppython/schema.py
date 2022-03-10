@@ -44,13 +44,21 @@ class CPPythonData(BaseModel):
     install_path: Path = Field(alias="install-path")
 
 
+class ToolData(BaseModel):
+    """
+    TODO
+    """
+
+    cppython: Optional[CPPythonData]
+
+
 class PyProject(BaseModel):
     """
     pyproject.toml schema
     """
 
     project: PEP621
-    cppython: Optional[CPPythonData]
+    tool: Optional[ToolData]
 
 
 class API(ABC):
