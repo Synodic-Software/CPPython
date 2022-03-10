@@ -18,9 +18,7 @@ class CMakeGenerator(Generator):
     """
 
     def __init__(self, pyproject: PyProject, cmake_data: CMakeData) -> None:
-        """
-        TODO
-        """
+        self.data = cmake_data
 
     @staticmethod
     def name() -> str:
@@ -36,13 +34,19 @@ class CMakeGenerator(Generator):
         """
         return CMakeData
 
-    def downloaded(self) -> bool:
+    def generator_downloaded(self) -> bool:
+
+        # CMake tooling is a part of the python package tooling
         return True
 
-    def download(self) -> None:
+    def download_generator(self) -> None:
         """
         Installs the external tooling required by the generator if necessary
-        Returns whether anything was installed or not
+        """
+
+    def update_generator(self) -> None:
+        """
+        Update the tooling required by the generator
         """
 
     def install(self) -> None:

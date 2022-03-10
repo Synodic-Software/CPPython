@@ -145,6 +145,12 @@ class Generator(Plugin, API):
     Abstract type to be inherited by CPPython Generator plugins
     """
 
+    @abstractmethod
+    def __init__(self, pyproject: PyProject, generator_data: GeneratorData) -> None:
+        """
+        Allows CPPython to pass the relevant data to constructed Generator plugin
+        """
+
     @staticmethod
     def plugin_group() -> str:
         """
@@ -169,15 +175,22 @@ class Generator(Plugin, API):
         raise NotImplementedError()
 
     @abstractmethod
-    def downloaded(self) -> bool:
+    def generator_downloaded(self) -> bool:
         """
         Returns whether the generator needs to be downloaded
         """
         raise NotImplementedError()
 
     @abstractmethod
-    def download(self) -> None:
+    def download_generator(self) -> None:
         """
         Installs the external tooling required by the generator
+        """
+        raise NotImplementedError()
+
+    @abstractmethod
+    def update_generator(self) -> None:
+        """
+        Update the tooling required by the generator
         """
         raise NotImplementedError()
