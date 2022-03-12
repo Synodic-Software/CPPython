@@ -49,10 +49,6 @@ cppython = "cppython.plugins.interface.console:cli"
 [project.entry-points."cppython.generator_plugins"]
 cmake = "cppython.plugins.generator.cmake:CMakeGenerator"
 
-# Pytest plugins
-[tool.entry-points.pytest11]
-pytest_cppython = "cppython.plugins.test.pytest"
-
 [tool.pytest.ini_options]
 testpaths = [
   "tests",
@@ -67,7 +63,6 @@ profile = "black"
 
 [tool.pylint.messages_control]
 disable = "C0330, C0326"
-extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.format]
 max-line-length = "120"
