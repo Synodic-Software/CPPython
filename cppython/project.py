@@ -5,8 +5,8 @@ The central delegation of the CPPython project
 from importlib import metadata
 from typing import Callable, Optional, Type, TypeVar
 
-from cppython.exceptions import ConfigError
-from cppython.schema import API, Generator, Interface, Plugin, PyProject
+from cppython_core.exceptions import ConfigError
+from cppython_core.schema import API, Generator, Interface, Plugin, PyProject
 
 
 class Project(API):
@@ -16,10 +16,15 @@ class Project(API):
 
     def __init__(self, interface: Interface, pyproject: PyProject) -> None:
 
-        self.enabled = pyproject.cppython is not None
+        self.enabled = False
 
-        if not self.enabled:
+        if pyproject.tool is None:
             return
+
+        if pyproject.tool.cppython is None:
+            return
+
+        self.enabled = True
 
         self._interface = interface
 
@@ -40,10 +45,10 @@ class Project(API):
 
             return None
 
-        plugin_type = find_plugin_type(Generator, lambda name: name == pyproject.cppython.generator)
+        plugin_type = find_plugin_type(Generator, lambda name: name == pyproject.tool.cppython.generator)
 
         if plugin_type is None:
-            raise ConfigError(f"No generator plugin with the name '{pyproject.cppython.generator}' was found.")
+            raise ConfigError(f"No generator plugin with the name '{pyproject.tool.cppython.generator}' was found.")
 
         generator_data = interface.read_generator_data(plugin_type.data_type())
         self._generator = plugin_type(pyproject, generator_data)
@@ -52,11 +57,11 @@ class Project(API):
         """
         Download the generator tooling if required
         """
-        if not self._generator.downloaded():
+        if not self._generator.generator_downloaded():
             self._interface.print(f"Downloading the {self._generator.name()} tool")
 
             # TODO: Make async with progress bar
-            self._generator.download()
+            self._generator.download_generator()
             self._interface.print("Download complete")
 
     # API Contract

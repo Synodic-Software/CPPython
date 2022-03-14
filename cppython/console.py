@@ -7,9 +7,9 @@ from typing import Type
 
 import click
 import tomlkit
+from cppython_core.schema import GeneratorDataType, Interface, PyProject
 
 from cppython.project import Project
-from cppython.schema import GeneratorDataType, Interface, PyProject
 
 
 def _create_pyproject():
@@ -111,4 +111,7 @@ class ConsoleInterface(Interface):
         """
 
     def print(self, string: str) -> None:
+        """
+        TODO
+        """
         click.echo(string)

@@ -15,10 +15,10 @@ requires-python = ">=3.10"
 
 dependencies = [
   "click>=8.0.3",
-  "cmake>=3.22.2",
+  "cmake>=3.22.3",
   "pydantic>=1.9",
-  "tomlkit>=0.9",
-  "pytest>=7.0.0", # Required for testing injection
+  "tomlkit>=0.10.0",
+  "cppython-core>=0.1.0",
 ]
 
 [project.license-files]
@@ -38,20 +38,14 @@ lint = [
   "isort>=5.10.1",
 ]
 test = [
+  "pytest>=7.1.0",
   "pytest-cov>=3.0.0",
   "pytest-mock>=3.7.0",
+  "pytest-cppython>=0.1.0",
 ]
 
 [project.scripts]
-cppython = "cppython.plugins.interface.console:cli"
-
-# CPPython plugins
-[project.entry-points."cppython.generator_plugins"]
-cmake = "cppython.plugins.generator.cmake:CMakeGenerator"
-
-# Pytest plugins
-[tool.entry-points.pytest11]
-pytest_cppython = "cppython.plugins.test.pytest"
+cppython = "cppython.console:cli"
 
 [tool.pytest.ini_options]
 testpaths = [
@@ -67,7 +61,6 @@ profile = "black"
 
 [tool.pylint.messages_control]
 disable = "C0330, C0326"
-extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.format]
 max-line-length = "120"

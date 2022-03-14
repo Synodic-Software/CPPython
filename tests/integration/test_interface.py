@@ -3,9 +3,9 @@ Test the integrations related to the internal interface implementation and the '
 """
 
 import pytest
+from pytest_cppython.plugin import InterfaceIntegrationTests
 
-from cppython.plugins.interface.console import ConsoleInterface
-from cppython.plugins.test.pytest import InterfaceIntegrationTests
+from cppython.console import ConsoleInterface
 
 
 class TestCLIInterface(InterfaceIntegrationTests):
