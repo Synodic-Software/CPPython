@@ -26,9 +26,6 @@ class Project(API):
 
         self.enabled = True
 
-        if not self.enabled:
-            return
-
         self._interface = interface
 
         PluginType = TypeVar("PluginType", bound=Type[Plugin])
