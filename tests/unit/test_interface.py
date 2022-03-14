@@ -4,12 +4,12 @@ Test the functions related to the internal interface implementation and the 'Int
 
 import pytest
 from click.testing import CliRunner
+from cppython_core.schema import API
+from pytest_cppython.plugin import InterfaceUnitTests
 from pytest_mock.plugin import MockerFixture
 
+from cppython.console import Config, ConsoleInterface, cli
 from cppython.data import default_pyproject
-from cppython.plugins.interface.console import Config, ConsoleInterface, cli
-from cppython.plugins.test.pytest import InterfaceUnitTests
-from cppython.schema import API
 
 
 class TestCLIInterface(InterfaceUnitTests):
@@ -43,7 +43,7 @@ class TestCLIInterface(InterfaceUnitTests):
         mocker.patch("cppython.project.Project.__init__", return_value=None)
 
         # Patch the reading of data
-        mocker.patch("cppython.plugins.interface.console._create_pyproject", return_value=default_pyproject)
+        mocker.patch("cppython.console._create_pyproject", return_value=default_pyproject)
 
         config = Config()
 

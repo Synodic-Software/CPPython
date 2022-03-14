@@ -5,8 +5,8 @@ The central delegation of the CPPython project
 from importlib import metadata
 from typing import Callable, Optional, Type, TypeVar
 
-from cppython.exceptions import ConfigError
-from cppython.schema import API, Generator, Interface, Plugin, PyProject
+from cppython_core.exceptions import ConfigError
+from cppython_core.schema import API, Generator, Interface, Plugin, PyProject
 
 
 class Project(API):
