@@ -44,11 +44,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cmake"
-version = "3.22.3"
-summary = "CMake is an open-source, cross-platform family of tools designed to build, test and package software"
-
-[[package]]
 name = "colorama"
 version = "0.4.4"
 requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
@@ -250,7 +245,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:66626e32ae603a3def926a3b86656a48b98b2e4016a4646e24cbedde657d3f71"
+content_hash = "sha256:e92be1dd34586ba9857865cf3ce269e012b9e89d2d4514c7683d44103deeb373"
 
 [metadata.files]
 "astroid 2.9.3" = [
@@ -293,24 +288,6 @@ content_hash = "sha256:66626e32ae603a3def926a3b86656a48b98b2e4016a4646e24cbedde6
 "click 8.0.4" = [
     {file = "click-8.0.4-py3-none-any.whl", hash = "sha256:6a7a62563bbfabfda3a38f3023a1db4a35978c0abd76f6c9605ecd6554d6d9b1"},
     {file = "click-8.0.4.tar.gz", hash = "sha256:8458d7b1287c5fb128c90e23381cf99dcde74beaf6c7ff6384ce84d6fe090adb"},
-]
-"cmake 3.22.3" = [
-    {file = "cmake-3.22.3-py2.py3-none-macosx_10_10_universal2.macosx_10_10_x86_64.macosx_11_0_arm64.macosx_11_0_universal2.whl", hash = "sha256:d387e4062541094d302c80b3beed08cfa4f2ef98454d04f34fd1071c595152d8"},
-    {file = "cmake-3.22.3-py2.py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9ff1a89c264a6645d5d222f73efe83ea47abc96d77ae96e3e4eb4580f6f396fc"},
-    {file = "cmake-3.22.3-py2.py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3adc8532f5029931e82c9ae6a07b5d866b216b422cedc72074155c80db6e27d7"},
-    {file = "cmake-3.22.3-py2.py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:c46f0573b0455a234c397fff2f3679e18925eb3da32069cc41f1aab7cd968260"},
-    {file = "cmake-3.22.3-py2.py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:86c68b283223375ff942bce5b9f2b286fa5ac94b02f848e52fcec2369a407b22"},
-    {file = "cmake-3.22.3-py2.py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:452e53346d52241fbebdb9487e88786221c92d4abfa59fb002dc928ada69399c"},
-    {file = "cmake-3.22.3-py2.py3-none-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:fb5fbcb8b45c9f9823a1bffffe8eab673e463b8d36b258856035725e04baf446"},
-    {file = "cmake-3.22.3-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl", hash = "sha256:e615d29c2c26faf7e3876c47bafbab0eefe29683e01bec3a14736e9694bdff73"},
-    {file = "cmake-3.22.3-py2.py3-none-musllinux_1_1_aarch64.whl", hash = "sha256:1d6096da730d2d0c8352926b647d0d340fc2ea3a6497dd13cff1c999d68d9d7b"},
-    {file = "cmake-3.22.3-py2.py3-none-musllinux_1_1_i686.whl", hash = "sha256:d3be0f5256bfe76c81d2db30216c937a7f7cefd251fb63c1cb30c5e0a896bbad"},
-    {file = "cmake-3.22.3-py2.py3-none-musllinux_1_1_ppc64le.whl", hash = "sha256:d73961a801ea9e2fdda9afa3b9fc84539e368ecec30de1ef54045abfabce4ece"},
-    {file = "cmake-3.22.3-py2.py3-none-musllinux_1_1_s390x.whl", hash = "sha256:45e89f6ff37283ecff912c7fe65dc4bc6dfe2fb78b7747b95272dd7423a3847f"},
-    {file = "cmake-3.22.3-py2.py3-none-musllinux_1_1_x86_64.whl", hash = "sha256:c776ad422f7ce3866497f132af4ba7240cb81d554ee5eb801fd5e2d8c7cd67d6"},
-    {file = "cmake-3.22.3-py2.py3-none-win32.whl", hash = "sha256:8d32168fb3153313408befc7b8b5593130bad7d5fe0b8df764bb723b8c710bfc"},
-    {file = "cmake-3.22.3-py2.py3-none-win_amd64.whl", hash = "sha256:d8db320fb36560fcf2ca66481009bc1d1f8ed45fd756ce91e4dee97026a0e3a4"},
-    {file = "cmake-3.22.3.tar.gz", hash = "sha256:6e1d1991775915dac047af851f2feec7eb35ab4b4610d3e7fd94d93bce8faf58"},
 ]
 "colorama 0.4.4" = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
