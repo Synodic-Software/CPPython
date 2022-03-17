@@ -9,7 +9,7 @@ import click
 import tomlkit
 from cppython_core.schema import GeneratorDataType, Interface, PyProject
 
-from cppython.project import Project
+from cppython.project import Project, ProjectConfiguration
 
 
 def _create_pyproject():
@@ -43,8 +43,10 @@ class Config:
         # Initialize the object hook into CPPython
         interface = ConsoleInterface()
 
+        configuration = ProjectConfiguration()
+
         # Initialize the CPPython context
-        self.project = Project(interface, pyproject)
+        self.project = Project(configuration, interface, pyproject)
 
 
 pass_config = click.make_pass_decorator(Config)

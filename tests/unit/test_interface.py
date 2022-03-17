@@ -55,3 +55,10 @@ class TestCLIInterface(InterfaceUnitTests):
 
         assert result.exit_code == 0
         mocked_command.assert_called_once()
+
+    def test_config(self):
+        """
+        TODO
+        """
+
+        config = Config()
