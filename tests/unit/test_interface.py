@@ -10,6 +10,7 @@ from pytest_mock.plugin import MockerFixture
 
 from cppython.console import Config, ConsoleInterface, cli
 from cppython.data import default_pyproject
+from cppython.project import ProjectConfiguration
 
 
 class TestCLIInterface(InterfaceUnitTests):
@@ -61,4 +62,18 @@ class TestCLIInterface(InterfaceUnitTests):
         TODO
         """
 
+        Config()
+
+    def test_verbosity(self):
+        """
+        TODO
+        """
+
         config = Config()
+
+        runner = CliRunner()
+        result = runner.invoke(cli, "-v info", obj=config, catch_exceptions=False)
+
+        assert result.exit_code == 0
+
+        assert config.configuration.verbose
