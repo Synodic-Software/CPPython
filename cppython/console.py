@@ -4,12 +4,13 @@ A click CLI for CPPython interfacing
 
 from pathlib import Path
 from typing import Type
+from xmlrpc.client import Boolean
 
 import click
 import tomlkit
 from cppython_core.schema import GeneratorDataType, Interface, PyProject
 
-from cppython.project import Project
+from cppython.project import Project, ProjectConfiguration
 
 
 def _create_pyproject():
@@ -38,60 +39,67 @@ class Config:
     """
 
     def __init__(self):
-        pyproject = _create_pyproject()
+        self.pyproject = _create_pyproject()
+        self.interface = ConsoleInterface()
+        self.configuration = ProjectConfiguration()
 
-        # Initialize the object hook into CPPython
-        interface = ConsoleInterface()
+    def create_project(self) -> Project:
+        """
+        TODO
+        """
+        return Project(self.configuration, self.interface, self.pyproject)
 
-        # Initialize the CPPython context
-        self.project = Project(interface, pyproject)
 
-
-pass_config = click.make_pass_decorator(Config)
+pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
 @click.group()
-@click.pass_context
-def cli(context):
+@click.option("-v", "--verbose", is_flag=True, help="Print additional output")
+@pass_config
+def cli(config, verbose: Boolean):
     """
     entry_point group for the CLI commands
     """
-    context.ensure_object(Config)
+    config.configuration.verbose = verbose
+
+
+@cli.command()
+@pass_config
+def info(config):
+    """
+    TODO
+    """
+    project = config.create_project()
 
 
 @cli.command()
 @pass_config
 def install(config):
     """
-    Fulfills the 'install' API requirement
+    TODO
     """
-    config.project.install()
+    project = config.create_project()
+    project.install()
 
 
 @cli.command()
 @pass_config
 def update(config):
     """
-    Fulfills the 'update' API requirement
+    TODO
     """
-    config.project.update()
+    project = config.create_project()
+    project.update()
 
 
 @cli.command()
 @pass_config
 def build(config):
     """
-    Fulfills the 'build' API requirement
+    TODO
     """
-    config.project.build()
-
-
-@cli.result_callback()
-@pass_config
-def cleanup(config, result):
-    """
-    Post-command cleanup
-    """
+    project = config.create_project()
+    project.build()
 
 
 class ConsoleInterface(Interface):
