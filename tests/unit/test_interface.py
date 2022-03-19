@@ -10,7 +10,6 @@ from pytest_mock.plugin import MockerFixture
 
 from cppython.console import Config, ConsoleInterface, cli
 from cppython.data import default_pyproject
-from cppython.project import ProjectConfiguration
 
 
 class TestCLIInterface(InterfaceUnitTests):

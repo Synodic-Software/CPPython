@@ -68,7 +68,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.1.1"
+version = "0.1.2"
 requires_python = ">=3.10"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -336,9 +336,9 @@ content_hash = "sha256:bde36450a64a7b8a8f4fd100acabb746a8136face027f51dc1e753e5c
     {file = "coverage-6.3.2-pp36.pp37.pp38-none-any.whl", hash = "sha256:18d520c6860515a771708937d2f78f63cc47ab3b80cb78e86573b0a760161faf"},
     {file = "coverage-6.3.2.tar.gz", hash = "sha256:03e2a7826086b91ef345ff18742ee9fc47a6839ccd517061ef8fa1976e652ce9"},
 ]
-"cppython-core 0.1.1" = [
-    {file = "cppython_core-0.1.1-py3-none-any.whl", hash = "sha256:5ea0027328417d22f2f718a883bafeac1b049fed84db06f0ab925a89149ef897"},
-    {file = "cppython-core-0.1.1.tar.gz", hash = "sha256:5df3d04010661f88f778317978eb3d5319976fa72d3289ec2a2b437daf717901"},
+"cppython-core 0.1.2" = [
+    {file = "cppython_core-0.1.2-py3-none-any.whl", hash = "sha256:6320acc041d6fd012d05de93d8d9a3df7bfb4585ae71f564642f0c2177fc987c"},
+    {file = "cppython-core-0.1.2.tar.gz", hash = "sha256:458e96ec672edce68b339a4b68a32a95dc4d2c0a37bf405bfd529208ca0b0469"},
 ]
 "iniconfig 1.1.1" = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
