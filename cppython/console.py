@@ -3,17 +3,17 @@ A click CLI for CPPython interfacing
 """
 
 from pathlib import Path
-from typing import Type
+from typing import Any, Type
 from xmlrpc.client import Boolean
 
 import click
 import tomlkit
-from cppython_core.schema import GeneratorDataType, Interface, PyProject
+from cppython_core.schema import GeneratorDataType, Interface
 
 from cppython.project import Project, ProjectConfiguration
 
 
-def _create_pyproject():
+def _create_pyproject() -> dict[str, Any]:
 
     # Search for a path upward
     path = Path.cwd()
@@ -30,7 +30,7 @@ def _create_pyproject():
     data = tomlkit.loads(path.read_text(encoding="utf-8"))
 
     # Interpret and validate data
-    return PyProject(**data)
+    return data
 
 
 class Config:
@@ -39,7 +39,7 @@ class Config:
     """
 
     def __init__(self):
-        self.pyproject = _create_pyproject()
+        self.pyproject_data = _create_pyproject()
         self.interface = ConsoleInterface()
         self.configuration = ProjectConfiguration()
 
@@ -47,7 +47,7 @@ class Config:
         """
         TODO
         """
-        return Project(self.configuration, self.interface, self.pyproject)
+        return Project(self.configuration, self.interface, self.pyproject_data)
 
 
 pass_config = click.make_pass_decorator(Config, ensure=True)

@@ -68,7 +68,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.1.2"
+version = "0.1.4"
 requires_python = ">=3.10"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -245,7 +245,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "3.1"
-content_hash = "sha256:cf6784e9ae16b1b1e951c6562ddcc2cc1724364e32c81aa431f0f3fce9005342"
+content_hash = "sha256:c2d0bac429ed766e18e9a8f9bc048d3c89d83b86bbdec3a679f8f28b77dcacf4"
 
 [metadata.files]
 "astroid 2.9.3" = [
@@ -336,9 +336,9 @@ content_hash = "sha256:cf6784e9ae16b1b1e951c6562ddcc2cc1724364e32c81aa431f0f3fce
     {file = "coverage-6.3.2-pp36.pp37.pp38-none-any.whl", hash = "sha256:18d520c6860515a771708937d2f78f63cc47ab3b80cb78e86573b0a760161faf"},
     {file = "coverage-6.3.2.tar.gz", hash = "sha256:03e2a7826086b91ef345ff18742ee9fc47a6839ccd517061ef8fa1976e652ce9"},
 ]
-"cppython-core 0.1.2" = [
-    {file = "cppython_core-0.1.2-py3-none-any.whl", hash = "sha256:6320acc041d6fd012d05de93d8d9a3df7bfb4585ae71f564642f0c2177fc987c"},
-    {file = "cppython-core-0.1.2.tar.gz", hash = "sha256:458e96ec672edce68b339a4b68a32a95dc4d2c0a37bf405bfd529208ca0b0469"},
+"cppython-core 0.1.4" = [
+    {file = "cppython_core-0.1.4-py3-none-any.whl", hash = "sha256:1856a7b9e58c3b95eb376fa01b04227c499726285868fce96152e52417d8178f"},
+    {file = "cppython-core-0.1.4.tar.gz", hash = "sha256:cc787deda93fe3a3386d4c04e3dc209b9e7ff0d96fa3bab168047be11b911f9d"},
 ]
 "iniconfig 1.1.1" = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
