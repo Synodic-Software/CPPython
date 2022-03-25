@@ -32,7 +32,7 @@ version = {use_scm = true}
 [tool.pdm.dev-dependencies]
 lint = [
   "black>=22.1.0",
-  "pylint>=2.12.2",
+  "pylint>=2.13.0",
   "isort>=5.10.1",
 ]
 test = [
