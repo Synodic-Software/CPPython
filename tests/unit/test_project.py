@@ -20,4 +20,6 @@ class TestProject:
 
         interface_mock = mocker.MagicMock()
         configuration = ProjectConfiguration()
-        Project(configuration, interface_mock, default_pyproject)
+        Project(configuration, interface_mock, default_pyproject.dict())
+
+    def
