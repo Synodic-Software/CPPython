@@ -7,7 +7,6 @@ from importlib import metadata
 from typing import Any, Type, TypeVar
 from xmlrpc.client import Boolean
 
-from cppython_core.exceptions import ConfigError
 from cppython_core.schema import (
     API,
     CPPythonData,
@@ -18,6 +17,23 @@ from cppython_core.schema import (
     ToolData,
 )
 from pydantic import create_model
+
+PluginType = TypeVar("PluginType", bound=Type[Plugin])
+
+
+def gather_plugins(plugin_type: PluginType) -> list[Type[PluginType]]:
+    """
+    TODO
+    """
+    plugins = []
+    entry_points = metadata.entry_points(group=f"cppython.{plugin_type.plugin_group()}")
+
+    for entry_point in entry_points:
+        loaded_plugin_type = entry_point.load()
+        if issubclass(loaded_plugin_type, plugin_type) & (loaded_plugin_type is not plugin_type):
+            plugins.append(loaded_plugin_type)
+
+    return plugins
 
 
 @dataclass
@@ -45,7 +61,7 @@ class Project(API):
             interface.print("Starting CPPython project initialization")
 
         # Gather
-        plugins = self._gather_plugins(Generator)
+        plugins = gather_plugins(Generator)
 
         if not plugins:
             if self.verbose:
@@ -90,22 +106,6 @@ class Project(API):
 
         if self.verbose:
             interface.print("CPPython project initialized")
-
-    _PluginType = TypeVar("_PluginType", bound=Type[Plugin])
-
-    def _gather_plugins(self, plugin_type: _PluginType) -> list[Type[_PluginType]]:
-        """
-        TODO
-        """
-        plugins = []
-        entry_points = metadata.entry_points(group=f"cppython.{plugin_type.plugin_group()}")
-
-        for entry_point in entry_points:
-            loaded_plugin_type = entry_point.load()
-            if issubclass(loaded_plugin_type, plugin_type) & (loaded_plugin_type is not plugin_type):
-                plugins.append(loaded_plugin_type)
-
-        return plugins
 
     def download(self):
         """

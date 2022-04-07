@@ -17,6 +17,7 @@ dependencies = [
   "click>=8.0.3",
   "tomlkit>=0.10.0",
   "cppython-core>=0.1.4",
+  "pydantic>=1.9.0",
 ]
 
 [project.license-files]
@@ -32,7 +33,7 @@ version = {use_scm = true}
 [tool.pdm.dev-dependencies]
 lint = [
   "black>=22.3.0",
-  "pylint>=2.13.4",
+  "pylint>=2.13.5",
   "isort>=5.10.1",
 ]
 test = [
@@ -59,6 +60,7 @@ profile = "black"
 
 [tool.pylint.messages_control]
 disable = "C0330, C0326"
+extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.format]
 max-line-length = "120"

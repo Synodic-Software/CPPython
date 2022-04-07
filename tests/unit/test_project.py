@@ -2,10 +2,11 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
+from cppython_core.schema import Generator
 from pytest_mock import MockerFixture
 
 from cppython.data import default_pyproject
-from cppython.project import Project, ProjectConfiguration
+from cppython.project import Project, ProjectConfiguration, gather_plugins
 
 
 class TestProject:
@@ -22,4 +23,16 @@ class TestProject:
         configuration = ProjectConfiguration()
         Project(configuration, interface_mock, default_pyproject.dict())
 
-    def
+    def test_plugin_gather(self, mocker: MockerFixture):
+        """
+        TODO
+        """
+        mocker.patch("cppython.console._create_pyproject", return_value=default_pyproject)
+        plugins = gather_plugins(Generator)
+
+        assert len(plugins) == 0
+
+    def test_generator_data_construction(self):
+        """
+        TODO
+        """
