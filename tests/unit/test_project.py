@@ -49,6 +49,8 @@ class TestBuilder:
         builder = ProjectBuilder(configuration)
         Model = builder.generate_model([])
 
+        # TODO: Add Dummy test
+
     def test_generator_creation(self):
         """
         TODO
@@ -56,4 +58,6 @@ class TestBuilder:
 
         configuration = ProjectConfiguration()
         builder = ProjectBuilder(configuration)
-        generators = builder.create_generators([])
+        generators = builder.create_generators([], default_pyproject)
+
+        # TODO: Add Dummy test
