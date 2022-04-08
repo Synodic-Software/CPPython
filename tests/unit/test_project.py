@@ -48,3 +48,12 @@ class TestBuilder:
         configuration = ProjectConfiguration()
         builder = ProjectBuilder(configuration)
         Model = builder.generate_model([])
+
+    def test_generator_creation(self):
+        """
+        TODO
+        """
+
+        configuration = ProjectConfiguration()
+        builder = ProjectBuilder(configuration)
+        generators = builder.create_generators([])

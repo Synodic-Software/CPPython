@@ -76,6 +76,14 @@ class ProjectBuilder:
             __base__=PyProject,
         )
 
+    def create_generators(self, plugins: list[Type[Plugin]]) -> list[Plugin]:
+        """
+        TODO
+        """
+        _generators = []
+        for plugin_type in plugins:
+            _generators.append(plugin_type(pyproject))
+
 
 class Project(API):
     """
@@ -116,10 +124,7 @@ class Project(API):
         self.enabled = True
 
         self._interface = interface
-
-        self._generators = []
-        for plugin_type in plugins:
-            self._generators.append(plugin_type(pyproject))
+        self._generators = builder.create_generators(plugins)
 
         if self.configuration.verbose:
             interface.print("CPPython project initialized")
