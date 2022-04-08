@@ -18,23 +18,6 @@ from cppython_core.schema import (
 )
 from pydantic import create_model
 
-PluginType = TypeVar("PluginType", bound=Type[Plugin])
-
-
-def gather_plugins(plugin_type: PluginType) -> list[Type[PluginType]]:
-    """
-    TODO
-    """
-    plugins = []
-    entry_points = metadata.entry_points(group=f"cppython.{plugin_type.plugin_group()}")
-
-    for entry_point in entry_points:
-        loaded_plugin_type = entry_point.load()
-        if issubclass(loaded_plugin_type, plugin_type) & (loaded_plugin_type is not plugin_type):
-            plugins.append(loaded_plugin_type)
-
-    return plugins
-
 
 @dataclass
 class ProjectConfiguration:
@@ -45,29 +28,32 @@ class ProjectConfiguration:
     verbose: Boolean = False
 
 
-class Project(API):
+class ProjectBuilder:
     """
-    The object constructed at each entry_point
+    TODO
     """
 
-    def __init__(
-        self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
-    ) -> None:
+    def __init__(self, configuration: ProjectConfiguration) -> None:
+        self.configuration = configuration
 
-        self.enabled = False
-        self.verbose = configuration.verbose
+    def gather_plugins(self, plugin_type: Type[Plugin]) -> list[Type[Plugin]]:
+        """
+        TODO
+        """
+        plugins = []
+        entry_points = metadata.entry_points(group=f"cppython.{plugin_type.plugin_group()}")
 
-        if self.verbose:
-            interface.print("Starting CPPython project initialization")
+        for entry_point in entry_points:
+            loaded_plugin_type = entry_point.load()
+            if issubclass(loaded_plugin_type, plugin_type) & (loaded_plugin_type is not plugin_type):
+                plugins.append(loaded_plugin_type)
 
-        # Gather
-        plugins = gather_plugins(Generator)
+        return plugins
 
-        if not plugins:
-            if self.verbose:
-                interface.print("No generator plugin was found.")
-            return
-
+    def generate_model(self, plugins: list[Type[Plugin]]) -> Type[PyProject]:
+        """
+        TODO
+        """
         plugin_fields = {}
         for plugin_type in plugins:
             plugin_fields[plugin_type.name()] = plugin_type.data_type()
@@ -84,15 +70,46 @@ class Project(API):
             __base__=ToolData,
         )
 
-        pyproject = PyProject(**pyproject_data)
+        return create_model(
+            "PyProject",
+            tool=ExtendedToolData,
+            __base__=PyProject,
+        )
+
+
+class Project(API):
+    """
+    The object constructed at each entry_point
+    """
+
+    def __init__(
+        self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
+    ) -> None:
+
+        self.enabled = False
+        self.configuration = configuration
+
+        if self.configuration.verbose:
+            interface.print("Starting CPPython project initialization")
+
+        builder = ProjectBuilder(self.configuration)
+        plugins = builder.gather_plugins(Generator)
+
+        if not plugins:
+            if self.configuration.verbose:
+                interface.print("No generator plugin was found.")
+            return
+
+        ExtendedPyProject = builder.generate_model(plugins)
+        pyproject = ExtendedPyProject(**pyproject_data)
 
         if pyproject.tool is None:
-            if self.verbose:
+            if self.configuration.verbose:
                 interface.print("Table [tool] is not defined")
             return
 
         if pyproject.tool.cppython is None:
-            if self.verbose:
+            if self.configuration.verbose:
                 interface.print("Table [tool.cppython] is not defined")
             return
 
@@ -104,7 +121,7 @@ class Project(API):
         for plugin_type in plugins:
             self._generators.append(plugin_type(pyproject))
 
-        if self.verbose:
+        if self.configuration.verbose:
             interface.print("CPPython project initialized")
 
     def download(self):
@@ -124,7 +141,7 @@ class Project(API):
 
     def install(self) -> None:
         if self.enabled:
-            if self.verbose:
+            if self.configuration.verbose:
                 self._interface.print("CPPython: Installing...")
             self.download()
 
@@ -133,7 +150,7 @@ class Project(API):
 
     def update(self) -> None:
         if self.enabled:
-            if self.verbose:
+            if self.configuration.verbose:
                 self._interface.print("CPPython: Updating...")
 
             for generator in self._generators:
@@ -141,7 +158,7 @@ class Project(API):
 
     def build(self) -> None:
         if self.enabled:
-            if self.verbose:
+            if self.configuration.verbose:
                 self._interface.print("CPPython: Building...")
 
             for generator in self._generators:

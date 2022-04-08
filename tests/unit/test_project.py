@@ -6,7 +6,7 @@ from cppython_core.schema import Generator
 from pytest_mock import MockerFixture
 
 from cppython.data import default_pyproject
-from cppython.project import Project, ProjectConfiguration, gather_plugins
+from cppython.project import Project, ProjectBuilder, ProjectConfiguration
 
 
 class TestProject:
@@ -23,12 +23,20 @@ class TestProject:
         configuration = ProjectConfiguration()
         Project(configuration, interface_mock, default_pyproject.dict())
 
-    def test_plugin_gather(self, mocker: MockerFixture):
+
+class TestBuilder:
+    """
+    TODO
+    """
+
+    def test_plugin_gather(self):
         """
         TODO
         """
-        mocker.patch("cppython.console._create_pyproject", return_value=default_pyproject)
-        plugins = gather_plugins(Generator)
+
+        configuration = ProjectConfiguration()
+        builder = ProjectBuilder(configuration)
+        plugins = builder.gather_plugins(Generator)
 
         assert len(plugins) == 0
 
@@ -36,3 +44,7 @@ class TestProject:
         """
         TODO
         """
+
+        configuration = ProjectConfiguration()
+        builder = ProjectBuilder(configuration)
+        Model = builder.generate_model([])
