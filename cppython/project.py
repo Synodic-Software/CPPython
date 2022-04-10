@@ -36,7 +36,9 @@ class ProjectBuilder:
     def __init__(self, configuration: ProjectConfiguration) -> None:
         self.configuration = configuration
 
-    def gather_plugins(self, plugin_type: Type[Plugin]) -> list[Type[Plugin]]:
+    DerivedPlugin = TypeVar("DerivedPlugin", bound=Plugin)
+
+    def gather_plugins(self, plugin_type: Type[DerivedPlugin]) -> list[Type[DerivedPlugin]]:
         """
         TODO
         """
@@ -50,7 +52,9 @@ class ProjectBuilder:
 
         return plugins
 
-    def generate_model(self, plugins: list[Type[Plugin]]) -> Type[PyProject]:
+    DerivedGenerator = TypeVar("DerivedGenerator", bound=Generator)
+
+    def generate_model(self, plugins: list[Type[DerivedGenerator]]) -> Type[PyProject]:
         """
         TODO
         """
@@ -58,21 +62,21 @@ class ProjectBuilder:
         for plugin_type in plugins:
             plugin_fields[plugin_type.name()] = plugin_type.data_type()
 
-        ExtendedCPPythonData = create_model(
+        extended_cppython_type = create_model(
             "ExtendedCPPythonData",
             **plugin_fields,
             __base__=CPPythonData,
         )
 
-        ExtendedToolData = create_model(
+        extended_tool_type = create_model(
             "ToolData",
-            cppython=ExtendedCPPythonData,
+            cppython=extended_cppython_type,
             __base__=ToolData,
         )
 
         return create_model(
             "PyProject",
-            tool=ExtendedToolData,
+            tool=extended_tool_type,
             __base__=PyProject,
         )
 
@@ -110,8 +114,8 @@ class Project(API):
                 interface.print("No generator plugin was found.")
             return
 
-        ExtendedPyProject = builder.generate_model(plugins)
-        pyproject = ExtendedPyProject(**pyproject_data)
+        extended_pyproject_type = builder.generate_model(plugins)
+        pyproject = extended_pyproject_type(**pyproject_data)
 
         if pyproject.tool is None:
             if self.configuration.verbose:
