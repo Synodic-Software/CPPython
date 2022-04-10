@@ -47,18 +47,18 @@ class TestBuilder:
 
         configuration = ProjectConfiguration()
         builder = ProjectBuilder(configuration)
-        Model = builder.generate_model([])
+        model_type = builder.generate_model([])
 
-        assert Model.__base__ == PyProject
+        assert model_type.__base__ == PyProject
 
         generator = mocker.Mock(spec=Generator)
         generator_data = mocker.Mock(spec=GeneratorData)
 
         generator.name.return_value = "mock"
         generator.data_type.return_value = type(generator_data)
-        Model = builder.generate_model([generator])
+        model_type = builder.generate_model([generator])
 
-        assert Model.__base__ == PyProject
+        assert model_type.__base__ == PyProject
 
     def test_generator_creation(self, mocker: MockerFixture):
         """
