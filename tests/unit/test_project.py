@@ -2,7 +2,7 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
-from cppython_core.schema import Generator
+from cppython_core.schema import Generator, GeneratorData, PyProject
 from pytest_mock import MockerFixture
 
 from cppython.data import default_pyproject
@@ -40,7 +40,7 @@ class TestBuilder:
 
         assert len(plugins) == 0
 
-    def test_generator_data_construction(self):
+    def test_generator_data_construction(self, mocker: MockerFixture):
         """
         TODO
         """
@@ -48,3 +48,30 @@ class TestBuilder:
         configuration = ProjectConfiguration()
         builder = ProjectBuilder(configuration)
         Model = builder.generate_model([])
+
+        assert Model.__base__ == PyProject
+
+        generator = mocker.Mock(spec=Generator)
+        generator_data = mocker.Mock(spec=GeneratorData)
+
+        generator.name.return_value = "mock"
+        generator.data_type.return_value = type(generator_data)
+        Model = builder.generate_model([generator])
+
+        assert Model.__base__ == PyProject
+
+    def test_generator_creation(self, mocker: MockerFixture):
+        """
+        TODO
+        """
+
+        configuration = ProjectConfiguration()
+        builder = ProjectBuilder(configuration)
+        generators = builder.create_generators([], default_pyproject)
+
+        assert not generators
+
+        generator = mocker.Mock(spec=Generator)
+        generators = builder.create_generators([generator], default_pyproject)
+
+        assert len(generators) == 1
