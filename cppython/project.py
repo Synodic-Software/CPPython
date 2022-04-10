@@ -52,9 +52,7 @@ class ProjectBuilder:
 
         return plugins
 
-    DerivedGenerator = TypeVar("DerivedGenerator", bound=Generator)
-
-    def generate_model(self, plugins: list[Type[DerivedGenerator]]) -> Type[PyProject]:
+    def generate_model(self, plugins: list[Type[Generator]]) -> Type[PyProject]:
         """
         TODO
         """
