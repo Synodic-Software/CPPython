@@ -67,13 +67,13 @@ class ProjectBuilder:
         )
 
         extended_tool_type = create_model(
-            "ToolData",
+            "ExtendedToolData",
             cppython=extended_cppython_type,
             __base__=ToolData,
         )
 
         return create_model(
-            "PyProject",
+            "ExtendedPyProject",
             tool=extended_tool_type,
             __base__=PyProject,
         )
