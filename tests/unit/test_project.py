@@ -2,8 +2,6 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
-from typing import Type
-
 from cppython_core.schema import Generator, GeneratorData, PyProject
 from pytest_mock import MockerFixture
 
@@ -68,8 +66,13 @@ class TestBuilder:
         model_type = builder.generate_model([generator_type])
 
         project_data = default_pyproject.dict()
-        project_data["tool"]["cppython"]["mock"] = MockGeneratorData(check=True)
+
+        mock_data = MockGeneratorData(check=True)
+        project_data["tool"]["cppython"]["mock"] = mock_data.dict()
         result = model_type(**project_data)
+
+        assert result.tool is not None
+        assert result.tool.cppython is not None
 
         assert result.tool.cppython.mock.check
 
