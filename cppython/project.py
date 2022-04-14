@@ -54,11 +54,11 @@ class ProjectBuilder:
 
     def generate_model(self, plugins: list[Type[Generator]]) -> Type[PyProject]:
         """
-        TODO
+        TODO: Proper return type hint
         """
         plugin_fields = {}
         for plugin_type in plugins:
-            plugin_fields[plugin_type.name()] = plugin_type.data_type()
+            plugin_fields[plugin_type.name()] = (plugin_type.data_type(), ...)
 
         extended_cppython_type = create_model(
             "ExtendedCPPythonData",
@@ -67,14 +67,14 @@ class ProjectBuilder:
         )
 
         extended_tool_type = create_model(
-            "ToolData",
-            cppython=extended_cppython_type,
+            "ExtendedToolData",
+            cppython=(extended_cppython_type, ...),
             __base__=ToolData,
         )
 
         return create_model(
-            "PyProject",
-            tool=extended_tool_type,
+            "ExtendedPyProject",
+            tool=(extended_tool_type, ...),
             __base__=PyProject,
         )
 

@@ -199,11 +199,11 @@ dependencies = [
 
 [[package]]
 name = "pytest-cppython"
-version = "0.1.0"
+version = "0.1.1"
 requires_python = ">=3.10"
 summary = "A pytest plugin that imports CPPython testing types"
 dependencies = [
-    "cppython-core>=0.1.0",
+    "cppython-core>=0.1.4",
 ]
 
 [[package]]
@@ -217,7 +217,7 @@ dependencies = [
 
 [[package]]
 name = "setuptools"
-version = "62.0.0"
+version = "62.1.0"
 requires_python = ">=3.7"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
 
@@ -474,17 +474,17 @@ content_hash = "sha256:f53b6399862b1bc49a0ad0dc5017dfeb3c9348259b7b5fbabf9c70536
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
 ]
-"pytest-cppython 0.1.0" = [
-    {file = "pytest_cppython-0.1.0-py3-none-any.whl", hash = "sha256:f243a909498a1271f0080a65b83b92ec48e92680bcbb28721a528d97f00c218c"},
-    {file = "pytest-cppython-0.1.0.tar.gz", hash = "sha256:029e0088969ef8b3217d93ee95f2b3a2dcea607b4bfd16e5ed2427bc3f5da98b"},
+"pytest-cppython 0.1.1" = [
+    {file = "pytest_cppython-0.1.1-py3-none-any.whl", hash = "sha256:712e3ae3bc8db1d6f60a44424860ea05a4df473dc6f710ba78afaaefa92fb70e"},
+    {file = "pytest-cppython-0.1.1.tar.gz", hash = "sha256:47701ed86497548e77310ef4dc232fc2bcdbc029a279b545d07af380f2820ade"},
 ]
 "pytest-mock 3.7.0" = [
     {file = "pytest_mock-3.7.0-py3-none-any.whl", hash = "sha256:6cff27cec936bf81dc5ee87f07132b807bcda51106b5ec4b90a04331cba76231"},
     {file = "pytest-mock-3.7.0.tar.gz", hash = "sha256:5112bd92cc9f186ee96e1a92efc84969ea494939c3aead39c50f421c4cc69534"},
 ]
-"setuptools 62.0.0" = [
-    {file = "setuptools-62.0.0-py3-none-any.whl", hash = "sha256:a65e3802053e99fc64c6b3b29c11132943d5b8c8facbcc461157511546510967"},
-    {file = "setuptools-62.0.0.tar.gz", hash = "sha256:7999cbd87f1b6e1f33bf47efa368b224bed5e27b5ef2c4d46580186cbcb1a86a"},
+"setuptools 62.1.0" = [
+    {file = "setuptools-62.1.0-py3-none-any.whl", hash = "sha256:26ead7d1f93efc0f8c804d9fafafbe4a44b179580a7105754b245155f9af05a8"},
+    {file = "setuptools-62.1.0.tar.gz", hash = "sha256:47c7b0c0f8fc10eec4cf1e71c6fdadf8decaa74ffa087e68cd1c20db7ad6a592"},
 ]
 "tomli 2.0.1" = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},

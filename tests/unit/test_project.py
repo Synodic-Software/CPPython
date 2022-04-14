@@ -9,6 +9,14 @@ from cppython.data import default_pyproject
 from cppython.project import Project, ProjectBuilder, ProjectConfiguration
 
 
+class MockGeneratorData(GeneratorData):
+    """
+    TODO
+    """
+
+    check: bool
+
+
 class TestProject:
     """
     TODO
@@ -51,14 +59,22 @@ class TestBuilder:
 
         assert model_type.__base__ == PyProject
 
-        generator = mocker.Mock(spec=Generator)
-        generator_data = mocker.Mock(spec=GeneratorData)
+        generator_type = mocker.Mock(spec=Generator)
+        generator_type.name.return_value = "mock"
+        generator_type.data_type.return_value = MockGeneratorData
 
-        generator.name.return_value = "mock"
-        generator.data_type.return_value = type(generator_data)
-        model_type = builder.generate_model([generator])
+        model_type = builder.generate_model([generator_type])
 
-        assert model_type.__base__ == PyProject
+        project_data = default_pyproject.dict()
+
+        mock_data = MockGeneratorData(check=True)
+        project_data["tool"]["cppython"]["mock"] = mock_data.dict()
+        result = model_type(**project_data)
+
+        assert result.tool is not None
+        assert result.tool.cppython is not None
+
+        assert result.tool.cppython.mock.check
 
     def test_generator_creation(self, mocker: MockerFixture):
         """

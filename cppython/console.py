@@ -69,7 +69,7 @@ def info(config):
     """
     TODO
     """
-    project = config.create_project()
+    config.create_project()
 
 
 @cli.command()
