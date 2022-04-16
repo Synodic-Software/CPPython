@@ -29,7 +29,12 @@ class TestProject:
 
         interface_mock = mocker.MagicMock()
         configuration = ProjectConfiguration()
-        Project(configuration, interface_mock, default_pyproject.dict())
+        Project(configuration, interface_mock, default_pyproject.dict(by_alias=True))
+
+    def test_download(self):
+        """
+        TODO
+        """
 
 
 class TestBuilder:
@@ -65,10 +70,10 @@ class TestBuilder:
 
         model_type = builder.generate_model([generator_type])
 
-        project_data = default_pyproject.dict()
+        project_data = default_pyproject.dict(by_alias=True)
 
         mock_data = MockGeneratorData(check=True)
-        project_data["tool"]["cppython"]["mock"] = mock_data.dict()
+        project_data["tool"]["cppython"]["mock"] = mock_data.dict(by_alias=True)
         result = model_type(**project_data)
 
         assert result.tool is not None

@@ -4,6 +4,7 @@ The central delegation of the CPPython project
 
 from dataclasses import dataclass
 from importlib import metadata
+from pathlib import Path
 from typing import Any, Type, TypeVar
 from xmlrpc.client import Boolean
 
@@ -98,7 +99,6 @@ class Project(API):
         self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
     ) -> None:
 
-        self.enabled = False
         self.configuration = configuration
 
         if self.configuration.verbose:
@@ -113,52 +113,51 @@ class Project(API):
             return
 
         extended_pyproject_type = builder.generate_model(plugins)
-        pyproject = extended_pyproject_type(**pyproject_data)
+        self.pyproject = extended_pyproject_type(**pyproject_data)
 
-        if pyproject.tool is None:
+        if self.pyproject.tool is None:
             if self.configuration.verbose:
                 interface.print("Table [tool] is not defined")
             return
 
-        if pyproject.tool.cppython is None:
+        if self.pyproject.tool.cppython is None:
             if self.configuration.verbose:
                 interface.print("Table [tool.cppython] is not defined")
             return
 
-        self.enabled = True
-
         self._interface = interface
-        self._generators = builder.create_generators(plugins, pyproject)
+        self._generators = builder.create_generators(plugins, self.pyproject)
 
         if self.configuration.verbose:
             interface.print("CPPython project initialized")
 
-    def download(self):
+    def download(self, path: Path):
         """
         Download the generator tooling if required
         """
+
         for generator in self._generators:
 
-            if not generator.generator_downloaded():
+            if not generator.generator_downloaded(path):
                 self._interface.print(f"Downloading the {generator.name()} tool")
 
                 # TODO: Make async with progress bar
-                generator.download_generator()
+                generator.download_generator(path)
                 self._interface.print("Download complete")
 
     # API Contract
 
     def install(self) -> None:
-        if self.enabled:
+        if self.pyproject.tool and self.pyproject.tool.cppython:
             if self.configuration.verbose:
                 self._interface.print("CPPython: Installing...")
-            self.download()
+            self.download(self.pyproject.tool.cppython.install_path)
 
             for generator in self._generators:
                 generator.install()
 
     def update(self) -> None:
-        if self.enabled:
+        if self.pyproject.tool and self.pyproject.tool.cppython:
             if self.configuration.verbose:
                 self._interface.print("CPPython: Updating...")
 
@@ -166,7 +165,7 @@ class Project(API):
                 generator.update()
 
     def build(self) -> None:
-        if self.enabled:
+        if self.pyproject.tool and self.pyproject.tool.cppython:
             if self.configuration.verbose:
                 self._interface.print("CPPython: Building...")
 
