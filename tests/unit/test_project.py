@@ -2,6 +2,8 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
+from pathlib import Path
+
 from cppython_core.schema import Generator, GeneratorData, PyProject
 from pytest_mock import MockerFixture
 
@@ -30,30 +32,6 @@ class TestProject:
         interface_mock = mocker.MagicMock()
         configuration = ProjectConfiguration()
         Project(configuration, interface_mock, default_pyproject.dict(by_alias=True))
-
-    def test_download(self, mocker: MockerFixture):
-        """
-        TODO
-        """
-
-        interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration()
-
-        generator_type = mocker.Mock(spec=Generator)
-        generator_type.name.return_value = "mock"
-        generator_type.data_type.return_value = MockGeneratorData
-
-        gather_override = mocker.patch.object(ProjectBuilder, "gather_plugins")
-        gather_override.return_value = [generator_type]
-
-        project_data = default_pyproject.dict(by_alias=True)
-        mock_data = MockGeneratorData(check=True)
-        project_data["tool"]["cppython"]["mock"] = mock_data.dict(by_alias=True)
-
-        project = Project(configuration, interface_mock, project_data)
-
-        # TODO: This does not verify signature correctness
-        project.download()
 
 
 class TestBuilder:
