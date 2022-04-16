@@ -14,9 +14,9 @@ dynamic = ["version"]
 requires-python = ">=3.10"
 
 dependencies = [
-  "click>=8.0.3",
-  "tomlkit>=0.10.0",
-  "cppython-core>=0.1.4",
+  "click>=8.1.2",
+  "tomlkit>=0.10.1",
+  "cppython-core>=0.2.1",
   "pydantic>=1.9.0",
 ]
 
@@ -40,7 +40,7 @@ test = [
   "pytest>=7.1.1",
   "pytest-cov>=3.0.0",
   "pytest-mock>=3.7.0",
-  "pytest-cppython>=0.1.0",
+  "pytest-cppython>=0.1.4",
 ]
 
 [project.scripts]
