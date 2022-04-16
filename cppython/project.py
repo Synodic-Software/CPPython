@@ -139,9 +139,13 @@ class Project(API):
         Download the generator tooling if required
         """
         if self._enabled:
-            path = self.pyproject.tool.cppython.install_path
+            base_path = self.pyproject.tool.cppython.install_path
 
             for generator in self._generators:
+
+                path = base_path / generator.name()
+
+                path.mkdir(parents=True, exist_ok=True)
 
                 if not generator.generator_downloaded(path):
                     self._interface.print(f"Downloading the {generator.name()} tool")
