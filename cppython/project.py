@@ -99,6 +99,7 @@ class Project(API):
         self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
     ) -> None:
 
+        self._enabled = False
         self.configuration = configuration
 
         if self.configuration.verbose:
@@ -125,39 +126,43 @@ class Project(API):
                 interface.print("Table [tool.cppython] is not defined")
             return
 
+        self._enabled = True
+
         self._interface = interface
         self._generators = builder.create_generators(plugins, self.pyproject)
 
         if self.configuration.verbose:
             interface.print("CPPython project initialized")
 
-    def download(self, path: Path):
+    def download(self):
         """
         Download the generator tooling if required
         """
+        if self._enabled:
+            path = self.pyproject.tool.cppython.install_path
 
-        for generator in self._generators:
+            for generator in self._generators:
 
-            if not generator.generator_downloaded(path):
-                self._interface.print(f"Downloading the {generator.name()} tool")
+                if not generator.generator_downloaded(path):
+                    self._interface.print(f"Downloading the {generator.name()} tool")
 
-                # TODO: Make async with progress bar
-                generator.download_generator(path)
-                self._interface.print("Download complete")
+                    # TODO: Make async with progress bar
+                    generator.download_generator(path)
+                    self._interface.print("Download complete")
 
     # API Contract
 
     def install(self) -> None:
-        if self.pyproject.tool and self.pyproject.tool.cppython:
+        if self._enabled:
             if self.configuration.verbose:
                 self._interface.print("CPPython: Installing...")
-            self.download(self.pyproject.tool.cppython.install_path)
+            self.download()
 
             for generator in self._generators:
                 generator.install()
 
     def update(self) -> None:
-        if self.pyproject.tool and self.pyproject.tool.cppython:
+        if self._enabled:
             if self.configuration.verbose:
                 self._interface.print("CPPython: Updating...")
 
@@ -165,7 +170,7 @@ class Project(API):
                 generator.update()
 
     def build(self) -> None:
-        if self.pyproject.tool and self.pyproject.tool.cppython:
+        if self._enabled:
             if self.configuration.verbose:
                 self._interface.print("CPPython: Building...")
 
