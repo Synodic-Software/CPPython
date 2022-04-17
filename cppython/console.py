@@ -2,9 +2,9 @@
 A click CLI for CPPython interfacing
 """
 
+from logging import Logger
 from pathlib import Path
 from typing import Any, Type
-from xmlrpc.client import Boolean
 
 import click
 import tomlkit
@@ -54,13 +54,13 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 
 
 @click.group()
-@click.option("-v", "--verbose", is_flag=True, help="Print additional output")
+@click.option("-v", "--verbose", count=True, help="Print additional output")
 @pass_config
-def cli(config, verbose: Boolean):
+def cli(config, verbose: int):
     """
     entry_point group for the CLI commands
     """
-    config.configuration.verbose = verbose
+    config.configuration.verbosity = verbose
 
 
 @cli.command()
@@ -118,8 +118,7 @@ class ConsoleInterface(Interface):
         Write output
         """
 
-    def print(self, string: str) -> None:
+    def register_logger(self, logger: Logger) -> None:
         """
         TODO
         """
-        click.echo(string)

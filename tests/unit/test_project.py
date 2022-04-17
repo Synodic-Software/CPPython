@@ -2,9 +2,14 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
-from pathlib import Path
+import logging
 
-from cppython_core.schema import Generator, GeneratorData, PyProject
+from cppython_core.schema import (
+    Generator,
+    GeneratorConfiguration,
+    GeneratorData,
+    PyProject,
+)
 from pytest_mock import MockerFixture
 
 from cppython.data import default_pyproject
@@ -85,11 +90,13 @@ class TestBuilder:
 
         configuration = ProjectConfiguration()
         builder = ProjectBuilder(configuration)
-        generators = builder.create_generators([], default_pyproject)
+
+        generator_configuration = GeneratorConfiguration(logging.getLogger(__name__))
+        generators = builder.create_generators([], generator_configuration, default_pyproject)
 
         assert not generators
 
         generator = mocker.Mock(spec=Generator)
-        generators = builder.create_generators([generator], default_pyproject)
+        generators = builder.create_generators([generator], generator_configuration, default_pyproject)
 
         assert len(generators) == 1
