@@ -75,4 +75,4 @@ class TestCLIInterface(InterfaceUnitTests):
 
         assert result.exit_code == 0
 
-        assert config.configuration.verbose
+        assert config.configuration.verbosity

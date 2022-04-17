@@ -2,16 +2,16 @@
 The central delegation of the CPPython project
 """
 
+import logging
 from dataclasses import dataclass
 from importlib import metadata
-from pathlib import Path
 from typing import Any, Type, TypeVar
-from xmlrpc.client import Boolean
 
 from cppython_core.schema import (
     API,
     CPPythonData,
     Generator,
+    GeneratorConfiguration,
     Interface,
     Plugin,
     PyProject,
@@ -26,7 +26,21 @@ class ProjectConfiguration:
     TODO
     """
 
-    verbose: Boolean = False
+    _verbosity: int = 0
+
+    @property
+    def verbosity(self) -> int:
+        """
+        TODO
+        """
+        return self._verbosity
+
+    @verbosity.setter
+    def verbosity(self, value: int) -> None:
+        """
+        TODO
+        """
+        self._verbosity = min(max(value, 0), 2)
 
 
 class ProjectBuilder:
@@ -79,13 +93,15 @@ class ProjectBuilder:
             __base__=PyProject,
         )
 
-    def create_generators(self, plugins: list[Type[Generator]], pyproject: PyProject) -> list[Generator]:
+    def create_generators(
+        self, plugins: list[Type[Generator]], configuration: GeneratorConfiguration, pyproject: PyProject
+    ) -> list[Generator]:
         """
         TODO
         """
         _generators = []
         for plugin_type in plugins:
-            _generators.append(plugin_type(pyproject))
+            _generators.append(plugin_type(configuration, pyproject))
 
         return _generators
 
@@ -100,39 +116,69 @@ class Project(API):
     ) -> None:
 
         self._enabled = False
-        self.configuration = configuration
+        self._configuration = configuration
+        self._pyproject = None
 
-        if self.configuration.verbose:
-            interface.print("Starting CPPython project initialization")
+        levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+
+        self._logger = logging.getLogger("cppython")
+        self._logger.setLevel(levels[configuration.verbosity])
+
+        interface.register_logger(self._logger)
+
+        self._logger.info("Initializing project")
 
         builder = ProjectBuilder(self.configuration)
         plugins = builder.gather_plugins(Generator)
 
         if not plugins:
-            if self.configuration.verbose:
-                interface.print("No generator plugin was found.")
+            self._logger.info("No generator plugin was found")
             return
 
         extended_pyproject_type = builder.generate_model(plugins)
-        self.pyproject = extended_pyproject_type(**pyproject_data)
+        self._pyproject = extended_pyproject_type(**pyproject_data)
+
+        if self.pyproject is None:
+            self._logger.info("Data is not defined")
+            return
 
         if self.pyproject.tool is None:
-            if self.configuration.verbose:
-                interface.print("Table [tool] is not defined")
+            self._logger.info("Table [tool] is not defined")
             return
 
         if self.pyproject.tool.cppython is None:
-            if self.configuration.verbose:
-                interface.print("Table [tool.cppython] is not defined")
+            self._logger.info("Table [tool.cppython] is not defined")
             return
 
         self._enabled = True
 
         self._interface = interface
-        self._generators = builder.create_generators(plugins, self.pyproject)
 
-        if self.configuration.verbose:
-            interface.print("CPPython project initialized")
+        generator_configuration = GeneratorConfiguration(self._logger)
+        self._generators = builder.create_generators(plugins, generator_configuration, self.pyproject)
+
+        self._logger.info("Initialized project")
+
+    @property
+    def enabled(self) -> bool:
+        """
+        TODO
+        """
+        return self._enabled
+
+    @property
+    def configuration(self) -> ProjectConfiguration:
+        """
+        TODO
+        """
+        return self._configuration
+
+    @property
+    def pyproject(self) -> PyProject | None:
+        """
+        TODO
+        """
+        return self._pyproject
 
     def download(self):
         """
@@ -148,18 +194,17 @@ class Project(API):
                 path.mkdir(parents=True, exist_ok=True)
 
                 if not generator.generator_downloaded(path):
-                    self._interface.print(f"Downloading the {generator.name()} tool")
+                    self._logger.info(f"Downloading the {generator.name()} tool")
 
                     # TODO: Make async with progress bar
                     generator.download_generator(path)
-                    self._interface.print("Download complete")
+                    self._logger.info("Download complete")
 
     # API Contract
 
     def install(self) -> None:
         if self._enabled:
-            if self.configuration.verbose:
-                self._interface.print("CPPython: Installing...")
+            self._logger.info("Installing project")
             self.download()
 
             for generator in self._generators:
@@ -167,16 +212,14 @@ class Project(API):
 
     def update(self) -> None:
         if self._enabled:
-            if self.configuration.verbose:
-                self._interface.print("CPPython: Updating...")
+            self._logger.info("Updating project")
 
             for generator in self._generators:
                 generator.update()
 
     def build(self) -> None:
         if self._enabled:
-            if self.configuration.verbose:
-                self._interface.print("CPPython: Building...")
+            self._logger.info("Building project")
 
             for generator in self._generators:
                 generator.build()
