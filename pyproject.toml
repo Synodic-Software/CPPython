@@ -33,7 +33,7 @@ version = {use_scm = true}
 [tool.pdm.dev-dependencies]
 lint = [
   "black>=22.3.0",
-  "pylint>=2.13.5",
+  "pylint>=2.13.7",
   "isort>=5.10.1",
 ]
 test = [
@@ -60,6 +60,7 @@ profile = "black"
 
 [tool.pylint.messages_control]
 disable = "C0330, C0326"
+disable = "logging-fstring-interpolation"
 extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.format]
