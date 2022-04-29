@@ -60,6 +60,7 @@ profile = "black"
 
 [tool.pylint.messages_control]
 disable = "C0330, C0326"
+disable = "logging-fstring-interpolation"
 extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.format]
