@@ -1,0 +1,12 @@
+name: Update Python Development Release
+on:
+  - push
+
+
+jobs:
+  publish_release:
+    uses: synodic-software/.github/.github/workflows/python-merge.yml@stable
+    with:
+      repository_url: https://upload.pypi.org/legacy/
+    secrets:
+      token: ${{ secrets.PYPI_API_TOKEN }}
