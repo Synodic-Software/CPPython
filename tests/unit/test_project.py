@@ -99,7 +99,7 @@ class TestBuilder:
         configuration = ProjectConfiguration()
         builder = ProjectBuilder(configuration)
 
-        generator_configuration = GeneratorConfiguration(logging.getLogger(__name__))
+        generator_configuration = GeneratorConfiguration()
         generators = builder.create_generators([], generator_configuration, default_pyproject)
 
         assert not generators

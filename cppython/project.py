@@ -124,8 +124,6 @@ class Project(API):
         self._logger = logging.getLogger("cppython")
         self._logger.setLevel(levels[configuration.verbosity])
 
-        interface.register_logger(self._logger)
-
         self._logger.info("Initializing project")
 
         builder = ProjectBuilder(self.configuration)
