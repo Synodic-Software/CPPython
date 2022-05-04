@@ -152,7 +152,7 @@ class Project(API):
 
         self._interface = interface
 
-        generator_configuration = GeneratorConfiguration(self._logger)
+        generator_configuration = GeneratorConfiguration()
         self._generators = builder.create_generators(plugins, generator_configuration, self.pyproject)
 
         self._logger.info("Initialized project")
