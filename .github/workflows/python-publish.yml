@@ -9,5 +9,4 @@ jobs:
     uses: synodic-software/.github/.github/workflows/python-publish.yml@stable
     with:
       repository_url: https://upload.pypi.org/legacy/
-    secrets:
-      token: ${{ secrets.PYPI_API_TOKEN }}
+      secrets: inherit
