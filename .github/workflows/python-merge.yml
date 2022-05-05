@@ -4,7 +4,7 @@ on:
 
 jobs:
   publish_release:
-    if: "github.repository_owner == 'Synodic-Software"
+    if: github.repository_owner == 'Synodic-Software'
     uses: synodic-software/.github/.github/workflows/python-merge.yml@stable
     with:
       repository_url: https://upload.pypi.org/legacy/
