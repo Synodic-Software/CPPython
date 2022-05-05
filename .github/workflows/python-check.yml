@@ -5,3 +5,5 @@ on:
 jobs:
   check:
     uses: synodic-software/.github/.github/workflows/python-check.yml@stable
+    with:
+      secrets: inherit
