@@ -122,6 +122,10 @@ class Project(API):
         levels = [logging.WARNING, logging.INFO, logging.DEBUG]
 
         self._logger = logging.getLogger("cppython")
+
+        # Add default output stream
+        console_handler = logging.StreamHandler()
+        self._logger.addHandler(console_handler)
         self._logger.setLevel(levels[configuration.verbosity])
 
         self._logger.info("Initializing project")
