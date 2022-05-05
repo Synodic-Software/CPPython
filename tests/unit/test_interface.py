@@ -8,6 +8,7 @@ from cppython_core.schema import (
     API,
     PEP621,
     CPPythonData,
+    InterfaceConfiguration,
     PyProject,
     TargetEnum,
     ToolData,
@@ -36,7 +37,8 @@ class TestCLIInterface(InterfaceUnitTests):
         Returns:
             ConsoleInterface -- The Interface object to use for the CPPython defined tests
         """
-        return ConsoleInterface()
+        configuration = InterfaceConfiguration()
+        return ConsoleInterface(configuration)
 
     # Grab the API methods and parameterize them for automatic testing of the entry_points
     method_list = [func for func in dir(API) if callable(getattr(API, func)) and not func.startswith("__")]

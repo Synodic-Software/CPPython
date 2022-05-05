@@ -8,7 +8,7 @@ from typing import Any, Type
 
 import click
 import tomlkit
-from cppython_core.schema import GeneratorDataType, Interface
+from cppython_core.schema import GeneratorDataT, Interface, InterfaceConfiguration
 
 from cppython.project import Project, ProjectConfiguration
 
@@ -40,7 +40,9 @@ class Config:
 
     def __init__(self):
         self.pyproject_data = _create_pyproject()
-        self.interface = ConsoleInterface()
+
+        configuration = InterfaceConfiguration()
+        self.interface = ConsoleInterface(configuration)
         self.configuration = ProjectConfiguration()
 
     def create_project(self) -> Project:
@@ -107,7 +109,14 @@ class ConsoleInterface(Interface):
     Interface implementation to pass to the project
     """
 
-    def read_generator_data(self, generator_data_type: Type[GeneratorDataType]) -> GeneratorDataType:
+    def __init__(self, configuration: InterfaceConfiguration) -> None:
+        super().__init__(configuration)
+
+    @staticmethod
+    def name() -> str:
+        return "console"
+
+    def read_generator_data(self, generator_data_type: Type[GeneratorDataT]) -> GeneratorDataT:
         """
         Requests generator information
         """
@@ -116,9 +125,4 @@ class ConsoleInterface(Interface):
     def write_pyproject(self) -> None:
         """
         Write output
-        """
-
-    def register_logger(self, logger: Logger) -> None:
-        """
-        TODO
         """

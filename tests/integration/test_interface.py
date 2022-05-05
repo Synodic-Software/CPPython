@@ -3,6 +3,7 @@ Test the integrations related to the internal interface implementation and the '
 """
 
 import pytest
+from cppython_core.schema import InterfaceConfiguration
 from pytest_cppython.plugin import InterfaceIntegrationTests
 
 from cppython.console import ConsoleInterface
@@ -21,4 +22,5 @@ class TestCLIInterface(InterfaceIntegrationTests):
         Returns:
             ConsoleInterface -- The Interface object to use for the CPPython defined tests
         """
-        return ConsoleInterface()
+        configuration = InterfaceConfiguration()
+        return ConsoleInterface(configuration)
