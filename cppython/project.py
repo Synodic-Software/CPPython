@@ -203,6 +203,10 @@ class Project(API):
                     # TODO: Make async with progress bar
                     generator.download_generator(path)
                     cppython_logger.warning("Download complete")
+                else:
+                    cppython_logger.info(f"The {generator.name()} generator is already downloaded")
+        else:
+            cppython_logger.info("Skipping download because the project is not enabled")
 
     # API Contract
 
@@ -214,6 +218,8 @@ class Project(API):
             for generator in self._generators:
                 cppython_logger.info(f"Installing {generator.name()} generator")
                 generator.install()
+        else:
+            cppython_logger.info("Skipping install because the project is not enabled")
 
     def update(self) -> None:
         if self._enabled:
@@ -222,6 +228,8 @@ class Project(API):
             for generator in self._generators:
                 cppython_logger.info(f"Updating {generator.name()} generator")
                 generator.update()
+        else:
+            cppython_logger.info("Skipping update because the project is not enabled")
 
     def build(self) -> None:
         if self._enabled:
@@ -230,3 +238,5 @@ class Project(API):
             for generator in self._generators:
                 cppython_logger.info(f"Building {generator.name()} generator")
                 generator.build()
+        else:
+            cppython_logger.info("Skipping build because the project is not enabled")
