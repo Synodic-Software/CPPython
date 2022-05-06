@@ -133,22 +133,25 @@ class Project(API):
         plugins = builder.gather_plugins(Generator)
 
         if not plugins:
-            cppython_logger.info("No generator plugin was found")
+            cppython_logger.error("No generator plugin was found")
             return
+
+        for plugin in plugins:
+            cppython_logger.warning(f"Generator plugin found: {plugin.name()}")
 
         extended_pyproject_type = builder.generate_model(plugins)
         self._pyproject = extended_pyproject_type(**pyproject_data)
 
         if self.pyproject is None:
-            cppython_logger.info("Data is not defined")
+            cppython_logger.error("Data is not defined")
             return
 
         if self.pyproject.tool is None:
-            cppython_logger.info("Table [tool] is not defined")
+            cppython_logger.error("Table [tool] is not defined")
             return
 
         if self.pyproject.tool.cppython is None:
-            cppython_logger.info("Table [tool.cppython] is not defined")
+            cppython_logger.error("Table [tool.cppython] is not defined")
             return
 
         self._enabled = True
@@ -158,7 +161,7 @@ class Project(API):
         generator_configuration = GeneratorConfiguration()
         self._generators = builder.create_generators(plugins, generator_configuration, self.pyproject)
 
-        cppython_logger.info("Initialized project")
+        cppython_logger.info("Initialized project successfully")
 
     @property
     def enabled(self) -> bool:
@@ -195,11 +198,11 @@ class Project(API):
                 path.mkdir(parents=True, exist_ok=True)
 
                 if not generator.generator_downloaded(path):
-                    cppython_logger.info(f"Downloading the {generator.name()} tool")
+                    cppython_logger.warning(f"Downloading the {generator.name()} requirements to {path}")
 
                     # TODO: Make async with progress bar
                     generator.download_generator(path)
-                    cppython_logger.info("Download complete")
+                    cppython_logger.warning("Download complete")
 
     # API Contract
 
@@ -209,6 +212,7 @@ class Project(API):
             self.download()
 
             for generator in self._generators:
+                cppython_logger.info(f"Installing {generator.name()} generator")
                 generator.install()
 
     def update(self) -> None:
@@ -216,6 +220,7 @@ class Project(API):
             cppython_logger.info("Updating project")
 
             for generator in self._generators:
+                cppython_logger.info(f"Updating {generator.name()} generator")
                 generator.update()
 
     def build(self) -> None:
@@ -223,4 +228,5 @@ class Project(API):
             cppython_logger.info("Building project")
 
             for generator in self._generators:
+                cppython_logger.info(f"Building {generator.name()} generator")
                 generator.build()
