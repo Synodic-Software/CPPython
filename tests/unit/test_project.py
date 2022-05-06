@@ -74,7 +74,7 @@ class TestBuilder:
 
         assert model_type.__base__ == PyProject
 
-        generator_type = mocker.Mock(spec=Generator)
+        generator_type = mocker.Mock()
         generator_type.name.return_value = "mock"
         generator_type.data_type.return_value = MockGeneratorData
 
@@ -104,7 +104,7 @@ class TestBuilder:
 
         assert not generators
 
-        generator = mocker.Mock(spec=Generator)
+        generator = mocker.Mock()
         generators = builder.create_generators([generator], generator_configuration, default_pyproject)
 
         assert len(generators) == 1

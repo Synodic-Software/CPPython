@@ -2,7 +2,6 @@
 A click CLI for CPPython interfacing
 """
 
-from logging import Logger
 from pathlib import Path
 from typing import Any, Type
 

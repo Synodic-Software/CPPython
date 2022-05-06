@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from importlib import metadata
 from typing import Any, Type, TypeVar
 
+from cppython_core.core import cppython_logger
 from cppython_core.schema import (
     API,
     CPPythonData,
@@ -58,7 +59,7 @@ class ProjectBuilder:
         TODO
         """
         plugins = []
-        entry_points = metadata.entry_points(group=f"cppython.{plugin_type.plugin_group()}")
+        entry_points = metadata.entry_points(group=f"cppython.{plugin_type.group()}")
 
         for entry_point in entry_points:
             loaded_plugin_type = entry_point.load()
@@ -121,35 +122,33 @@ class Project(API):
 
         levels = [logging.WARNING, logging.INFO, logging.DEBUG]
 
-        self._logger = logging.getLogger("cppython")
-
         # Add default output stream
         console_handler = logging.StreamHandler()
-        self._logger.addHandler(console_handler)
-        self._logger.setLevel(levels[configuration.verbosity])
+        cppython_logger.addHandler(console_handler)
+        cppython_logger.setLevel(levels[configuration.verbosity])
 
-        self._logger.info("Initializing project")
+        cppython_logger.info("Initializing project")
 
         builder = ProjectBuilder(self.configuration)
         plugins = builder.gather_plugins(Generator)
 
         if not plugins:
-            self._logger.info("No generator plugin was found")
+            cppython_logger.info("No generator plugin was found")
             return
 
         extended_pyproject_type = builder.generate_model(plugins)
         self._pyproject = extended_pyproject_type(**pyproject_data)
 
         if self.pyproject is None:
-            self._logger.info("Data is not defined")
+            cppython_logger.info("Data is not defined")
             return
 
         if self.pyproject.tool is None:
-            self._logger.info("Table [tool] is not defined")
+            cppython_logger.info("Table [tool] is not defined")
             return
 
         if self.pyproject.tool.cppython is None:
-            self._logger.info("Table [tool.cppython] is not defined")
+            cppython_logger.info("Table [tool.cppython] is not defined")
             return
 
         self._enabled = True
@@ -159,7 +158,7 @@ class Project(API):
         generator_configuration = GeneratorConfiguration()
         self._generators = builder.create_generators(plugins, generator_configuration, self.pyproject)
 
-        self._logger.info("Initialized project")
+        cppython_logger.info("Initialized project")
 
     @property
     def enabled(self) -> bool:
@@ -196,17 +195,17 @@ class Project(API):
                 path.mkdir(parents=True, exist_ok=True)
 
                 if not generator.generator_downloaded(path):
-                    self._logger.info(f"Downloading the {generator.name()} tool")
+                    cppython_logger.info(f"Downloading the {generator.name()} tool")
 
                     # TODO: Make async with progress bar
                     generator.download_generator(path)
-                    self._logger.info("Download complete")
+                    cppython_logger.info("Download complete")
 
     # API Contract
 
     def install(self) -> None:
         if self._enabled:
-            self._logger.info("Installing project")
+            cppython_logger.info("Installing project")
             self.download()
 
             for generator in self._generators:
@@ -214,14 +213,14 @@ class Project(API):
 
     def update(self) -> None:
         if self._enabled:
-            self._logger.info("Updating project")
+            cppython_logger.info("Updating project")
 
             for generator in self._generators:
                 generator.update()
 
     def build(self) -> None:
         if self._enabled:
-            self._logger.info("Building project")
+            cppython_logger.info("Building project")
 
             for generator in self._generators:
                 generator.build()
