@@ -19,7 +19,7 @@ class Preset(BaseModel):
 
     name: str
     hidden: Optional[bool] = None
-    inherits: list[Preset] = []
+    inherits: list[str] = []
     displayName: Optional[str] = None
     description: Optional[str] = None
 
