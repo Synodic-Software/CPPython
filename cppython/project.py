@@ -191,7 +191,7 @@ class Project(API):
     def _write_generator_presets(self, tool_path: Path, generator: Generator, toolchain_path: Path) -> Path:
         """
         Write a generator preset.
-        @returns - The written directory
+        @returns - The written json file
         """
         generator_tool_path = tool_path / generator.name()
         generator_tool_path.mkdir(parents=True, exist_ok=True)
@@ -199,9 +199,7 @@ class Project(API):
         configure_preset = ConfigurePreset(name=generator.name(), hidden=True, toolchainFile=toolchain_path)
         presets = CMakePresets(configurePresets=[configure_preset])
 
-        write_preset(generator_tool_path, presets)
-
-        return generator_tool_path
+        return write_preset(generator.name(), generator_tool_path, presets)
 
     def _write_presets(self, tool_path: Path, names: list[str], includes: list[Path]) -> None:
         """
@@ -211,7 +209,7 @@ class Project(API):
         configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
         presets = CMakePresets(configurePresets=[configure_preset], include=includes)
 
-        write_preset(tool_path, presets)
+        write_preset("cppython", tool_path, presets)
 
     # API Contract
     def install(self) -> None:
@@ -237,8 +235,8 @@ class Project(API):
 
             toolchain_path = generator.install()
 
-            directory = self._write_generator_presets(tool_path, generator, toolchain_path)
-            includes.append(directory)
+            json = self._write_generator_presets(tool_path, generator, toolchain_path)
+            includes.append(json)
             names.append(generator.name())
 
         self._write_presets(tool_path, names, includes)
@@ -265,8 +263,8 @@ class Project(API):
 
             toolchain_path = generator.update()
 
-            directory = self._write_generator_presets(tool_path, generator, toolchain_path)
-            includes.append(directory)
+            json = self._write_generator_presets(tool_path, generator, toolchain_path)
+            includes.append(json)
             names.append(generator.name())
 
         self._write_presets(tool_path, names, includes)

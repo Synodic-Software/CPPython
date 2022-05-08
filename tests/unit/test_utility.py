@@ -18,7 +18,7 @@ class TestBuilder:
         """
 
         presets = CMakePresets()
-        write_preset(tmpdir, presets)
-        output = read_preset(tmpdir)
+        write_preset("test", tmpdir, presets)
+        output = read_preset("test", tmpdir)
 
         assert presets == output
