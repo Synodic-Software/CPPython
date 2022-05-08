@@ -20,6 +20,7 @@ from cppython_core.schema import (
 from pydantic import create_model
 
 from cppython.schema import API, CMakePresets, ConfigurePreset, ProjectConfiguration
+from cppython.utility import write_preset
 
 
 class ProjectBuilder:
@@ -187,14 +188,6 @@ class Project(API):
             else:
                 cppython_logger.info(f"The {generator.name()} generator is already downloaded")
 
-    def _write_presets_file(self, path: Path, presets: CMakePresets) -> None:
-        """
-        Writing routing
-        """
-
-        with open(path / "CMakePresets.json", "w", encoding="utf8") as json_file:
-            presets.json(json_file)  # type: ignore
-
     def _write_generator_presets(self, tool_path: Path, generator: Generator, toolchain_path: Path) -> Path:
         """
         Write a generator preset.
@@ -206,7 +199,7 @@ class Project(API):
         configure_preset = ConfigurePreset(name=generator.name(), hidden=True, toolchainFile=toolchain_path)
         presets = CMakePresets(configurePresets=[configure_preset])
 
-        self._write_presets_file(generator_tool_path, presets)
+        write_preset(generator_tool_path, presets)
 
         return generator_tool_path
 
@@ -217,7 +210,8 @@ class Project(API):
 
         configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
         presets = CMakePresets(configurePresets=[configure_preset], include=includes)
-        self._write_presets_file(tool_path, presets)
+
+        write_preset(tool_path, presets)
 
     # API Contract
     def install(self) -> None:
