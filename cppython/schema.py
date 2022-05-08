@@ -65,7 +65,7 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
     The schema for the CMakePresets and CMakeUserPresets files
     """
 
-    version: int = Field(4, const=True)
+    version: int = Field(default=4, const=True)
     cmakeMinimumRequired: Optional[CMakeVersion]
     include: Optional[list[str]]
     vendor: Optional[Any]
