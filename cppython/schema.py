@@ -66,7 +66,7 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
     """
 
     version: int = Field(default=4, const=True)
-    cmakeMinimumRequired: CMakeVersion  # TODO: 'version' compatability validation
+    cmakeMinimumRequired: CMakeVersion = CMakeVersion()  # TODO: 'version' compatability validation
     include: list[str] = []
     vendor: Optional[Any] = None
     configurePresets: list[ConfigurePreset] = []
