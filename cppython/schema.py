@@ -18,10 +18,10 @@ class Preset(BaseModel):
     """
 
     name: str
-    hidden: Optional[bool]
-    inherits: Optional[list[Preset]]
-    displayName: Optional[str]
-    description: Optional[str]
+    hidden: Optional[bool] = None
+    inherits: list[Preset] = []
+    displayName: Optional[str] = None
+    description: Optional[str] = None
 
 
 class ConfigurePreset(Preset):
@@ -29,7 +29,7 @@ class ConfigurePreset(Preset):
     Partial Configure Preset specification
     """
 
-    toolchainFile: Optional[Path]
+    toolchainFile: Optional[Path] = None
 
 
 class BuildPreset(Preset):
@@ -37,8 +37,8 @@ class BuildPreset(Preset):
     Partial Build Preset specification
     """
 
-    configurePreset: Optional[str]
-    inheritConfigureEnvironment: Optional[bool] = True
+    configurePreset: Optional[str] = None
+    inheritConfigureEnvironment: Optional[bool] = None
 
 
 class TestPreset(Preset):
@@ -46,8 +46,8 @@ class TestPreset(Preset):
     Partial Test Preset specification
     """
 
-    configurePreset: Optional[str]
-    inheritConfigureEnvironment: Optional[bool] = True
+    configurePreset: Optional[str] = None
+    inheritConfigureEnvironment: Optional[bool] = None
 
 
 class CMakeVersion(BaseModel, extra=Extra.forbid):
@@ -66,12 +66,12 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
     """
 
     version: int = Field(default=4, const=True)
-    cmakeMinimumRequired: Optional[CMakeVersion]
-    include: Optional[list[str]]
-    vendor: Optional[Any]
-    configurePresets: Optional[list[ConfigurePreset]]
-    buildPresets: Optional[list[BuildPreset]]
-    testPresets: Optional[list[TestPreset]]
+    cmakeMinimumRequired: CMakeVersion  # TODO: 'version' compatability validation
+    include: list[str] = []
+    vendor: Optional[Any] = None
+    configurePresets: list[ConfigurePreset] = []
+    buildPresets: list[BuildPreset] = []
+    testPresets: list[TestPreset] = []
 
 
 @dataclass
