@@ -6,10 +6,11 @@ from __future__ import annotations  # Required for self-referenced pydantic type
 
 from abc import abstractmethod
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import PosixPath
 from typing import Any, Optional
 
 from pydantic import BaseModel, Extra, Field
+from pydantic.types import FilePath
 
 
 class Preset(BaseModel):
@@ -29,7 +30,7 @@ class ConfigurePreset(Preset):
     Partial Configure Preset specification
     """
 
-    toolchainFile: Optional[Path] = None
+    toolchainFile: Optional[FilePath] = None
 
 
 class BuildPreset(Preset):
@@ -67,7 +68,7 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
 
     version: int = Field(default=4, const=True)
     cmakeMinimumRequired: CMakeVersion = CMakeVersion()  # TODO: 'version' compatability validation
-    include: list[Path] = []
+    include: list[FilePath] = []
     vendor: Optional[Any] = None
     configurePresets: list[ConfigurePreset] = []
     buildPresets: list[BuildPreset] = []
