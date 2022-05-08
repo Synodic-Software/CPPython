@@ -68,7 +68,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.3.3.dev11"
+version = "0.3.3.dev14"
 requires_python = ">=3.10"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -200,7 +200,7 @@ dependencies = [
 
 [[package]]
 name = "pytest-cppython"
-version = "0.1.7.dev7"
+version = "0.1.7.dev8"
 requires_python = ">=3.10"
 summary = "A pytest plugin that imports CPPython testing types"
 dependencies = [
@@ -340,9 +340,9 @@ content_hash = "sha256:9842348d0ddc71440b500499ed71e9b60aea9edcf388f5d8ef170c125
     {file = "coverage-6.3.2-pp36.pp37.pp38-none-any.whl", hash = "sha256:18d520c6860515a771708937d2f78f63cc47ab3b80cb78e86573b0a760161faf"},
     {file = "coverage-6.3.2.tar.gz", hash = "sha256:03e2a7826086b91ef345ff18742ee9fc47a6839ccd517061ef8fa1976e652ce9"},
 ]
-"cppython-core 0.3.3.dev11" = [
-    {file = "cppython_core-0.3.3.dev11-py3-none-any.whl", hash = "sha256:0eabfb0b16d0eb189a9aa0fddc0ba4969544b0fa23ca0c645446cb2cf99739e6"},
-    {file = "cppython-core-0.3.3.dev11.tar.gz", hash = "sha256:d70407fe819fdfc1afcf0229f12374a87a2306ee34e641f3fd79ca56b0cec0e5"},
+"cppython-core 0.3.3.dev14" = [
+    {file = "cppython_core-0.3.3.dev14-py3-none-any.whl", hash = "sha256:e9735b3029c97b2a3d9ae92c587a734c90ff655ebbfb39d44164c728a499be09"},
+    {file = "cppython-core-0.3.3.dev14.tar.gz", hash = "sha256:000e71af5cab85906781b3b32fd7a8d8c3179a8ee6a137a45ac9c3d219186cd8"},
 ]
 "dill 0.3.4" = [
     {file = "dill-0.3.4-py2.py3-none-any.whl", hash = "sha256:7e40e4a70304fd9ceab3535d36e58791d9c4a776b38ec7f7ec9afc8d3dca4d4f"},
@@ -476,9 +476,9 @@ content_hash = "sha256:9842348d0ddc71440b500499ed71e9b60aea9edcf388f5d8ef170c125
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
 ]
-"pytest-cppython 0.1.7.dev7" = [
-    {file = "pytest_cppython-0.1.7.dev7-py3-none-any.whl", hash = "sha256:9633695811b4db94861cbd7e50ffa14915c8b219189343b2314a24488f030f01"},
-    {file = "pytest-cppython-0.1.7.dev7.tar.gz", hash = "sha256:40fa340a05f1eea5c25dbf5221573378b831ef06cd4e5f5a965f9b0fde31f7a1"},
+"pytest-cppython 0.1.7.dev8" = [
+    {file = "pytest_cppython-0.1.7.dev8-py3-none-any.whl", hash = "sha256:e0d0475e7dc7f7c640f15257c7e50c186f2c29351a03d5c3b5820d33fb7c26c5"},
+    {file = "pytest-cppython-0.1.7.dev8.tar.gz", hash = "sha256:603e9b6fc1ae7cc3e1e1133d88b8f258870373e6354aecbf86058ea8593cecce"},
 ]
 "pytest-mock 3.7.0" = [
     {file = "pytest_mock-3.7.0-py3-none-any.whl", hash = "sha256:6cff27cec936bf81dc5ee87f07132b807bcda51106b5ec4b90a04331cba76231"},

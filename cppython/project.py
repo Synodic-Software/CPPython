@@ -3,13 +3,11 @@ The central delegation of the CPPython project
 """
 
 import logging
-from dataclasses import dataclass
 from importlib import metadata
 from typing import Any, Type, TypeVar
 
 from cppython_core.core import cppython_logger
 from cppython_core.schema import (
-    API,
     CPPythonData,
     Generator,
     GeneratorConfiguration,
@@ -20,28 +18,7 @@ from cppython_core.schema import (
 )
 from pydantic import create_model
 
-
-@dataclass
-class ProjectConfiguration:
-    """
-    TODO
-    """
-
-    _verbosity: int = 0
-
-    @property
-    def verbosity(self) -> int:
-        """
-        TODO
-        """
-        return self._verbosity
-
-    @verbosity.setter
-    def verbosity(self, value: int) -> None:
-        """
-        TODO
-        """
-        self._verbosity = min(max(value, 0), 2)
+from cppython.schema import API, ProjectConfiguration
 
 
 class ProjectBuilder:
@@ -209,8 +186,10 @@ class Project(API):
             cppython_logger.info("Skipping download because the project is not enabled")
 
     # API Contract
-
     def install(self) -> None:
+        """
+        TODO
+        """
         if self._enabled:
             cppython_logger.info("Installing project")
             self.download()
@@ -222,6 +201,9 @@ class Project(API):
             cppython_logger.info("Skipping install because the project is not enabled")
 
     def update(self) -> None:
+        """
+        TODO
+        """
         if self._enabled:
             cppython_logger.info("Updating project")
 
@@ -230,13 +212,3 @@ class Project(API):
                 generator.update()
         else:
             cppython_logger.info("Skipping update because the project is not enabled")
-
-    def build(self) -> None:
-        if self._enabled:
-            cppython_logger.info("Building project")
-
-            for generator in self._generators:
-                cppython_logger.info(f"Building {generator.name()} generator")
-                generator.build()
-        else:
-            cppython_logger.info("Skipping build because the project is not enabled")
