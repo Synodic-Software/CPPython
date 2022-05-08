@@ -165,50 +165,53 @@ class Project(API):
         """
         Download the generator tooling if required
         """
-        if self._enabled:
-            base_path = self.pyproject.tool.cppython.install_path
-
-            for generator in self._generators:
-
-                path = base_path / generator.name()
-
-                path.mkdir(parents=True, exist_ok=True)
-
-                if not generator.generator_downloaded(path):
-                    cppython_logger.warning(f"Downloading the {generator.name()} requirements to {path}")
-
-                    # TODO: Make async with progress bar
-                    generator.download_generator(path)
-                    cppython_logger.warning("Download complete")
-                else:
-                    cppython_logger.info(f"The {generator.name()} generator is already downloaded")
-        else:
+        if not self._enabled:
             cppython_logger.info("Skipping download because the project is not enabled")
+            return
+
+        base_path = self.pyproject.tool.cppython.install_path
+
+        for generator in self._generators:
+
+            path = base_path / generator.name()
+
+            path.mkdir(parents=True, exist_ok=True)
+
+            if not generator.generator_downloaded(path):
+                cppython_logger.warning(f"Downloading the {generator.name()} requirements to {path}")
+
+                # TODO: Make async with progress bar
+                generator.download_generator(path)
+                cppython_logger.warning("Download complete")
+            else:
+                cppython_logger.info(f"The {generator.name()} generator is already downloaded")
 
     # API Contract
     def install(self) -> None:
         """
         TODO
         """
-        if self._enabled:
-            cppython_logger.info("Installing project")
-            self.download()
-
-            for generator in self._generators:
-                cppython_logger.info(f"Installing {generator.name()} generator")
-                generator.install()
-        else:
+        if not self._enabled:
             cppython_logger.info("Skipping install because the project is not enabled")
+            return
+
+        cppython_logger.info("Installing project")
+        self.download()
+
+        for generator in self._generators:
+            cppython_logger.info(f"Installing {generator.name()} generator")
+            generator.install()
 
     def update(self) -> None:
         """
         TODO
         """
-        if self._enabled:
-            cppython_logger.info("Updating project")
-
-            for generator in self._generators:
-                cppython_logger.info(f"Updating {generator.name()} generator")
-                generator.update()
-        else:
+        if not self._enabled:
             cppython_logger.info("Skipping update because the project is not enabled")
+            return
+
+        cppython_logger.info("Updating project")
+
+        for generator in self._generators:
+            cppython_logger.info(f"Updating {generator.name()} generator")
+            generator.update()
