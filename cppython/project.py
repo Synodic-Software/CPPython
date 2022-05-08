@@ -4,7 +4,6 @@ The central delegation of the CPPython project
 
 import logging
 from importlib import metadata
-from pathlib import Path
 from typing import Any, Type, TypeVar
 
 from cppython_core.core import cppython_logger
@@ -19,8 +18,8 @@ from cppython_core.schema import (
 )
 from pydantic import create_model
 
-from cppython.schema import API, CMakePresets, ConfigurePreset, ProjectConfiguration
-from cppython.utility import write_preset
+from cppython.schema import API, ProjectConfiguration
+from cppython.utility import write_preset, write_presets
 
 
 class ProjectBuilder:
@@ -188,29 +187,6 @@ class Project(API):
             else:
                 cppython_logger.info(f"The {generator.name()} generator is already downloaded")
 
-    def _write_generator_presets(self, tool_path: Path, generator: Generator, toolchain_path: Path) -> Path:
-        """
-        Write a generator preset.
-        @returns - The written json file
-        """
-        generator_tool_path = tool_path / generator.name()
-        generator_tool_path.mkdir(parents=True, exist_ok=True)
-
-        configure_preset = ConfigurePreset(name=generator.name(), hidden=True, toolchainFile=toolchain_path)
-        presets = CMakePresets(configurePresets=[configure_preset])
-
-        return write_preset(generator.name(), generator_tool_path, presets)
-
-    def _write_presets(self, tool_path: Path, names: list[str], includes: list[Path]) -> None:
-        """
-        Write the cppython main preset
-        """
-
-        configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
-        presets = CMakePresets(configurePresets=[configure_preset], include=includes)
-
-        write_preset("cppython", tool_path, presets)
-
     # API Contract
     def install(self) -> None:
         """
@@ -226,20 +202,20 @@ class Project(API):
         tool_path = self.pyproject.tool.cppython.tool_path
         tool_path.mkdir(parents=True, exist_ok=True)
 
-        names = []
-        includes = []
+        generator_output = []
 
         # TODO: Async
         for generator in self._generators:
             cppython_logger.info(f"Installing {generator.name()} generator")
 
-            toolchain_path = generator.install()
+            try:
+                toolchain_path = generator.install()
+                generator_output.append((generator.name(), toolchain_path))
+            except Exception as exception:
+                cppython_logger.error(f"Generator {generator.name()} failed to install")
+                raise exception
 
-            json = self._write_generator_presets(tool_path, generator, toolchain_path)
-            includes.append(json)
-            names.append(generator.name())
-
-        self._write_presets(tool_path, names, includes)
+        write_presets(tool_path, generator_output)
 
     def update(self) -> None:
         """
@@ -254,17 +230,17 @@ class Project(API):
         tool_path = self.pyproject.tool.cppython.tool_path
         tool_path.mkdir(parents=True, exist_ok=True)
 
-        names = []
-        includes = []
+        generator_output = []
 
         # TODO: Async
         for generator in self._generators:
             cppython_logger.info(f"Updating {generator.name()} generator")
 
-            toolchain_path = generator.update()
+            try:
+                toolchain_path = generator.update()
+                generator_output.append((generator.name(), toolchain_path))
+            except Exception as exception:
+                cppython_logger.error(f"Generator {generator.name()} failed to update")
+                raise exception
 
-            json = self._write_generator_presets(tool_path, generator, toolchain_path)
-            includes.append(json)
-            names.append(generator.name())
-
-        self._write_presets(tool_path, names, includes)
+        write_presets(tool_path, generator_output)
