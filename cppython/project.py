@@ -4,6 +4,7 @@ The central delegation of the CPPython project
 
 import logging
 from importlib import metadata
+from pathlib import Path
 from typing import Any, Type, TypeVar
 
 from cppython_core.core import cppython_logger
@@ -18,7 +19,7 @@ from cppython_core.schema import (
 )
 from pydantic import create_model
 
-from cppython.schema import API, ProjectConfiguration
+from cppython.schema import API, CMakePresets, ConfigurePreset, ProjectConfiguration
 
 
 class ProjectBuilder:
@@ -186,6 +187,38 @@ class Project(API):
             else:
                 cppython_logger.info(f"The {generator.name()} generator is already downloaded")
 
+    def _write_presets_file(self, path: Path, presets: CMakePresets) -> None:
+        """
+        Writing routing
+        """
+
+        with open(path / "CMakePresets.json", "w", encoding="utf8") as json_file:
+            presets.json(json_file)  # type: ignore
+
+    def _write_generator_presets(self, tool_path: Path, generator: Generator, toolchain_path: Path) -> Path:
+        """
+        Write a generator preset.
+        @returns - The written directory
+        """
+        generator_tool_path = tool_path / generator.name()
+        generator_tool_path.mkdir(parents=True, exist_ok=True)
+
+        configure_preset = ConfigurePreset(name=generator.name(), hidden=True, toolchainFile=toolchain_path)
+        presets = CMakePresets(configurePresets=[configure_preset])
+
+        self._write_presets_file(generator_tool_path, presets)
+
+        return generator_tool_path
+
+    def _write_presets(self, tool_path: Path, names: list[str], includes: list[Path]) -> None:
+        """
+        Write the cppython main preset
+        """
+
+        configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
+        presets = CMakePresets(configurePresets=[configure_preset], include=includes)
+        self._write_presets_file(tool_path, presets)
+
     # API Contract
     def install(self) -> None:
         """
@@ -198,9 +231,23 @@ class Project(API):
         cppython_logger.info("Installing project")
         self.download()
 
+        tool_path = self.pyproject.tool.cppython.tool_path
+        tool_path.mkdir(parents=True, exist_ok=True)
+
+        names = []
+        includes = []
+
+        # TODO: Async
         for generator in self._generators:
             cppython_logger.info(f"Installing {generator.name()} generator")
-            generator.install()
+
+            toolchain_path = generator.install()
+
+            directory = self._write_generator_presets(tool_path, generator, toolchain_path)
+            includes.append(directory)
+            names.append(generator.name())
+
+        self._write_presets(tool_path, names, includes)
 
     def update(self) -> None:
         """
@@ -212,6 +259,20 @@ class Project(API):
 
         cppython_logger.info("Updating project")
 
+        tool_path = self.pyproject.tool.cppython.tool_path
+        tool_path.mkdir(parents=True, exist_ok=True)
+
+        names = []
+        includes = []
+
+        # TODO: Async
         for generator in self._generators:
             cppython_logger.info(f"Updating {generator.name()} generator")
-            generator.update()
+
+            toolchain_path = generator.update()
+
+            directory = self._write_generator_presets(tool_path, generator, toolchain_path)
+            includes.append(directory)
+            names.append(generator.name())
+
+        self._write_presets(tool_path, names, includes)
