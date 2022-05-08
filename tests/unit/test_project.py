@@ -2,8 +2,6 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
-import logging
-
 from cppython_core.schema import (
     PEP621,
     CPPythonData,

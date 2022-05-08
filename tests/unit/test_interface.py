@@ -5,7 +5,6 @@ Test the functions related to the internal interface implementation and the 'Int
 import pytest
 from click.testing import CliRunner
 from cppython_core.schema import (
-    API,
     PEP621,
     CPPythonData,
     InterfaceConfiguration,
@@ -17,11 +16,12 @@ from pytest_cppython.plugin import InterfaceUnitTests
 from pytest_mock.plugin import MockerFixture
 
 from cppython.console import Config, ConsoleInterface, cli
+from cppython.schema import API
 
 default_pep621 = PEP621(name="test_name", version="1.0")
-default_cppython_data = CPPythonData(**{"target": TargetEnum.EXE})
-default_tool_data = ToolData(**{"cppython": default_cppython_data})
-default_pyproject = PyProject(**{"project": default_pep621, "tool": default_tool_data})
+default_cppython_data = CPPythonData(target=TargetEnum.EXE)
+default_tool_data = ToolData(cppython=default_cppython_data)
+default_pyproject = PyProject(project=default_pep621, tool=default_tool_data)
 
 
 class TestCLIInterface(InterfaceUnitTests):
