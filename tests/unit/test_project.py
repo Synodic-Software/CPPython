@@ -2,6 +2,8 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
+from pathlib import Path
+
 from cppython_core.schema import (
     PEP621,
     CPPythonData,
@@ -41,7 +43,7 @@ class TestProject:
         """
 
         interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration()
+        configuration = ProjectConfiguration(root_path=Path())
         Project(configuration, interface_mock, default_pyproject.dict(by_alias=True))
 
 
@@ -55,7 +57,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration()
+        configuration = ProjectConfiguration(root_path=Path())
         builder = ProjectBuilder(configuration)
         plugins = builder.gather_plugins(Generator)
 
@@ -66,7 +68,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration()
+        configuration = ProjectConfiguration(root_path=Path())
         builder = ProjectBuilder(configuration)
         model_type = builder.generate_model([])
 
@@ -94,7 +96,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration()
+        configuration = ProjectConfiguration(root_path=Path())
         builder = ProjectBuilder(configuration)
 
         generator_configuration = GeneratorConfiguration()
