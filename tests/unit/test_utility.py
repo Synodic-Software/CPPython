@@ -23,15 +23,17 @@ class TestBuilder:
 
         assert presets == output
 
-    def test_presets(self, tmpdir: Path):
+    def test_presets(self, tmpdir):
         """
         TODO
         """
 
-        input_toolchain = tmpdir / "input.cmake"
+        temporary_directory = Path(tmpdir)
+
+        input_toolchain = temporary_directory / "input.cmake"
 
         with open(input_toolchain, "w", encoding="utf8") as file:
             file.write("")
 
         generator_output = [("test", input_toolchain)]
-        write_presets(tmpdir, generator_output)
+        write_presets(temporary_directory, generator_output)

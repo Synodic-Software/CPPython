@@ -5,6 +5,9 @@ TODO
 import json
 from pathlib import Path
 
+from pydantic import FilePath
+from pydantic.types import DirectoryPath
+
 from cppython.schema import CMakePresets, ConfigurePreset
 
 
@@ -23,18 +26,19 @@ def write_preset(name: str, path: Path, presets: CMakePresets) -> Path:
     """
     file = path / f"{name}.json"
 
+    serialized = json.loads(presets.json())
     with open(file, "w", encoding="utf8") as json_file:
-        json.dump(presets.dict(), json_file, ensure_ascii=False, indent=2)
+        json.dump(serialized, json_file, ensure_ascii=False, indent=2)
 
     return file
 
 
-def write_presets(tool_path: Path, generator_output: list[tuple[str, Path]]) -> None:
+def write_presets(tool_path: DirectoryPath, generator_output: list[tuple[str, FilePath]]) -> None:
     """
     Write the cppython presets
     """
 
-    def write_generator_presets(tool_path: Path, generator_name: str, toolchain_path: Path) -> Path:
+    def write_generator_presets(tool_path: DirectoryPath, generator_name: str, toolchain_path: FilePath) -> FilePath:
         """
         Write a generator preset.
         @returns - The written json file
