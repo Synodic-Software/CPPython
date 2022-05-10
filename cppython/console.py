@@ -12,7 +12,10 @@ from cppython_core.schema import GeneratorDataT, Interface, InterfaceConfigurati
 from cppython.project import Project, ProjectConfiguration
 
 
-def _create_pyproject() -> dict[str, Any]:
+def _find_pyproject_file() -> Path:
+    """
+    TODO
+    """
 
     # Search for a path upward
     path = Path.cwd()
@@ -24,6 +27,14 @@ def _create_pyproject() -> dict[str, Any]:
             ), "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
 
     path = Path(path / "pyproject.toml")
+
+    return path
+
+
+def _create_pyproject(path: Path) -> dict[str, Any]:
+    """
+    TODO
+    """
 
     # Load file
     data = tomlkit.loads(path.read_text(encoding="utf-8"))
@@ -38,11 +49,12 @@ class Config:
     """
 
     def __init__(self):
-        self.pyproject_data = _create_pyproject()
+        path = _find_pyproject_file()
+        self.pyproject_data = _create_pyproject(path)
 
         configuration = InterfaceConfiguration()
         self.interface = ConsoleInterface(configuration)
-        self.configuration = ProjectConfiguration()
+        self.configuration = ProjectConfiguration(root_path=path)
 
     def create_project(self) -> Project:
         """

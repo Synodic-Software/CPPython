@@ -19,7 +19,7 @@ from cppython_core.schema import (
 from pydantic import create_model
 
 from cppython.schema import API, ProjectConfiguration
-from cppython.utility import write_preset, write_presets
+from cppython.utility import write_presets
 
 
 class ProjectBuilder:
