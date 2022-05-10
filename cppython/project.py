@@ -209,7 +209,7 @@ class Project(API):
             cppython_logger.info(f"Installing {generator.name()} generator")
 
             try:
-                toolchain_path = generator.install()
+                toolchain_path = generator.install().absolute()
                 generator_output.append((generator.name(), toolchain_path))
             except Exception as exception:
                 cppython_logger.error(f"Generator {generator.name()} failed to install")
@@ -237,7 +237,7 @@ class Project(API):
             cppython_logger.info(f"Updating {generator.name()} generator")
 
             try:
-                toolchain_path = generator.update()
+                toolchain_path = generator.update().absolute()
                 generator_output.append((generator.name(), toolchain_path))
             except Exception as exception:
                 cppython_logger.error(f"Generator {generator.name()} failed to update")
