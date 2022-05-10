@@ -33,6 +33,9 @@ class ConfigurePreset(Preset):
 
     @validator("toolchainFile")
     def validate_path(cls, v):
+        """
+        TODO
+        """
         return Path(v).as_posix()
 
 
@@ -79,6 +82,9 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
 
     @validator("include")
     def validate_path(cls, v):
+        """
+        TODO
+        """
         output = []
         for value in v:
             output.append(Path(value).as_posix())
