@@ -5,9 +5,6 @@ TODO
 import json
 from pathlib import Path
 
-from pydantic import FilePath
-from pydantic.types import DirectoryPath
-
 from cppython.schema import CMakePresets, ConfigurePreset
 
 
@@ -26,19 +23,19 @@ def write_preset(name: str, path: Path, presets: CMakePresets) -> Path:
     """
     file = path / f"{name}.json"
 
-    serialized = json.loads(presets.json())
+    serialized = json.loads(presets.json(exclude_none=True))
     with open(file, "w", encoding="utf8") as json_file:
         json.dump(serialized, json_file, ensure_ascii=False, indent=2)
 
     return file
 
 
-def write_presets(tool_path: DirectoryPath, generator_output: list[tuple[str, FilePath]]) -> None:
+def write_presets(tool_path: Path, generator_output: list[tuple[str, Path]]) -> None:
     """
     Write the cppython presets
     """
 
-    def write_generator_presets(tool_path: DirectoryPath, generator_name: str, toolchain_path: FilePath) -> FilePath:
+    def write_generator_presets(tool_path: Path, generator_name: str, toolchain_path: Path) -> Path:
         """
         Write a generator preset.
         @returns - The written json file
@@ -46,7 +43,7 @@ def write_presets(tool_path: DirectoryPath, generator_output: list[tuple[str, Fi
         generator_tool_path = tool_path / generator_name
         generator_tool_path.mkdir(parents=True, exist_ok=True)
 
-        configure_preset = ConfigurePreset(name=generator_name, hidden=True, toolchainFile=toolchain_path)
+        configure_preset = ConfigurePreset(name=generator_name, hidden=True, toolchainFile=str(toolchain_path))
         presets = CMakePresets(configurePresets=[configure_preset])
 
         return write_preset(generator_name, generator_tool_path, presets)
@@ -54,12 +51,16 @@ def write_presets(tool_path: DirectoryPath, generator_output: list[tuple[str, Fi
     names = []
     includes = []
 
+    tool_path = tool_path / "cppython"
+
     for generator_name, toolchain in generator_output:
 
         preset_file = write_generator_presets(tool_path, generator_name, toolchain)
 
+        relative_file = preset_file.relative_to(tool_path)
+
         names.append(generator_name)
-        includes.append(preset_file)
+        includes.append(str(relative_file))
 
     configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
     presets = CMakePresets(configurePresets=[configure_preset], include=includes)

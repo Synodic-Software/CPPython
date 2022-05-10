@@ -12,14 +12,16 @@ class TestBuilder:
     TODO
     """
 
-    def test_preset_read_write(self, tmpdir: Path):
+    def test_preset_read_write(self, tmpdir):
         """
         TODO
         """
 
+        temporary_directory = Path(tmpdir)
+
         presets = CMakePresets()
-        write_preset("test", tmpdir, presets)
-        output = read_preset("test", tmpdir)
+        write_preset("test", temporary_directory, presets)
+        output = read_preset("test", temporary_directory)
 
         assert presets == output
 
@@ -37,3 +39,15 @@ class TestBuilder:
 
         generator_output = [("test", input_toolchain)]
         write_presets(temporary_directory, generator_output)
+
+        cppython_tool = temporary_directory / "cppython"
+        assert cppython_tool.exists()
+
+        cppython_file = cppython_tool / "cppython.json"
+        assert cppython_file.exists()
+
+        test_tool = cppython_tool / "test"
+        assert test_tool.exists()
+
+        test_file = test_tool / "test.json"
+        assert test_file.exists()
