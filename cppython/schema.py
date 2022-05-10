@@ -6,11 +6,10 @@ from __future__ import annotations  # Required for self-referenced pydantic type
 
 from abc import abstractmethod
 from dataclasses import dataclass
-from pathlib import PosixPath
+from pathlib import Path
 from typing import Any, Optional
 
-from pydantic import BaseModel, Extra, Field
-from pydantic.types import FilePath
+from pydantic import BaseModel, Extra, Field, validator
 
 
 class Preset(BaseModel):
@@ -19,10 +18,10 @@ class Preset(BaseModel):
     """
 
     name: str
-    hidden: Optional[bool] = None
+    hidden: Optional[bool]
     inherits: list[str] = []
-    displayName: Optional[str] = None
-    description: Optional[str] = None
+    displayName: Optional[str]
+    description: Optional[str]
 
 
 class ConfigurePreset(Preset):
@@ -30,7 +29,11 @@ class ConfigurePreset(Preset):
     Partial Configure Preset specification
     """
 
-    toolchainFile: Optional[FilePath] = None
+    toolchainFile: Optional[str]
+
+    @validator("toolchainFile")
+    def validate_path(cls, v):
+        return Path(v).as_posix()
 
 
 class BuildPreset(Preset):
@@ -38,8 +41,8 @@ class BuildPreset(Preset):
     Partial Build Preset specification
     """
 
-    configurePreset: Optional[str] = None
-    inheritConfigureEnvironment: Optional[bool] = None
+    configurePreset: Optional[str]
+    inheritConfigureEnvironment: Optional[bool]
 
 
 class TestPreset(Preset):
@@ -47,8 +50,8 @@ class TestPreset(Preset):
     Partial Test Preset specification
     """
 
-    configurePreset: Optional[str] = None
-    inheritConfigureEnvironment: Optional[bool] = None
+    configurePreset: Optional[str]
+    inheritConfigureEnvironment: Optional[bool]
 
 
 class CMakeVersion(BaseModel, extra=Extra.forbid):
@@ -68,11 +71,18 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
 
     version: int = Field(default=4, const=True)
     cmakeMinimumRequired: CMakeVersion = CMakeVersion()  # TODO: 'version' compatability validation
-    include: list[FilePath] = []
-    vendor: Optional[Any] = None
+    include: list[str] = []
+    vendor: Optional[Any]
     configurePresets: list[ConfigurePreset] = []
     buildPresets: list[BuildPreset] = []
     testPresets: list[TestPreset] = []
+
+    @validator("include")
+    def validate_path(cls, v):
+        output = []
+        for value in v:
+            output.append(Path(value).as_posix())
+        return output
 
 
 @dataclass
