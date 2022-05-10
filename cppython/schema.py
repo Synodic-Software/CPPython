@@ -91,6 +91,7 @@ class ProjectConfiguration:
     TODO
     """
 
+    root_path: Path  # The path where the pyproject.toml lives
     _verbosity: int = 0
 
     @property
