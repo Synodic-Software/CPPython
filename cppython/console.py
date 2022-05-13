@@ -26,7 +26,7 @@ def _find_pyproject_file() -> Path:
                 False
             ), "This is not a valid project. No pyproject.toml found in the current directory or any of its parents."
 
-    path = Path(path / "pyproject.toml")
+    path = Path(path)
 
     return path
 
@@ -50,7 +50,7 @@ class Config:
 
     def __init__(self):
         path = _find_pyproject_file()
-        self.pyproject_data = _create_pyproject(path)
+        self.pyproject_data = _create_pyproject(path / "pyproject.toml")
 
         configuration = InterfaceConfiguration()
         self.interface = ConsoleInterface(configuration)
