@@ -8,7 +8,9 @@ from typing import Any, Type, TypeVar
 
 from cppython_core.core import cppython_logger
 from cppython_core.schema import (
+    PEP621,
     CPPythonData,
+    CPPythonDataT,
     Generator,
     GeneratorConfiguration,
     Interface,
@@ -73,16 +75,40 @@ class ProjectBuilder:
         )
 
     def create_generators(
-        self, plugins: list[Type[Generator]], configuration: GeneratorConfiguration, pyproject: PyProject
+        self,
+        plugins: list[Type[Generator]],
+        configuration: GeneratorConfiguration,
+        project: PEP621,
+        cppython: CPPythonData,
     ) -> list[Generator]:
         """
         TODO
         """
         _generators = []
         for plugin_type in plugins:
-            _generators.append(plugin_type(configuration, pyproject))
+            _generators.append(plugin_type(configuration, project, cppython))
 
         return _generators
+
+    def generate_modified(self, original: CPPythonDataT) -> CPPythonDataT:
+        """
+        Applies dynamic behaviors of the settings to itself
+        Returns a copy of the original with dynamic modifications
+        """
+        modified = original.copy(deep=True)
+
+        # Add the pyproject.toml location to all relative paths
+
+        if not modified.install_path.is_absolute():
+            modified.install_path = self.configuration.root_path.absolute() / modified.install_path
+
+        if not modified.tool_path.is_absolute():
+            modified.tool_path = self.configuration.root_path.absolute() / modified.tool_path
+
+        if not modified.build_path.is_absolute():
+            modified.build_path = self.configuration.root_path.absolute() / modified.build_path
+
+        return modified
 
 
 class Project(API):
@@ -96,7 +122,6 @@ class Project(API):
 
         self._enabled = False
         self._configuration = configuration
-        self._pyproject = None
 
         levels = [logging.WARNING, logging.INFO, logging.DEBUG]
 
@@ -118,26 +143,30 @@ class Project(API):
             cppython_logger.warning(f"Generator plugin found: {plugin.name()}")
 
         extended_pyproject_type = builder.generate_model(plugins)
-        self._pyproject = extended_pyproject_type(**pyproject_data)
+        pyproject = extended_pyproject_type(**pyproject_data)
 
-        if self.pyproject is None:
+        if pyproject is None:
             cppython_logger.error("Data is not defined")
             return
 
-        if self.pyproject.tool is None:
+        if pyproject.tool is None:
             cppython_logger.error("Table [tool] is not defined")
             return
 
-        if self.pyproject.tool.cppython is None:
+        if pyproject.tool.cppython is None:
             cppython_logger.error("Table [tool.cppython] is not defined")
             return
 
         self._enabled = True
 
+        self._project = pyproject.project
+
+        self._modified_cppython_data = builder.generate_modified(pyproject.tool.cppython)
+
         self._interface = interface
 
         generator_configuration = GeneratorConfiguration()
-        self._generators = builder.create_generators(plugins, generator_configuration, self.pyproject)
+        self._generators = builder.create_generators(plugins, generator_configuration, self.project, self.cppython)
 
         cppython_logger.info("Initialized project successfully")
 
@@ -156,11 +185,18 @@ class Project(API):
         return self._configuration
 
     @property
-    def pyproject(self) -> PyProject | None:
+    def project(self):
         """
-        TODO
+        The pyproject project table
         """
-        return self._pyproject
+        return self._project
+
+    @property
+    def cppython(self):
+        """
+        The resolved CPPython data
+        """
+        return self._modified_cppython_data
 
     def download(self):
         """
@@ -170,7 +206,7 @@ class Project(API):
             cppython_logger.info("Skipping download because the project is not enabled")
             return
 
-        base_path = self.pyproject.tool.cppython.install_path
+        base_path = self.cppython.install_path
 
         for generator in self._generators:
 
@@ -199,7 +235,7 @@ class Project(API):
         cppython_logger.info("Installing project")
         self.download()
 
-        tool_path = self.pyproject.tool.cppython.tool_path
+        tool_path = self.cppython.tool_path
         tool_path.mkdir(parents=True, exist_ok=True)
 
         generator_output = []
@@ -227,7 +263,7 @@ class Project(API):
 
         cppython_logger.info("Updating project")
 
-        tool_path = self.pyproject.tool.cppython.tool_path
+        tool_path = self.cppython.tool_path
         tool_path.mkdir(parents=True, exist_ok=True)
 
         generator_output = []

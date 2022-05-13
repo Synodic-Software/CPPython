@@ -100,11 +100,13 @@ class TestBuilder:
         builder = ProjectBuilder(configuration)
 
         generator_configuration = GeneratorConfiguration()
-        generators = builder.create_generators([], generator_configuration, default_pyproject)
+        generators = builder.create_generators([], generator_configuration, default_pep621, default_cppython_data)
 
         assert not generators
 
         generator = mocker.Mock()
-        generators = builder.create_generators([generator], generator_configuration, default_pyproject)
+        generators = builder.create_generators(
+            [generator], generator_configuration, default_pep621, default_cppython_data
+        )
 
         assert len(generators) == 1
