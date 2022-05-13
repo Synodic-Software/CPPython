@@ -32,11 +32,11 @@ class ConfigurePreset(Preset):
     toolchainFile: Optional[str]
 
     @validator("toolchainFile")
-    def validate_path(cls, v):
+    def validate_path(cls, value):  # pylint: disable=E0213
         """
         TODO
         """
-        return Path(v).as_posix()
+        return Path(value).as_posix()
 
 
 class BuildPreset(Preset):
