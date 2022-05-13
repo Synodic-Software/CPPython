@@ -200,7 +200,7 @@ dependencies = [
 
 [[package]]
 name = "pytest-cppython"
-version = "0.1.7.dev8"
+version = "0.1.7.dev9"
 requires_python = ">=3.10"
 summary = "A pytest plugin that imports CPPython testing types"
 dependencies = [
@@ -474,9 +474,9 @@ content_hash = "sha256:9842348d0ddc71440b500499ed71e9b60aea9edcf388f5d8ef170c125
     {file = "pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
     {file = "pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
 ]
-"pytest-cppython 0.1.7.dev8" = [
-    {file = "pytest_cppython-0.1.7.dev8-py3-none-any.whl", hash = "sha256:e0d0475e7dc7f7c640f15257c7e50c186f2c29351a03d5c3b5820d33fb7c26c5"},
-    {file = "pytest-cppython-0.1.7.dev8.tar.gz", hash = "sha256:603e9b6fc1ae7cc3e1e1133d88b8f258870373e6354aecbf86058ea8593cecce"},
+"pytest-cppython 0.1.7.dev9" = [
+    {file = "pytest_cppython-0.1.7.dev9-py3-none-any.whl", hash = "sha256:2630bff1dac5f0b94e8bd24837281f49c6b27534971d5b7a824fb73c3bc74744"},
+    {file = "pytest-cppython-0.1.7.dev9.tar.gz", hash = "sha256:1895bae6a380c653b314f272af680299bff4c56f9070a5d62487b71a40819030"},
 ]
 "pytest-mock 3.7.0" = [
     {file = "pytest_mock-3.7.0-py3-none-any.whl", hash = "sha256:6cff27cec936bf81dc5ee87f07132b807bcda51106b5ec4b90a04331cba76231"},
