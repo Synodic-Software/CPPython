@@ -185,7 +185,7 @@ class Project(API):
         return self._configuration
 
     @property
-    def project(self):
+    def project(self) -> PEP621:
         """
         The pyproject project table
         """
@@ -198,7 +198,7 @@ class Project(API):
         """
         return self._modified_cppython_data
 
-    def download(self):
+    def download(self) -> None:
         """
         Download the generator tooling if required
         """
