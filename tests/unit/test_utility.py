@@ -3,8 +3,9 @@ TODO
 """
 from pathlib import Path
 
-from cppython.schema import CMakePresets
-from cppython.utility import read_preset, write_preset, write_presets
+from pydantic.main import BaseModel
+
+from cppython.utility import read_model_json, write_model_json
 
 
 class TestBuilder:
@@ -12,42 +13,26 @@ class TestBuilder:
     TODO
     """
 
-    def test_preset_read_write(self, tmpdir):
+    def test_model_read_write(self, tmpdir):
         """
         TODO
         """
 
-        temporary_directory = Path(tmpdir)
+        class TestModel(BaseModel):
+            """
+            TODO
+            """
 
-        presets = CMakePresets()
-        write_preset("test", temporary_directory, presets)
-        output = read_preset("test", temporary_directory)
+            test_path: Path
+            test_int: int
 
-        assert presets == output
-
-    def test_presets(self, tmpdir):
-        """
-        TODO
-        """
+        test_model = TestModel(test_path=Path(), test_int=3)
 
         temporary_directory = Path(tmpdir)
 
-        input_toolchain = temporary_directory / "input.cmake"
+        json_path = temporary_directory / "test.json"
 
-        with open(input_toolchain, "w", encoding="utf8") as file:
-            file.write("")
+        write_model_json(json_path, test_model)
+        output = read_model_json(json_path, TestModel)
 
-        generator_output = [("test", input_toolchain)]
-        write_presets(temporary_directory, generator_output)
-
-        cppython_tool = temporary_directory / "cppython"
-        assert cppython_tool.exists()
-
-        cppython_file = cppython_tool / "cppython.json"
-        assert cppython_file.exists()
-
-        test_tool = cppython_tool / "test"
-        assert test_tool.exists()
-
-        test_file = test_tool / "test.json"
-        assert test_file.exists()
+        assert test_model == output
