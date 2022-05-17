@@ -68,7 +68,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.3.3.dev22"
+version = "0.3.3.dev25"
 requires_python = ">=3.10"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -219,7 +219,7 @@ dependencies = [
 
 [[package]]
 name = "setuptools"
-version = "62.2.0"
+version = "62.3.1"
 requires_python = ">=3.7"
 summary = "Easily download, build, install, upgrade, and uninstall Python packages"
 
@@ -340,9 +340,9 @@ content_hash = "sha256:9842348d0ddc71440b500499ed71e9b60aea9edcf388f5d8ef170c125
     {file = "coverage-6.3.3-pp36.pp37.pp38-none-any.whl", hash = "sha256:d522f1dc49127eab0bfbba4e90fa068ecff0899bbf61bf4065c790ddd6c177fe"},
     {file = "coverage-6.3.3.tar.gz", hash = "sha256:2781c43bffbbec2b8867376d4d61916f5e9c4cc168232528562a61d1b4b01879"},
 ]
-"cppython-core 0.3.3.dev22" = [
-    {file = "cppython_core-0.3.3.dev22-py3-none-any.whl", hash = "sha256:f8463fbeeef5f17440998a82b459d25032230d5e4d1d1e52848e421260f6c089"},
-    {file = "cppython-core-0.3.3.dev22.tar.gz", hash = "sha256:8e8b57e7d677cd42b7d34a245d1a807fca95697e12a62bca1672dae24eaa16ea"},
+"cppython-core 0.3.3.dev25" = [
+    {file = "cppython_core-0.3.3.dev25-py3-none-any.whl", hash = "sha256:3922c2ad03557d7e6f777b686c3542e9840898579ab68573cb7e41e36ed8e964"},
+    {file = "cppython-core-0.3.3.dev25.tar.gz", hash = "sha256:13bfc78b0c847eae260d521305a0354eeacb4c6d6bffa816a18c21ded1e3b087"},
 ]
 "dill 0.3.4" = [
     {file = "dill-0.3.4-py2.py3-none-any.whl", hash = "sha256:7e40e4a70304fd9ceab3535d36e58791d9c4a776b38ec7f7ec9afc8d3dca4d4f"},
@@ -484,9 +484,9 @@ content_hash = "sha256:9842348d0ddc71440b500499ed71e9b60aea9edcf388f5d8ef170c125
     {file = "pytest_mock-3.7.0-py3-none-any.whl", hash = "sha256:6cff27cec936bf81dc5ee87f07132b807bcda51106b5ec4b90a04331cba76231"},
     {file = "pytest-mock-3.7.0.tar.gz", hash = "sha256:5112bd92cc9f186ee96e1a92efc84969ea494939c3aead39c50f421c4cc69534"},
 ]
-"setuptools 62.2.0" = [
-    {file = "setuptools-62.2.0-py3-none-any.whl", hash = "sha256:5534570b9980fc650d45c62877ff603c7aaaf24893371708736cc016bd221c3c"},
-    {file = "setuptools-62.2.0.tar.gz", hash = "sha256:ca6ba73b7fd5f734ae70ece8c4c1f7062b07f3352f6428f6277e27c8f5c64237"},
+"setuptools 62.3.1" = [
+    {file = "setuptools-62.3.1-py3-none-any.whl", hash = "sha256:588ffd1dc6e20e9f4f7057aa9873fcdc26e0270362602735d32476bad67d82c5"},
+    {file = "setuptools-62.3.1.tar.gz", hash = "sha256:28c79c24d83c42a5e6d6cc711e5e9a6c1b89326229feaa5807fc277040658600"},
 ]
 "tomli 2.0.1" = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
