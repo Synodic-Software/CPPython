@@ -7,7 +7,6 @@ from importlib import metadata
 from pathlib import Path
 from typing import Any, Type, TypeVar
 
-from cppython_core.core import cppython_logger
 from cppython_core.schema import (
     PEP621,
     CPPythonData,
@@ -19,6 +18,7 @@ from cppython_core.schema import (
     PyProject,
     ToolData,
 )
+from cppython_core.utility import cppython_logger
 from pydantic import create_model
 
 from cppython.schema import API, CMakePresets, ConfigurePreset, ProjectConfiguration
