@@ -244,12 +244,12 @@ class Project(API):
         """
         return self._modified_cppython_data
 
-    def download(self) -> None:
+    def download_generator_tools(self) -> None:
         """
         Download the generator tooling if required
         """
         if not self._enabled:
-            cppython_logger.info("Skipping download because the project is not enabled")
+            cppython_logger.info("Skipping 'download_generator_tools' because the project is not enabled")
             return
 
         base_path = self.cppython.install_path
@@ -269,6 +269,24 @@ class Project(API):
             else:
                 cppython_logger.info(f"The {generator.name()} generator is already downloaded")
 
+    def update_generator_tools(self) -> None:
+        """
+        Update the generator tooling if available
+        """
+        if not self._enabled:
+            cppython_logger.info("Skipping 'update_generator_tools' because the project is not enabled")
+            return
+
+        self.download_generator_tools()
+
+        base_path = self.cppython.install_path
+
+        for generator in self._generators:
+
+            path = base_path / generator.name()
+
+            generator.update_generator(path)
+
     # API Contract
     def install(self) -> None:
         """
@@ -278,9 +296,10 @@ class Project(API):
             cppython_logger.info("Skipping install because the project is not enabled")
             return
 
-        cppython_logger.info("Installing project")
-        self.download()
+        cppython_logger.info("Installing tools")
+        self.download_generator_tools()
 
+        cppython_logger.info("Installing project")
         tool_path = self.cppython.tool_path
         tool_path.mkdir(parents=True, exist_ok=True)
 
@@ -306,6 +325,9 @@ class Project(API):
         if not self._enabled:
             cppython_logger.info("Skipping update because the project is not enabled")
             return
+
+        cppython_logger.info("Updating tools")
+        self.update_generator_tools()
 
         cppython_logger.info("Updating project")
 
