@@ -164,7 +164,7 @@ class ProjectBuilder:
             root_preset = read_model_json(root_preset_path, CMakePresets)
 
             for include_path in root_preset.include:
-                if Path(include_path).name is "cppython.json":
+                if Path(include_path).name == "cppython.json":
                     include_path = json_path
 
             write_model_json(root_preset_path, root_preset)
