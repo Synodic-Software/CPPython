@@ -19,9 +19,19 @@ class Preset(BaseModel):
 
     name: str
     hidden: Optional[bool]
-    inherits: list[str] = []
+    inherits: Optional[list[str] | str]
     displayName: Optional[str]
     description: Optional[str]
+
+    @validator("inherits")
+    def validate_str(cls, values):
+        """
+        Conform to list
+        """
+        if isinstance(values, str):
+            return [values]
+
+        return values
 
 
 class ConfigurePreset(Preset):
@@ -73,22 +83,25 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
     """
 
     version: int = Field(default=4, const=True)
-    cmakeMinimumRequired: CMakeVersion = CMakeVersion()  # TODO: 'version' compatability validation
-    include: list[str] = []
+    cmakeMinimumRequired: CMakeVersion = CMakeVersion()  # TODO: 'version' compatibility validation
+    include: Optional[list[str]]
     vendor: Optional[Any]
-    configurePresets: list[ConfigurePreset] = []
-    buildPresets: list[BuildPreset] = []
-    testPresets: list[TestPreset] = []
+    configurePresets: Optional[list[ConfigurePreset]]
+    buildPresets: Optional[list[BuildPreset]]
+    testPresets: Optional[list[TestPreset]]
 
     @validator("include")
-    def validate_path(cls, v):
+    def validate_path(cls, values):
         """
         TODO
         """
-        output = []
-        for value in v:
-            output.append(Path(value).as_posix())
-        return output
+        if values is not None:
+            output = []
+            for value in values:
+                output.append(Path(value).as_posix())
+            return output
+
+        return None
 
 
 @dataclass
