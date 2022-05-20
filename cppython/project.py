@@ -111,17 +111,19 @@ class ProjectBuilder:
 
         return modified
 
-    def write_presets(self, tool_path: Path, generator_output: list[tuple[str, Path]]) -> None:
+    def write_presets(self, path: Path, generator_output: list[tuple[str, Path]]) -> None:
         """
         Write the cppython presets
         """
 
-        def write_generator_presets(tool_path: Path, generator_name: str, toolchain_path: Path) -> Path:
+        path.mkdir(parents=True, exist_ok=True)
+
+        def write_generator_presets(path: Path, generator_name: str, toolchain_path: Path) -> Path:
             """
             Write a generator preset.
             @returns - The written json file
             """
-            generator_tool_path = tool_path / generator_name
+            generator_tool_path = path / generator_name
             generator_tool_path.mkdir(parents=True, exist_ok=True)
 
             configure_preset = ConfigurePreset(name=generator_name, hidden=True, toolchainFile=str(toolchain_path))
@@ -136,13 +138,13 @@ class ProjectBuilder:
         names = []
         includes = []
 
-        tool_path = tool_path / "cppython"
+        path = path / "cppython"
 
         for generator_name, toolchain in generator_output:
 
-            preset_file = write_generator_presets(tool_path, generator_name, toolchain)
+            preset_file = write_generator_presets(path, generator_name, toolchain)
 
-            relative_file = preset_file.relative_to(tool_path)
+            relative_file = preset_file.relative_to(path)
 
             names.append(generator_name)
             includes.append(str(relative_file))
@@ -150,7 +152,7 @@ class ProjectBuilder:
         configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
         presets = CMakePresets(configurePresets=[configure_preset], include=includes)
 
-        json_path = tool_path / "cppython.json"
+        json_path = path / "cppython.json"
 
         write_model_json(json_path, presets)
 
@@ -300,8 +302,7 @@ class Project(API):
         self.download_generator_tools()
 
         cppython_logger.info("Installing project")
-        tool_path = self.cppython.tool_path
-        tool_path.mkdir(parents=True, exist_ok=True)
+        preset_path = self.cppython.build_path
 
         generator_output = []
 
@@ -316,7 +317,7 @@ class Project(API):
                 cppython_logger.error(f"Generator {generator.name()} failed to install")
                 raise exception
 
-        self._builder.write_presets(tool_path, generator_output)
+        self._builder.write_presets(preset_path, generator_output)
 
     def update(self) -> None:
         """
@@ -331,8 +332,7 @@ class Project(API):
 
         cppython_logger.info("Updating project")
 
-        tool_path = self.cppython.tool_path
-        tool_path.mkdir(parents=True, exist_ok=True)
+        preset_path = self.cppython.build_path
 
         generator_output = []
 
@@ -347,4 +347,4 @@ class Project(API):
                 cppython_logger.error(f"Generator {generator.name()} failed to update")
                 raise exception
 
-        self._builder.write_presets(tool_path, generator_output)
+        self._builder.write_presets(preset_path, generator_output)
