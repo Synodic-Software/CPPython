@@ -170,7 +170,7 @@ class ProjectBuilder:
                     if Path(include_path).name == "cppython.json":
                         include_path = json_path
 
-            root_preset.update(root_model.dict())
+            root_preset.update(root_model.dict(exclude_none=True))
 
             write_json(root_preset_path, root_preset)
 
