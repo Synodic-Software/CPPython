@@ -22,7 +22,7 @@ from cppython_core.utility import cppython_logger
 from pydantic import create_model
 
 from cppython.schema import API, CMakePresets, ConfigurePreset, ProjectConfiguration
-from cppython.utility import read_json, read_model_json, write_json, write_model_json
+from cppython.utility import read_json, write_json, write_model_json
 
 
 class ProjectBuilder:
