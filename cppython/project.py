@@ -111,9 +111,10 @@ class ProjectBuilder:
 
         return modified
 
-    def write_presets(self, path: Path, generator_output: list[tuple[str, Path]]) -> None:
+    def write_presets(self, path: Path, generator_output: list[tuple[str, Path]]) -> Path:
         """
-        Write the cppython presets
+        Write the cppython presets.
+        Returns the
         """
 
         path.mkdir(parents=True, exist_ok=True)
@@ -155,24 +156,26 @@ class ProjectBuilder:
         json_path = path / "cppython.json"
 
         write_model_json(json_path, presets)
+        return json_path
 
-        # Read the top level json file and replace the include reference
+    def write_root_presets(self, path: Path):
+        """
+        Read the top level json file and replace the include reference
+        """
 
         root_preset_path = self.configuration.root_path / "CMakePresets.json"
 
-        if root_preset_path.exists():
-            root_preset = read_json(root_preset_path)
+        root_preset = read_json(root_preset_path)
+        root_model = CMakePresets.parse_obj(root_preset)
 
-            root_model = CMakePresets.parse_obj(root_preset)
+        if root_model.include is not None:
+            for include_path in root_model.include:
+                if Path(include_path).name == "cppython.json":
+                    include_path = path
 
-            if root_model.include is not None:
-                for include_path in root_model.include:
-                    if Path(include_path).name == "cppython.json":
-                        include_path = json_path
+        root_preset.update(root_model.dict(exclude_none=True))
 
-            root_preset.update(root_model.dict(exclude_none=True))
-
-            write_json(root_preset_path, root_preset)
+        write_json(root_preset_path, root_preset)
 
 
 class Project(API):
@@ -335,7 +338,8 @@ class Project(API):
                 cppython_logger.error(f"Generator {generator.name()} failed to install")
                 raise exception
 
-        self._builder.write_presets(preset_path, generator_output)
+        project_presets = self._builder.write_presets(preset_path, generator_output)
+        self._builder.write_root_presets(project_presets)
 
     def update(self) -> None:
         """
@@ -365,4 +369,5 @@ class Project(API):
                 cppython_logger.error(f"Generator {generator.name()} failed to update")
                 raise exception
 
-        self._builder.write_presets(preset_path, generator_output)
+        project_presets = self._builder.write_presets(preset_path, generator_output)
+        self._builder.write_root_presets(project_presets)
