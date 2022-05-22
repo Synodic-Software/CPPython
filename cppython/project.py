@@ -22,7 +22,7 @@ from cppython_core.utility import cppython_logger
 from pydantic import create_model
 
 from cppython.schema import API, CMakePresets, ConfigurePreset, ProjectConfiguration
-from cppython.utility import read_model_json, write_model_json
+from cppython.utility import read_json, read_model_json, write_json, write_model_json
 
 
 class ProjectBuilder:
@@ -161,13 +161,18 @@ class ProjectBuilder:
         root_preset_path = self.configuration.root_path / "CMakePresets.json"
 
         if root_preset_path.exists():
-            root_preset = read_model_json(root_preset_path, CMakePresets)
+            root_preset = read_json(root_preset_path)
 
-            for include_path in root_preset.include:
-                if Path(include_path).name == "cppython.json":
-                    include_path = json_path
+            root_model = CMakePresets.parse_obj(root_preset)
 
-            write_model_json(root_preset_path, root_preset)
+            if root_model.include is not None:
+                for include_path in root_model.include:
+                    if Path(include_path).name == "cppython.json":
+                        include_path = json_path
+
+            root_preset.update(root_model.dict())
+
+            write_json(root_preset_path, root_preset)
 
 
 class Project(API):
