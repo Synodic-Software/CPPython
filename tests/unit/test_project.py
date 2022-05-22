@@ -116,10 +116,9 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration(root_path=Path())
-        builder = ProjectBuilder(configuration)
-
         temporary_directory = Path(tmpdir)
+        configuration = ProjectConfiguration(root_path=temporary_directory)
+        builder = ProjectBuilder(configuration)
 
         input_toolchain = temporary_directory / "input.cmake"
 
@@ -140,3 +139,18 @@ class TestBuilder:
 
         test_file = test_tool / "test.json"
         assert test_file.exists()
+
+    def test_root_presets(self, tmpdir):
+        """
+        TODO
+        """
+
+        temporary_directory = Path(tmpdir)
+        configuration = ProjectConfiguration(root_path=temporary_directory)
+        builder = ProjectBuilder(configuration)
+
+        input_preset = temporary_directory / "CMakePresets.json"
+        with open(input_preset, "w", encoding="utf8") as file:
+            file.write("{}")
+
+        builder.write_root_presets(temporary_directory / "test_location")
