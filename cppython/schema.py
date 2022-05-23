@@ -46,7 +46,10 @@ class ConfigurePreset(Preset):
         """
         TODO
         """
-        return Path(value).as_posix()
+        if value is not None:
+            return Path(value).as_posix()
+
+        return None
 
 
 class BuildPreset(Preset):
