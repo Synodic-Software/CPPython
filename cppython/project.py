@@ -173,7 +173,7 @@ class ProjectBuilder:
         if root_model.include is not None:
             for index, include_path in enumerate(root_model.include):
                 if Path(include_path).name == "cppython.json":
-                    root_model.include[index] = "${sourceDir}/build/" + path.as_posix()
+                    root_model.include[index] = "build/" + path.as_posix()
 
             # 'dict.update' wont apply to nested types, manual replacement
             root_preset["include"] = root_model.include
