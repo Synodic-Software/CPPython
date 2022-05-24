@@ -2,6 +2,7 @@
 The central delegation of the CPPython project
 """
 
+import collections.abc
 import logging
 from importlib import metadata
 from pathlib import Path
@@ -169,13 +170,14 @@ class ProjectBuilder:
         root_model = CMakePresets.parse_obj(root_preset)
 
         if root_model.include is not None:
-            for include_path in root_model.include:
+            for index, include_path in enumerate(root_model.include):
                 if Path(include_path).name == "cppython.json":
-                    include_path = path
+                    root_model.include[index] = path.as_posix()
 
-        root_preset.update(root_model.dict(exclude_none=True))
+            # 'dict.update' wont apply to nested types, manual replacement
+            root_preset["include"] = root_model.include
 
-        write_json(root_preset_path, root_preset)
+            write_json(root_preset_path, root_preset)
 
 
 class Project(API):
