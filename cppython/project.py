@@ -161,7 +161,8 @@ class ProjectBuilder:
 
     def write_root_presets(self, path: Path):
         """
-        Read the top level json file and replace the include reference
+        Read the top level json file and replace the include reference.
+        Receives a relative path to the tool cmake json file
         """
 
         root_preset_path = self.configuration.root_path / "CMakePresets.json"
@@ -172,7 +173,7 @@ class ProjectBuilder:
         if root_model.include is not None:
             for index, include_path in enumerate(root_model.include):
                 if Path(include_path).name == "cppython.json":
-                    root_model.include[index] = path.as_posix()
+                    root_model.include[index] = "${sourceDir}/build" + path.as_posix()
 
             # 'dict.update' wont apply to nested types, manual replacement
             root_preset["include"] = root_model.include
@@ -341,7 +342,7 @@ class Project(API):
                 raise exception
 
         project_presets = self._builder.write_presets(preset_path, generator_output)
-        self._builder.write_root_presets(project_presets)
+        self._builder.write_root_presets(project_presets.relative_to(preset_path))
 
     def update(self) -> None:
         """
@@ -372,4 +373,4 @@ class Project(API):
                 raise exception
 
         project_presets = self._builder.write_presets(preset_path, generator_output)
-        self._builder.write_root_presets(project_presets)
+        self._builder.write_root_presets(project_presets.relative_to(preset_path))
