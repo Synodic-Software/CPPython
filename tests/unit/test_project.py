@@ -17,6 +17,7 @@ from cppython_core.schema import (
 from pytest_mock import MockerFixture
 
 from cppython.project import Project, ProjectBuilder, ProjectConfiguration
+from cppython.utility import read_json, write_json
 
 default_pep621 = PEP621(name="test_name", version="1.0")
 default_cppython_data = CPPythonData(**{"target": TargetEnum.EXE})
@@ -140,7 +141,7 @@ class TestBuilder:
         test_file = test_tool / "test.json"
         assert test_file.exists()
 
-    def test_root_presets(self, tmpdir):
+    def test_root_unmodified(self, tmpdir):
         """
         TODO
         """
@@ -149,8 +150,27 @@ class TestBuilder:
         configuration = ProjectConfiguration(root_path=temporary_directory)
         builder = ProjectBuilder(configuration)
 
+        # TODO: Translate into reuseable testing data
+        output = {
+            "version": 4,
+            "cmakeMinimumRequired": {"major": 3, "minor": 23, "patch": 1},
+            "include": ["should/be/replaced/cppython.json"],
+            "configurePresets": [
+                {
+                    "name": "default",
+                    "inherits": ["cppython"],
+                    "hidden": True,
+                    "description": "Tests that generator isn't removed",
+                    "generator": "Should exist",
+                },
+            ],
+        }
+
         input_preset = temporary_directory / "CMakePresets.json"
-        with open(input_preset, "w", encoding="utf8") as file:
-            file.write("{}")
+        write_json(input_preset, output)
 
         builder.write_root_presets(temporary_directory / "test_location")
+
+        data = read_json(input_preset)
+
+        # TODO: Assert the differences affect nothing but what is written by the builder
