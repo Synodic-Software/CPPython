@@ -15,7 +15,7 @@ from cppython_core.schema import (
 from pytest_cppython.plugin import InterfaceUnitTests
 from pytest_mock.plugin import MockerFixture
 
-from cppython.console import Config, ConsoleInterface, cli
+from cppython.console.interface import Config, ConsoleInterface, cli
 from cppython.schema import API
 
 default_pep621 = PEP621(name="test_name", version="1.0")
@@ -56,7 +56,7 @@ class TestCLIInterface(InterfaceUnitTests):
         mocker.patch("cppython.project.Project.__init__", return_value=None)
 
         # Patch the reading of data
-        mocker.patch("cppython.console._create_pyproject", return_value=default_pyproject)
+        mocker.patch("cppython.console.interface._create_pyproject", return_value=default_pyproject)
 
         config = Config()
 

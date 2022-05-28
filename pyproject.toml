@@ -44,7 +44,7 @@ test = [
 ]
 
 [project.scripts]
-cppython = "cppython.console:cli"
+cppython = "cppython.console.interface:cli"
 
 [tool.pytest.ini_options]
 testpaths = [
