@@ -114,6 +114,7 @@ class ProjectConfiguration:
     """
 
     root_path: Path  # The path where the pyproject.toml lives
+    version: str  # The version number a 'dynamic' project version will resolve to
     _verbosity: int = 0
 
     @property

@@ -54,7 +54,9 @@ class Config:
 
         configuration = InterfaceConfiguration()
         self.interface = ConsoleInterface(configuration)
-        self.configuration = ProjectConfiguration(root_path=path)
+
+        # TODO: Fill this with a VCS extracted value
+        self.configuration = ProjectConfiguration(root_path=path, version="1.0.0")
 
     def create_project(self) -> Project:
         """
