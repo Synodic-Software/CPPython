@@ -9,6 +9,7 @@ import click
 import tomlkit
 from cppython_core.schema import GeneratorDataT, Interface, InterfaceConfiguration
 
+from cppython.console.vcs.git import Git
 from cppython.project import Project, ProjectConfiguration
 
 
@@ -55,8 +56,10 @@ class Config:
         configuration = InterfaceConfiguration()
         self.interface = ConsoleInterface(configuration)
 
-        # TODO: Fill this with a VCS extracted value
-        self.configuration = ProjectConfiguration(root_path=path, version="1.0.0")
+        # TODO: Don't assume git SCM. Implement importing and scm selection
+
+        version = Git().extract_version(path)
+        self.configuration = ProjectConfiguration(root_path=path, version=version.base_version)
 
     def create_project(self) -> Project:
         """
