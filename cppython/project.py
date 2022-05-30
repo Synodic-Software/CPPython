@@ -2,7 +2,6 @@
 The central delegation of the CPPython project
 """
 
-import collections.abc
 import logging
 from importlib import metadata
 from pathlib import Path
@@ -89,7 +88,8 @@ class ProjectBuilder:
         """
         _generators = []
         for plugin_type in plugins:
-            _generators.append(plugin_type(configuration, project, cppython))
+            name = plugin_type.name()
+            _generators.append(plugin_type(configuration, project, cppython, getattr(cppython, name)))
 
         return _generators
 

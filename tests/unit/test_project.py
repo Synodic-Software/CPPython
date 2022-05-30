@@ -33,6 +33,14 @@ class MockGeneratorData(GeneratorData):
     check: bool
 
 
+class ExtendedCPPython(CPPythonData):
+    """
+    TODO
+    """
+
+    mock: MockGeneratorData
+
+
 class TestProject:
     """
     TODO
@@ -105,9 +113,20 @@ class TestBuilder:
 
         assert not generators
 
-        generator = mocker.Mock()
+        generator_type = mocker.Mock()
+        generator_type.name.return_value = "mock"
+        generator_type.data_type.return_value = MockGeneratorData
+
+        mock_data = MockGeneratorData(check=True)
+        extended_cppython_dict = default_cppython_data.dict(exclude_defaults=True)
+        extended_cppython_dict["mock"] = mock_data
+        extended_cppython = ExtendedCPPython(**extended_cppython_dict)
+
         generators = builder.create_generators(
-            [generator], generator_configuration, default_pep621, default_cppython_data
+            [generator_type],
+            generator_configuration,
+            default_pep621,
+            extended_cppython,
         )
 
         assert len(generators) == 1
