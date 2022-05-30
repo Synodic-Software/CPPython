@@ -6,7 +6,7 @@ import pytest
 from cppython_core.schema import InterfaceConfiguration
 from pytest_cppython.plugin import InterfaceIntegrationTests
 
-from cppython.console import ConsoleInterface
+from cppython.console.interface import ConsoleInterface
 
 
 class TestCLIInterface(InterfaceIntegrationTests):

@@ -107,28 +107,21 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
         return None
 
 
-@dataclass
-class ProjectConfiguration:
+class ProjectConfiguration(BaseModel):
     """
     TODO
     """
 
     root_path: Path  # The path where the pyproject.toml lives
-    _verbosity: int = 0
+    version: str  # The version number a 'dynamic' project version will resolve to
+    verbosity: int = 0
 
-    @property
-    def verbosity(self) -> int:
+    @validator("verbosity")
+    def min_max(cls, value):
         """
         TODO
         """
-        return self._verbosity
-
-    @verbosity.setter
-    def verbosity(self, value: int) -> None:
-        """
-        TODO
-        """
-        self._verbosity = min(max(value, 0), 2)
+        return min(max(value, 0), 2)
 
 
 class API:

@@ -44,7 +44,7 @@ class TestProject:
         """
 
         interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration(root_path=Path())
+        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
         Project(configuration, interface_mock, default_pyproject.dict(by_alias=True))
 
 
@@ -58,7 +58,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration(root_path=Path())
+        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
         builder = ProjectBuilder(configuration)
         plugins = builder.gather_plugins(Generator)
 
@@ -69,7 +69,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration(root_path=Path())
+        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
         builder = ProjectBuilder(configuration)
         model_type = builder.generate_model([])
 
@@ -97,7 +97,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration(root_path=Path())
+        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
         builder = ProjectBuilder(configuration)
 
         generator_configuration = GeneratorConfiguration()
@@ -118,7 +118,7 @@ class TestBuilder:
         """
 
         temporary_directory = Path(tmpdir)
-        configuration = ProjectConfiguration(root_path=temporary_directory)
+        configuration = ProjectConfiguration(root_path=temporary_directory, version="1.0.0")
         builder = ProjectBuilder(configuration)
 
         input_toolchain = temporary_directory / "input.cmake"
@@ -147,7 +147,7 @@ class TestBuilder:
         """
 
         temporary_directory = Path(tmpdir)
-        configuration = ProjectConfiguration(root_path=temporary_directory)
+        configuration = ProjectConfiguration(root_path=temporary_directory, version="1.0.0")
         builder = ProjectBuilder(configuration)
 
         # TODO: Translate into reuseable testing data
