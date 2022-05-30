@@ -74,7 +74,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.3.3.dev30"
+version = "0.3.3.dev33"
 requires_python = ">=3.10"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -366,9 +366,9 @@ content_hash = "sha256:0faf7f9fc3975f7bfc743c5e74d8f396304b96d97ac53337073dc076d
     {file = "coverage-6.4-pp36.pp37.pp38-none-any.whl", hash = "sha256:e637ae0b7b481905358624ef2e81d7fb0b1af55f5ff99f9ba05442a444b11e45"},
     {file = "coverage-6.4.tar.gz", hash = "sha256:727dafd7f67a6e1cad808dc884bd9c5a2f6ef1f8f6d2f22b37b96cb0080d4f49"},
 ]
-"cppython-core 0.3.3.dev30" = [
-    {file = "cppython_core-0.3.3.dev30-py3-none-any.whl", hash = "sha256:ab950bc91a2f179ad9d55422d31c0a1d86cbb1d176499147f94fc89748b8795c"},
-    {file = "cppython-core-0.3.3.dev30.tar.gz", hash = "sha256:67deac5a1660f0ad3e0f39c1235bd6272bd9a438ee2760ad1ac7e3bbc0260675"},
+"cppython-core 0.3.3.dev33" = [
+    {file = "cppython_core-0.3.3.dev33-py3-none-any.whl", hash = "sha256:957c6f5092a66fe69cc2001857e6b9209fb840c24038600c11ed39d672159ef3"},
+    {file = "cppython-core-0.3.3.dev33.tar.gz", hash = "sha256:f1d0443adb6b0f94665f9a6cd515363852d60d674c1a690912bbf4a002ca7c2b"},
 ]
 "dill 0.3.5.1" = [
     {file = "dill-0.3.5.1-py2.py3-none-any.whl", hash = "sha256:33501d03270bbe410c72639b350e941882a8b0fd55357580fbc873fba0c59302"},

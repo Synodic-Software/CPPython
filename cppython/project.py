@@ -16,6 +16,7 @@ from cppython_core.schema import (
     GeneratorConfiguration,
     Interface,
     Plugin,
+    ProjectDataT,
     PyProject,
     ToolData,
 )
@@ -92,7 +93,20 @@ class ProjectBuilder:
 
         return _generators
 
-    def generate_modified(self, original: CPPythonDataT) -> CPPythonDataT:
+    def generate_modified_project(self, original: ProjectDataT) -> ProjectDataT:
+        """
+        Applies dynamic behaviors of the settings to itself
+        Returns a copy of the original with dynamic modifications
+        """
+        modified = original.copy(deep=True)
+
+        # Update the dynamic version
+
+        modified.version = self.configuration.version
+
+        return modified
+
+    def generate_modified_cppython(self, original: CPPythonDataT) -> CPPythonDataT:
         """
         Applies dynamic behaviors of the settings to itself
         Returns a copy of the original with dynamic modifications
@@ -231,7 +245,8 @@ class Project(API):
 
         self._project = pyproject.project
 
-        self._modified_cppython_data = self._builder.generate_modified(pyproject.tool.cppython)
+        self._modified_project_data = self._builder.generate_modified_project(pyproject.project)
+        self._modified_cppython_data = self._builder.generate_modified_cppython(pyproject.tool.cppython)
 
         self._interface = interface
 
@@ -259,9 +274,9 @@ class Project(API):
     @property
     def project(self) -> PEP621:
         """
-        The pyproject project table
+        The resolved pyproject project table
         """
-        return self._project
+        return self._modified_project_data
 
     @property
     def cppython(self):
