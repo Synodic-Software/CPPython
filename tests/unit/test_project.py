@@ -108,7 +108,7 @@ class TestBuilder:
         configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
         builder = ProjectBuilder(configuration)
 
-        generator_configuration = GeneratorConfiguration()
+        generator_configuration = GeneratorConfiguration(root_path=configuration.root_path)
         generators = builder.create_generators([], generator_configuration, default_pep621, default_cppython_data)
 
         assert not generators
