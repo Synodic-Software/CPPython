@@ -250,7 +250,7 @@ class Project(API):
 
         self._interface = interface
 
-        generator_configuration = GeneratorConfiguration()
+        generator_configuration = GeneratorConfiguration(root_path=self.configuration.root_path)
         self._generators = self._builder.create_generators(
             plugins, generator_configuration, self.project, self.cppython
         )
