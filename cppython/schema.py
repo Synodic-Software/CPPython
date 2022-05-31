@@ -5,7 +5,6 @@ TODO
 from __future__ import annotations  # Required for self-referenced pydantic types
 
 from abc import abstractmethod
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Optional
 
