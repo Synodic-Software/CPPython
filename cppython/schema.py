@@ -23,7 +23,7 @@ class Preset(BaseModel):
     description: Optional[str]
 
     @validator("inherits")
-    def validate_str(cls, values):
+    def validate_str(cls, values):  # pylint: disable=E0213
         """
         Conform to list
         """
@@ -93,7 +93,7 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
     testPresets: Optional[list[TestPreset]]
 
     @validator("include")
-    def validate_path(cls, values):
+    def validate_path(cls, values):  # pylint: disable=E0213
         """
         TODO
         """
@@ -116,7 +116,7 @@ class ProjectConfiguration(BaseModel):
     verbosity: int = 0
 
     @validator("verbosity")
-    def min_max(cls, value):
+    def min_max(cls, value):  # pylint: disable=E0213
         """
         TODO
         """
