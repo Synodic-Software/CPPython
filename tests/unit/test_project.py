@@ -6,6 +6,7 @@ from pathlib import Path
 
 from cppython_core.schema import (
     PEP621,
+    ConfigurePreset,
     CPPythonData,
     Generator,
     GeneratorConfiguration,
@@ -145,7 +146,9 @@ class TestBuilder:
         with open(input_toolchain, "w", encoding="utf8") as file:
             file.write("")
 
-        generator_output = [("test", input_toolchain)]
+        configure_preset = ConfigurePreset(name="test_preset", toolchainFile=str(input_toolchain))
+
+        generator_output = [("test", configure_preset)]
         builder.write_presets(temporary_directory, generator_output)
 
         cppython_tool = temporary_directory / "cppython"

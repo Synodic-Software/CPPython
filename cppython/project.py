@@ -126,7 +126,7 @@ class ProjectBuilder:
 
         return modified
 
-    def write_presets(self, path: Path, generator_output: list[tuple[str, Path]]) -> Path:
+    def write_presets(self, path: Path, generator_output: list[tuple[str, ConfigurePreset]]) -> Path:
         """
         Write the cppython presets.
         Returns the
@@ -134,7 +134,7 @@ class ProjectBuilder:
 
         path.mkdir(parents=True, exist_ok=True)
 
-        def write_generator_presets(path: Path, generator_name: str, toolchain_path: Path) -> Path:
+        def write_generator_presets(path: Path, generator_name: str, configure_preset: ConfigurePreset) -> Path:
             """
             Write a generator preset.
             @returns - The written json file
@@ -142,7 +142,7 @@ class ProjectBuilder:
             generator_tool_path = path / generator_name
             generator_tool_path.mkdir(parents=True, exist_ok=True)
 
-            configure_preset = ConfigurePreset(name=generator_name, hidden=True, toolchainFile=str(toolchain_path))
+            configure_preset.hidden = True
             presets = CMakePresets(configurePresets=[configure_preset])
 
             json_path = generator_tool_path / f"{generator_name}.json"
@@ -156,9 +156,9 @@ class ProjectBuilder:
 
         path = path / "cppython"
 
-        for generator_name, toolchain in generator_output:
+        for generator_name, configure_preset in generator_output:
 
-            preset_file = write_generator_presets(path, generator_name, toolchain)
+            preset_file = write_generator_presets(path, generator_name, configure_preset)
 
             relative_file = preset_file.relative_to(path)
 
@@ -350,8 +350,9 @@ class Project(API):
             cppython_logger.info(f"Installing {generator.name()} generator")
 
             try:
-                toolchain_path = generator.install().absolute()
-                generator_output.append((generator.name(), toolchain_path))
+                generator.install()
+                config_preset = generator.generate_cmake_config()
+                generator_output.append((generator.name(), config_preset))
             except Exception as exception:
                 cppython_logger.error(f"Generator {generator.name()} failed to install")
                 raise exception
@@ -381,8 +382,9 @@ class Project(API):
             cppython_logger.info(f"Updating {generator.name()} generator")
 
             try:
-                toolchain_path = generator.update().absolute()
-                generator_output.append((generator.name(), toolchain_path))
+                generator.update()
+                config_preset = generator.generate_cmake_config()
+                generator_output.append((generator.name(), config_preset))
             except Exception as exception:
                 cppython_logger.error(f"Generator {generator.name()} failed to update")
                 raise exception
