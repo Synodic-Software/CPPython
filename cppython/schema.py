@@ -8,47 +8,8 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Optional
 
+from cppython_core.schema import ConfigurePreset, Preset
 from pydantic import BaseModel, Extra, Field, validator
-
-
-class Preset(BaseModel):
-    """
-    Partial Preset specification
-    """
-
-    name: str
-    hidden: Optional[bool]
-    inherits: Optional[list[str] | str]
-    displayName: Optional[str]
-    description: Optional[str]
-
-    @validator("inherits")
-    def validate_str(cls, values):  # pylint: disable=E0213
-        """
-        Conform to list
-        """
-        if isinstance(values, str):
-            return [values]
-
-        return values
-
-
-class ConfigurePreset(Preset):
-    """
-    Partial Configure Preset specification
-    """
-
-    toolchainFile: Optional[str]
-
-    @validator("toolchainFile")
-    def validate_path(cls, value):  # pylint: disable=E0213
-        """
-        TODO
-        """
-        if value is not None:
-            return Path(value).as_posix()
-
-        return None
 
 
 class BuildPreset(Preset):
