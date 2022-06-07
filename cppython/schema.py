@@ -8,8 +8,8 @@ from abc import abstractmethod
 from pathlib import Path
 from typing import Any, Optional
 
-from cppython_core.schema import ConfigurePreset, Preset
-from pydantic import BaseModel, Extra, Field, validator
+from cppython_core.schema import ConfigurePreset, CPPythonModel, Preset
+from pydantic import Extra, Field, validator
 
 
 class BuildPreset(Preset):
@@ -17,8 +17,8 @@ class BuildPreset(Preset):
     Partial Build Preset specification
     """
 
-    configurePreset: Optional[str]
-    inheritConfigureEnvironment: Optional[bool]
+    configurePreset: Optional[str] = Field(default=None)
+    inheritConfigureEnvironment: Optional[bool] = Field(default=None)
 
 
 class TestPreset(Preset):
@@ -26,32 +26,32 @@ class TestPreset(Preset):
     Partial Test Preset specification
     """
 
-    configurePreset: Optional[str]
-    inheritConfigureEnvironment: Optional[bool]
+    configurePreset: Optional[str] = Field(default=None)
+    inheritConfigureEnvironment: Optional[bool] = Field(default=None)
 
 
-class CMakeVersion(BaseModel, extra=Extra.forbid):
+class CMakeVersion(CPPythonModel, extra=Extra.forbid):
     """
     The version specification for CMake
     """
 
-    major: int = 3
-    minor: int = 23
-    patch: int = 1
+    major: int = Field(default=3)
+    minor: int = Field(default=23)
+    patch: int = Field(default=1)
 
 
-class CMakePresets(BaseModel, extra=Extra.forbid):
+class CMakePresets(CPPythonModel, extra=Extra.forbid):
     """
     The schema for the CMakePresets and CMakeUserPresets files
     """
 
     version: int = Field(default=4, const=True)
-    cmakeMinimumRequired: CMakeVersion = CMakeVersion()  # TODO: 'version' compatibility validation
-    include: Optional[list[str]]
-    vendor: Optional[Any]
-    configurePresets: Optional[list[ConfigurePreset]]
-    buildPresets: Optional[list[BuildPreset]]
-    testPresets: Optional[list[TestPreset]]
+    cmakeMinimumRequired: CMakeVersion = Field(default=CMakeVersion())  # TODO: 'version' compatibility validation
+    include: Optional[list[str]] = Field(default=None)
+    vendor: Optional[Any] = Field(default=None)
+    configurePresets: Optional[list[ConfigurePreset]] = Field(default=None)
+    buildPresets: Optional[list[BuildPreset]] = Field(default=None)
+    testPresets: Optional[list[TestPreset]] = Field(default=None)
 
     @validator("include")
     def validate_path(cls, values):  # pylint: disable=E0213
@@ -67,14 +67,14 @@ class CMakePresets(BaseModel, extra=Extra.forbid):
         return None
 
 
-class ProjectConfiguration(BaseModel):
+class ProjectConfiguration(CPPythonModel):
     """
     TODO
     """
 
     root_path: Path  # The path where the pyproject.toml lives
     version: str  # The version number a 'dynamic' project version will resolve to
-    verbosity: int = 0
+    verbosity: int = Field(default=0)
 
     @validator("verbosity")
     def min_max(cls, value):  # pylint: disable=E0213

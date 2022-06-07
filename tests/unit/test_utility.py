@@ -3,7 +3,7 @@ TODO
 """
 from pathlib import Path
 
-from pydantic.main import BaseModel
+from cppython_core.schema import CPPythonModel
 
 from cppython.utility import read_model_json, write_model_json
 
@@ -13,7 +13,7 @@ class TestBuilder:
     TODO
     """
 
-    class TestModel(BaseModel):
+    class TestModel(CPPythonModel):
         """
         TODO
         """
