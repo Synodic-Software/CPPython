@@ -98,7 +98,7 @@ class TestBuilder:
 
         assert result.tool is not None
         assert result.tool.cppython is not None
-
+        assert result.tool.cppython.mock is not None
         assert result.tool.cppython.mock.check
 
     def test_generator_creation(self, mocker: MockerFixture):
