@@ -13,7 +13,7 @@ class TestBuilder:
     TODO
     """
 
-    class TestModel(CPPythonModel):
+    class ModelTest(CPPythonModel):
         """
         TODO
         """
@@ -26,13 +26,13 @@ class TestBuilder:
         TODO
         """
 
-        test_model = TestBuilder.TestModel(test_path=Path(), test_int=3)
+        test_model = TestBuilder.ModelTest(test_path=Path(), test_int=3)
 
         temporary_directory = Path(tmpdir)
 
         json_path = temporary_directory / "test.json"
 
         write_model_json(json_path, test_model)
-        output = read_model_json(json_path, TestBuilder.TestModel)
+        output = read_model_json(json_path, TestBuilder.ModelTest)
 
         assert test_model == output

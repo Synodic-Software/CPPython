@@ -2,6 +2,8 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
+from __future__ import annotations
+
 from pathlib import Path
 
 from cppython_core.schema import (
@@ -33,6 +35,9 @@ class MockGeneratorData(GeneratorData):
 
     check: bool
 
+    def resolve(self: MockGeneratorData, project_configuration: ProjectConfiguration) -> MockGeneratorData:
+        return self
+
 
 class ExtendedCPPython(CPPythonData):
     """
@@ -49,11 +54,11 @@ class TestProject:
 
     def test_construction(self, mocker: MockerFixture):
         """
-        Makes sure the project can be created from the default PyProject data
+        Test project construction on this project
         """
 
         interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
+        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
         Project(configuration, interface_mock, default_pyproject.dict(by_alias=True))
 
 
@@ -67,7 +72,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
+        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
         builder = ProjectBuilder(configuration)
         plugins = builder.gather_plugins(Generator)
 
@@ -78,7 +83,7 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
+        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
         builder = ProjectBuilder(configuration)
         model_type = builder.generate_model([])
 
@@ -106,10 +111,10 @@ class TestBuilder:
         TODO
         """
 
-        configuration = ProjectConfiguration(root_path=Path(), version="1.0.0")
+        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
         builder = ProjectBuilder(configuration)
 
-        generator_configuration = GeneratorConfiguration(root_path=configuration.root_path)
+        generator_configuration = GeneratorConfiguration(root_path=configuration.pyproject_file.parent)
         generators = builder.create_generators([], generator_configuration, default_pep621, default_cppython_data)
 
         assert not generators
@@ -132,16 +137,19 @@ class TestBuilder:
 
         assert len(generators) == 1
 
-    def test_presets(self, tmpdir):
+    def test_presets(self, tmp_path: Path):
         """
         TODO
         """
 
-        temporary_directory = Path(tmpdir)
-        configuration = ProjectConfiguration(root_path=temporary_directory, version="1.0.0")
+        # Write a dummy file for the config
+        test_file = tmp_path / "pyproject.toml"
+        test_file.write_text("Test File", encoding="utf-8")
+
+        configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
         builder = ProjectBuilder(configuration)
 
-        input_toolchain = temporary_directory / "input.cmake"
+        input_toolchain = tmp_path / "input.cmake"
 
         with open(input_toolchain, "w", encoding="utf8") as file:
             file.write("")
@@ -149,9 +157,9 @@ class TestBuilder:
         configure_preset = ConfigurePreset(name="test_preset", toolchainFile=str(input_toolchain))
 
         generator_output = [("test", configure_preset)]
-        builder.write_presets(temporary_directory, generator_output)
+        builder.write_presets(tmp_path, generator_output)
 
-        cppython_tool = temporary_directory / "cppython"
+        cppython_tool = tmp_path / "cppython"
         assert cppython_tool.exists()
 
         cppython_file = cppython_tool / "cppython.json"
@@ -163,13 +171,16 @@ class TestBuilder:
         test_file = test_tool / "test.json"
         assert test_file.exists()
 
-    def test_root_unmodified(self, tmpdir):
+    def test_root_unmodified(self, tmp_path: Path):
         """
         TODO
         """
 
-        temporary_directory = Path(tmpdir)
-        configuration = ProjectConfiguration(root_path=temporary_directory, version="1.0.0")
+        # Write a dummy file for the config
+        test_file = tmp_path / "pyproject.toml"
+        test_file.write_text("Test File", encoding="utf-8")
+        configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
+
         builder = ProjectBuilder(configuration)
 
         # TODO: Translate into reuseable testing data
@@ -188,10 +199,10 @@ class TestBuilder:
             ],
         }
 
-        input_preset = temporary_directory / "CMakePresets.json"
+        input_preset = tmp_path / "CMakePresets.json"
         write_json(input_preset, output)
 
-        builder.write_root_presets(temporary_directory / "test_location")
+        builder.write_root_presets(tmp_path / "test_location")
 
         data = read_json(input_preset)
 

@@ -51,7 +51,8 @@ class Config:
 
     def __init__(self):
         path = _find_pyproject_file()
-        self.pyproject_data = _create_pyproject(path / "pyproject.toml")
+        file_path = path / "pyproject.toml"
+        self.pyproject_data = _create_pyproject(file_path)
 
         configuration = InterfaceConfiguration()
         self.interface = ConsoleInterface(configuration)
@@ -59,7 +60,7 @@ class Config:
         # TODO: Don't assume git SCM. Implement importing and scm selection
 
         version = Git().extract_version(path)
-        self.configuration = ProjectConfiguration(root_path=path, version=version.base_version)
+        self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version.base_version)
 
     def create_project(self) -> Project:
         """
