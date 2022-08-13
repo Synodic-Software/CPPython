@@ -93,39 +93,6 @@ class ProjectBuilder:
 
         return _generators
 
-    def generate_modified_project(self, original: ProjectDataT) -> ProjectDataT:
-        """
-        Applies dynamic behaviors of the settings to itself
-        Returns a copy of the original with dynamic modifications
-        """
-        modified = original.copy(deep=True)
-
-        # Update the dynamic version
-
-        modified.version = self.configuration.version
-
-        return modified
-
-    def generate_modified_cppython(self, original: CPPythonDataT) -> CPPythonDataT:
-        """
-        Applies dynamic behaviors of the settings to itself
-        Returns a copy of the original with dynamic modifications
-        """
-        modified = original.copy(deep=True)
-
-        # Add the pyproject.toml location to all relative paths
-
-        if not modified.install_path.is_absolute():
-            modified.install_path = self.configuration.root_path.absolute() / modified.install_path
-
-        if not modified.tool_path.is_absolute():
-            modified.tool_path = self.configuration.root_path.absolute() / modified.tool_path
-
-        if not modified.build_path.is_absolute():
-            modified.build_path = self.configuration.root_path.absolute() / modified.build_path
-
-        return modified
-
     def write_presets(self, path: Path, generator_output: list[tuple[str, ConfigurePreset]]) -> Path:
         """
         Write the cppython presets.
