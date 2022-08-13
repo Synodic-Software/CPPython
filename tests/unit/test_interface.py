@@ -2,16 +2,11 @@
 Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
+from typing import Type
+
 import pytest
 from click.testing import CliRunner
-from cppython_core.schema import (
-    PEP621,
-    CPPythonData,
-    InterfaceConfiguration,
-    PyProject,
-    TargetEnum,
-    ToolData,
-)
+from cppython_core.schema import PEP621, CPPythonData, PyProject, TargetEnum, ToolData
 from pytest_cppython.plugin import InterfaceUnitTests
 from pytest_mock.plugin import MockerFixture
 
@@ -29,16 +24,12 @@ class TestCLIInterface(InterfaceUnitTests):
     The tests for our CLI interface
     """
 
-    @pytest.fixture(name="interface")
-    def fixture_interface(self) -> ConsoleInterface:
+    @pytest.fixture(name="interface_type")
+    def fixture_interface_type(self) -> Type[ConsoleInterface]:
         """
-        Override of the plugin provided interface fixture.
-
-        Returns:
-            ConsoleInterface -- The Interface object to use for the CPPython defined tests
+        A required testing hook that allows type generation
         """
-        configuration = InterfaceConfiguration()
-        return ConsoleInterface(configuration)
+        return ConsoleInterface
 
     # Grab the API methods and parameterize them for automatic testing of the entry_points
     method_list = [func for func in dir(API) if callable(getattr(API, func)) and not func.startswith("__")]

@@ -67,23 +67,6 @@ class CMakePresets(CPPythonModel, extra=Extra.forbid):
         return None
 
 
-class ProjectConfiguration(CPPythonModel):
-    """
-    TODO
-    """
-
-    root_path: Path  # The path where the pyproject.toml lives
-    version: str  # The version number a 'dynamic' project version will resolve to
-    verbosity: int = Field(default=0)
-
-    @validator("verbosity")
-    def min_max(cls, value):  # pylint: disable=E0213
-        """
-        TODO
-        """
-        return min(max(value, 0), 2)
-
-
 class API:
     """
     Project API

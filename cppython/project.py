@@ -10,19 +10,18 @@ from typing import Any, Type, TypeVar
 from cppython_core.schema import (
     PEP621,
     CPPythonData,
-    CPPythonDataT,
     Generator,
     GeneratorConfiguration,
     Interface,
     Plugin,
-    ProjectDataT,
+    ProjectConfiguration,
     PyProject,
     ToolData,
 )
 from cppython_core.utility import cppython_logger
 from pydantic import create_model
 
-from cppython.schema import API, CMakePresets, ConfigurePreset, ProjectConfiguration
+from cppython.schema import API, CMakePresets, ConfigurePreset
 from cppython.utility import read_json, write_json, write_model_json
 
 
@@ -93,39 +92,6 @@ class ProjectBuilder:
 
         return _generators
 
-    def generate_modified_project(self, original: ProjectDataT) -> ProjectDataT:
-        """
-        Applies dynamic behaviors of the settings to itself
-        Returns a copy of the original with dynamic modifications
-        """
-        modified = original.copy(deep=True)
-
-        # Update the dynamic version
-
-        modified.version = self.configuration.version
-
-        return modified
-
-    def generate_modified_cppython(self, original: CPPythonDataT) -> CPPythonDataT:
-        """
-        Applies dynamic behaviors of the settings to itself
-        Returns a copy of the original with dynamic modifications
-        """
-        modified = original.copy(deep=True)
-
-        # Add the pyproject.toml location to all relative paths
-
-        if not modified.install_path.is_absolute():
-            modified.install_path = self.configuration.root_path.absolute() / modified.install_path
-
-        if not modified.tool_path.is_absolute():
-            modified.tool_path = self.configuration.root_path.absolute() / modified.tool_path
-
-        if not modified.build_path.is_absolute():
-            modified.build_path = self.configuration.root_path.absolute() / modified.build_path
-
-        return modified
-
     def write_presets(self, path: Path, generator_output: list[tuple[str, ConfigurePreset]]) -> Path:
         """
         Write the cppython presets.
@@ -157,7 +123,6 @@ class ProjectBuilder:
         path = path / "cppython"
 
         for generator_name, configure_preset in generator_output:
-
             preset_file = write_generator_presets(path, generator_name, configure_preset)
 
             relative_file = preset_file.relative_to(path)
@@ -179,7 +144,7 @@ class ProjectBuilder:
         Receives a relative path to the tool cmake json file
         """
 
-        root_preset_path = self.configuration.root_path / "CMakePresets.json"
+        root_preset_path = self.configuration.pyproject_file.parent / "CMakePresets.json"
 
         root_preset = read_json(root_preset_path)
         root_model = CMakePresets.parse_obj(root_preset)
@@ -203,7 +168,6 @@ class Project(API):
     def __init__(
         self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
     ) -> None:
-
         self._enabled = False
         self._configuration = configuration
 
@@ -245,12 +209,12 @@ class Project(API):
 
         self._project = pyproject.project
 
-        self._modified_project_data = self._builder.generate_modified_project(pyproject.project)
-        self._modified_cppython_data = self._builder.generate_modified_cppython(pyproject.tool.cppython)
+        self._modified_project_data = pyproject.project.resolve(self.configuration)
+        self._modified_cppython_data = pyproject.tool.cppython.resolve(self.configuration)
 
         self._interface = interface
 
-        generator_configuration = GeneratorConfiguration(root_path=self.configuration.root_path)
+        generator_configuration = GeneratorConfiguration(root_path=self.configuration.pyproject_file.parent)
         self._generators = self._builder.create_generators(
             plugins, generator_configuration, self.project, self.cppython
         )
@@ -296,7 +260,6 @@ class Project(API):
         base_path = self.cppython.install_path
 
         for generator in self._generators:
-
             path = base_path / generator.name()
 
             path.mkdir(parents=True, exist_ok=True)
@@ -323,7 +286,6 @@ class Project(API):
         base_path = self.cppython.install_path
 
         for generator in self._generators:
-
             path = base_path / generator.name()
 
             generator.update_generator(path)
