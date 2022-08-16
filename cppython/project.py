@@ -3,161 +3,20 @@ The central delegation of the CPPython project
 """
 
 import logging
-from importlib import metadata
-from pathlib import Path
-from typing import Any, Type, TypeVar
+from typing import Any
 
 from cppython_core.schema import (
-    PEP621,
-    CPPythonData,
+    CPPythonDataResolved,
     Generator,
     GeneratorConfiguration,
     Interface,
-    Plugin,
+    PEP621Resolved,
     ProjectConfiguration,
-    PyProject,
-    ToolData,
 )
 from cppython_core.utility import cppython_logger
-from pydantic import create_model
 
-from cppython.schema import API, CMakePresets, ConfigurePreset
-from cppython.utility import read_json, write_json, write_model_json
-
-
-class ProjectBuilder:
-    """
-    TODO
-    """
-
-    def __init__(self, configuration: ProjectConfiguration) -> None:
-        self.configuration = configuration
-
-    DerivedPlugin = TypeVar("DerivedPlugin", bound=Plugin)
-
-    def gather_plugins(self, plugin_type: Type[DerivedPlugin]) -> list[Type[DerivedPlugin]]:
-        """
-        TODO
-        """
-        plugins = []
-        entry_points = metadata.entry_points(group=f"cppython.{plugin_type.group()}")
-
-        for entry_point in entry_points:
-            loaded_plugin_type = entry_point.load()
-            if issubclass(loaded_plugin_type, plugin_type) & (loaded_plugin_type is not plugin_type):
-                plugins.append(loaded_plugin_type)
-
-        return plugins
-
-    def generate_model(self, plugins: list[Type[Generator]]) -> Type[PyProject]:
-        """
-        TODO: Proper return type hint
-        """
-        plugin_fields = {}
-        for plugin_type in plugins:
-            plugin_fields[plugin_type.name()] = (plugin_type.data_type(), ...)
-
-        extended_cppython_type = create_model(
-            "ExtendedCPPythonData",
-            **plugin_fields,
-            __base__=CPPythonData,
-        )
-
-        extended_tool_type = create_model(
-            "ExtendedToolData",
-            cppython=(extended_cppython_type, ...),
-            __base__=ToolData,
-        )
-
-        return create_model(
-            "ExtendedPyProject",
-            tool=(extended_tool_type, ...),
-            __base__=PyProject,
-        )
-
-    def create_generators(
-        self,
-        plugins: list[Type[Generator]],
-        configuration: GeneratorConfiguration,
-        project: PEP621,
-        cppython: CPPythonData,
-    ) -> list[Generator]:
-        """
-        TODO
-        """
-        _generators = []
-        for plugin_type in plugins:
-            name = plugin_type.name()
-            _generators.append(plugin_type(configuration, project, cppython, getattr(cppython, name)))
-
-        return _generators
-
-    def write_presets(self, path: Path, generator_output: list[tuple[str, ConfigurePreset]]) -> Path:
-        """
-        Write the cppython presets.
-        Returns the
-        """
-
-        path.mkdir(parents=True, exist_ok=True)
-
-        def write_generator_presets(path: Path, generator_name: str, configure_preset: ConfigurePreset) -> Path:
-            """
-            Write a generator preset.
-            @returns - The written json file
-            """
-            generator_tool_path = path / generator_name
-            generator_tool_path.mkdir(parents=True, exist_ok=True)
-
-            configure_preset.hidden = True
-            presets = CMakePresets(configurePresets=[configure_preset])
-
-            json_path = generator_tool_path / f"{generator_name}.json"
-
-            write_model_json(json_path, presets)
-
-            return json_path
-
-        names = []
-        includes = []
-
-        path = path / "cppython"
-
-        for generator_name, configure_preset in generator_output:
-            preset_file = write_generator_presets(path, generator_name, configure_preset)
-
-            relative_file = preset_file.relative_to(path)
-
-            names.append(generator_name)
-            includes.append(str(relative_file))
-
-        configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
-        presets = CMakePresets(configurePresets=[configure_preset], include=includes)
-
-        json_path = path / "cppython.json"
-
-        write_model_json(json_path, presets)
-        return json_path
-
-    def write_root_presets(self, path: Path):
-        """
-        Read the top level json file and replace the include reference.
-        Receives a relative path to the tool cmake json file
-        """
-
-        root_preset_path = self.configuration.pyproject_file.parent / "CMakePresets.json"
-
-        root_preset = read_json(root_preset_path)
-        root_model = CMakePresets.parse_obj(root_preset)
-
-        if root_model.include is not None:
-            for index, include_path in enumerate(root_model.include):
-                if Path(include_path).name == "cppython.json":
-                    root_model.include[index] = "build/" + path.as_posix()
-
-            # 'dict.update' wont apply to nested types, manual replacement
-            root_preset["include"] = root_model.include
-
-            write_json(root_preset_path, root_preset)
+from cppython.builder import Builder
+from cppython.schema import API
 
 
 class Project(API):
@@ -180,7 +39,7 @@ class Project(API):
 
         cppython_logger.info("Initializing project")
 
-        self._builder = ProjectBuilder(self.configuration)
+        self._builder = Builder(self.configuration)
         plugins = self._builder.gather_plugins(Generator)
 
         if not plugins:
@@ -209,14 +68,15 @@ class Project(API):
 
         self._project = pyproject.project
 
-        self._modified_project_data = pyproject.project.resolve(self.configuration)
-        self._modified_cppython_data = pyproject.tool.cppython.resolve(self.configuration)
+        resolved_cppython_model = self._builder.generate_resolved_cppython_model(plugins)
+        self._resolved_project_data = pyproject.project.resolve(self.configuration)
+        self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, self.configuration)
 
         self._interface = interface
 
-        generator_configuration = GeneratorConfiguration(root_path=self.configuration.pyproject_file.parent)
+        generator_configuration = GeneratorConfiguration(root_directory=self.configuration.pyproject_file.parent)
         self._generators = self._builder.create_generators(
-            plugins, generator_configuration, self.project, self.cppython
+            plugins, self.configuration, generator_configuration, self.project, self.cppython
         )
 
         cppython_logger.info("Initialized project successfully")
@@ -236,18 +96,18 @@ class Project(API):
         return self._configuration
 
     @property
-    def project(self) -> PEP621:
+    def project(self) -> PEP621Resolved:
         """
         The resolved pyproject project table
         """
-        return self._modified_project_data
+        return self._resolved_project_data
 
     @property
-    def cppython(self):
+    def cppython(self) -> CPPythonDataResolved:
         """
         The resolved CPPython data
         """
-        return self._modified_cppython_data
+        return self._resolved_cppython_data
 
     def download_generator_tools(self) -> None:
         """
