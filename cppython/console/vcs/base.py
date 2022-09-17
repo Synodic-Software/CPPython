@@ -10,26 +10,40 @@ from packaging.version import Version
 
 
 class VCS(ABC):
-    """
-    Base class for version control systems
-    """
+    """Base class for version control systems"""
 
-    subclasses = []
+    subclasses: list[type["VCS"]] = []
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs) -> None:
         super().__init_subclass__(**kwargs)
         cls.subclasses.append(cls)
 
     @abstractmethod
     def is_repository(self, path: Path) -> bool:
-        """
-        TODO
+        """_summary_
+
+        Args:
+            path: _description_
+
+        Raises:
+            NotImplementedError: _description_
+
+        Returns:
+            _description_
         """
         raise NotImplementedError()
 
     @abstractmethod
     def extract_version(self, path: Path) -> Version:
-        """
-        TODO
+        """_summary_
+
+        Args:
+            path: _description_
+
+        Raises:
+            NotImplementedError: _description_
+
+        Returns:
+            _description_
         """
         raise NotImplementedError()

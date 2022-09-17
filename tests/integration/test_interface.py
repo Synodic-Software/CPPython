@@ -1,5 +1,4 @@
-"""
-Test the integrations related to the internal interface implementation and the 'Interface' interface itself
+"""Test the integrations related to the internal interface implementation and the 'Interface' interface itself
 """
 
 import pytest
@@ -9,15 +8,18 @@ from pytest_cppython.plugin import InterfaceIntegrationTests
 from cppython.console.interface import ConsoleInterface
 
 
-class TestCLIInterface(InterfaceIntegrationTests):
-    """
-    The tests for our CLI interface
-    """
+class TestCLIInterface(InterfaceIntegrationTests[ConsoleInterface]):
+    """The tests for our CLI interface"""
 
     @pytest.fixture(name="interface")
-    def fixture_interface(self):
-        """
-        Override of the plugin provided interface fixture.
+    def fixture_interface(
+        self, interface_type: type[ConsoleInterface], interface_configuration: InterfaceConfiguration
+    ) -> ConsoleInterface:
+        """Override of the plugin provided interface fixture.
+
+        Args:
+            interface_type: _description_
+            interface_configuration: _description_
 
         Returns:
             ConsoleInterface -- The Interface object to use for the CPPython defined tests

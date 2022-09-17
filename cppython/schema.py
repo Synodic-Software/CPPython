@@ -1,38 +1,44 @@
-"""
-TODO
+"""Project schema specifications
 """
 
 from __future__ import annotations  # Required for self-referenced pydantic types
 
 from abc import abstractmethod
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from cppython_core.schema import ConfigurePreset, CPPythonModel, Preset
 from pydantic import Extra, Field, validator
 
 
 class BuildPreset(Preset):
-    """
-    Partial Build Preset specification
+    """Partial Build Preset specification
+
+    Args:
+        Preset: _description_
     """
 
-    configurePreset: Optional[str] = Field(default=None)
-    inheritConfigureEnvironment: Optional[bool] = Field(default=None)
+    configurePreset: str | None = Field(default=None)
+    inheritConfigureEnvironment: bool | None = Field(default=None)
 
 
 class TestPreset(Preset):
-    """
-    Partial Test Preset specification
+    """Partial Test Preset specification
+
+    Args:
+        Preset: _description_
     """
 
-    configurePreset: Optional[str] = Field(default=None)
-    inheritConfigureEnvironment: Optional[bool] = Field(default=None)
+    configurePreset: str | None = Field(default=None)
+    inheritConfigureEnvironment: bool | None = Field(default=None)
 
 
 class CMakeVersion(CPPythonModel, extra=Extra.forbid):
-    """
-    The version specification for CMake
+    """The version specification for CMake
+
+    Args:
+        CPPythonModel: _description_
+        extra: _description_. Defaults to Extra.forbid.
     """
 
     major: int = Field(default=3)
@@ -41,22 +47,34 @@ class CMakeVersion(CPPythonModel, extra=Extra.forbid):
 
 
 class CMakePresets(CPPythonModel, extra=Extra.forbid):
-    """
-    The schema for the CMakePresets and CMakeUserPresets files
+    """The schema for the CMakePresets and CMakeUserPresets files
+
+    Args:
+        CPPythonModel: _description_
+        extra: _description_. Defaults to Extra.forbid.
+
+    Returns:
+        _description_
     """
 
     version: int = Field(default=4, const=True)
-    cmakeMinimumRequired: CMakeVersion = Field(default=CMakeVersion())  # TODO: 'version' compatibility validation
-    include: Optional[list[str]] = Field(default=None)
-    vendor: Optional[Any] = Field(default=None)
-    configurePresets: Optional[list[ConfigurePreset]] = Field(default=None)
-    buildPresets: Optional[list[BuildPreset]] = Field(default=None)
-    testPresets: Optional[list[TestPreset]] = Field(default=None)
+    cmakeMinimumRequired: CMakeVersion = Field(default=CMakeVersion())
+    include: list[str] | None = Field(default=None)
+    vendor: Any | None = Field(default=None)
+    configurePresets: list[ConfigurePreset] | None = Field(default=None)
+    buildPresets: list[BuildPreset] | None = Field(default=None)
+    testPresets: list[TestPreset] | None = Field(default=None)
 
     @validator("include")
-    def validate_path(cls, values):  # pylint: disable=E0213
-        """
-        TODO
+    @classmethod
+    def validate_path(cls, values: list[str] | None) -> list[str] | None:
+        """Validates that the path is in posix form
+
+        Args:
+            values: _description_
+
+        Returns:
+            _description_
         """
         if values is not None:
             output = []
@@ -68,21 +86,23 @@ class CMakePresets(CPPythonModel, extra=Extra.forbid):
 
 
 class API:
-    """
-    Project API
-    """
+    """Project API specification"""
 
     @abstractmethod
     def install(self) -> None:
-        """
-        TODO
+        """_summary_
+
+        Raises:
+            NotImplementedError: _description_
         """
         raise NotImplementedError()
 
     @abstractmethod
     def update(self) -> None:
-        """
-        TODO
+        """_summary_
+
+        Raises:
+            NotImplementedError: _description_
         """
 
         raise NotImplementedError()

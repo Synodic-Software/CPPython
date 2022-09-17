@@ -1,96 +1,108 @@
-"""
-Test the functions related to the internal interface implementation and the 'Interface' interface itself
+"""Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from cppython_core.schema import (
     PEP621,
     ConfigurePreset,
     CPPythonData,
-    CPPythonDataResolved,
-    Generator,
     GeneratorConfiguration,
-    PEP621Resolved,
+    ProjectConfiguration,
     PyProject,
-    ToolData,
 )
 from pytest_cppython.mock import MockGenerator, MockGeneratorData
 from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
-from cppython.project import Project, ProjectConfiguration
+from cppython.project import Project
 from cppython.utility import read_json, write_json
-
-default_pep621 = PEP621(name="test_name", version="1.0")
-default_cppython_data = CPPythonData()
-default_tool_data = ToolData(**{"cppython": default_cppython_data})
-default_pyproject = PyProject(**{"project": default_pep621, "tool": default_tool_data})
-
-mocked_pyproject = default_pyproject.dict(by_alias=True)
-mocked_pyproject["tool"]["cppython"]["mock"] = MockGeneratorData()
+from tests.data.fixtures import CPPythonProjectFixtures
 
 
 class ExtendedCPPython(CPPythonData):
-    """
-    TODO
+    """_summary_
+
+    Args:
+        CPPythonData: _description_
     """
 
     mock: MockGeneratorData
 
 
-class TestProject:
-    """
-    TODO
+class TestProject(CPPythonProjectFixtures):
+    """_summary_
+
+    Args:
+        CPPythonProjectFixtures: _description_
     """
 
-    def test_construction_without_plugins(self, mocker: MockerFixture):
-        """
-        TODO
+    def test_construction_without_plugins(
+        self, mocker: MockerFixture, project: PyProject, project_configuration: ProjectConfiguration
+    ) -> None:
+        """_summary_
+
+        Args:
+            mocker: _description_
+            project: _description_
+            project_configuration: _description_
         """
 
         interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        Project(configuration, interface_mock, default_pyproject.dict(by_alias=True))
+        Project(project_configuration, interface_mock, project.dict(by_alias=True))
 
-    def test_construction_with_plugins(self, mocker: MockerFixture):
-        """
-        TODO
+    def test_construction_with_plugins(
+        self, mocker: MockerFixture, project_configuration: ProjectConfiguration, mock_project: dict[str, Any]
+    ) -> None:
+        """_summary_
+
+        Args:
+            mocker: _description_
+            project_configuration: _description_
+            mock_project: _description_
         """
 
         mocked_plugin_list = [MockGenerator]
         mocker.patch("cppython.builder.Builder.gather_plugins", return_value=mocked_plugin_list)
 
         interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        Project(configuration, interface_mock, mocked_pyproject)
+        Project(project_configuration, interface_mock, mock_project)
 
 
-class TestBuilder:
+class TestBuilder(CPPythonProjectFixtures):
+    """_summary_
+
+    Args:
+        CPPythonProjectFixtures: _description_
     """
-    TODO
-    """
 
-    def test_plugin_gather(self):
-        """
-        TODO
+    def test_plugin_gather(self, project_configuration: ProjectConfiguration) -> None:
+        """_summary_
+
+        Args:
+            project_configuration: _description_
         """
 
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        builder = Builder(configuration)
-        plugins = builder.gather_plugins(Generator)
+        builder = Builder(project_configuration)
+        plugins = builder.gather_plugins(MockGenerator)
 
         assert len(plugins) == 0
 
-    def test_generator_data_construction(self, mocker: MockerFixture):
-        """
-        TODO
+    def test_generator_data_construction(
+        self, mocker: MockerFixture, project_configuration: ProjectConfiguration, project: PyProject
+    ) -> None:
+        """_summary_
+
+        Args:
+            mocker: _description_
+            project_configuration: _description_
+            project: _description_
         """
 
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        builder = Builder(configuration)
+        builder = Builder(project_configuration)
         model_type = builder.generate_model([])
 
         assert model_type.__base__ == PyProject
@@ -101,7 +113,7 @@ class TestBuilder:
 
         model_type = builder.generate_model([generator_type])
 
-        project_data = default_pyproject.dict(by_alias=True)
+        project_data = project.dict(by_alias=True)
 
         mock_data = MockGeneratorData()
         project_data["tool"]["cppython"]["mock"] = mock_data.dict(by_alias=True)
@@ -109,25 +121,29 @@ class TestBuilder:
 
         assert result.tool is not None
         assert result.tool.cppython is not None
-        assert result.tool.cppython.mock is not None
 
-    def test_generator_creation(self, mocker: MockerFixture):
+    def test_generator_creation(
+        self, mocker: MockerFixture, project_configuration: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData
+    ) -> None:
+        """_summary_
+
+        Args:
+            mocker: _description_
+            project_configuration: _description_
+            pep621: _description_
+            cppython: _description_
         """
-        TODO
-        """
 
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        builder = Builder(configuration)
+        builder = Builder(project_configuration)
 
-        generator_configuration = GeneratorConfiguration(root_directory=configuration.pyproject_file.parent)
+        generator_configuration = GeneratorConfiguration(root_directory=project_configuration.pyproject_file.parent)
 
         resolved = builder.generate_resolved_cppython_model([])
         generators = builder.create_generators(
             [],
-            configuration,
+            project_configuration,
             generator_configuration,
-            default_pep621.resolve(configuration),
-            default_cppython_data.resolve(resolved, configuration),
+            (pep621.resolve(project_configuration), cppython.resolve(resolved, project_configuration)),
         )
 
         assert not generators
@@ -137,7 +153,7 @@ class TestBuilder:
         generator_type.data_type.return_value = MockGeneratorData
 
         mock_data = MockGeneratorData()
-        extended_cppython_dict = default_cppython_data.dict(exclude_defaults=True)
+        extended_cppython_dict = cppython.dict(exclude_defaults=True)
         extended_cppython_dict["mock"] = mock_data
         extended_cppython = ExtendedCPPython(**extended_cppython_dict)
 
@@ -145,17 +161,18 @@ class TestBuilder:
 
         generators = builder.create_generators(
             [generator_type],
-            configuration,
+            project_configuration,
             generator_configuration,
-            default_pep621.resolve(configuration),
-            extended_cppython.resolve(resolved, configuration),
+            (pep621.resolve(project_configuration), extended_cppython.resolve(resolved, project_configuration)),
         )
 
         assert len(generators) == 1
 
-    def test_presets(self, tmp_path: Path):
-        """
-        TODO
+    def test_presets(self, tmp_path: Path) -> None:
+        """_summary_
+
+        Args:
+            tmp_path: _description_
         """
 
         # Write a dummy file for the config
@@ -187,9 +204,11 @@ class TestBuilder:
         test_file = test_tool / "test.json"
         assert test_file.exists()
 
-    def test_root_unmodified(self, tmp_path: Path):
-        """
-        TODO
+    def test_root_unmodified(self, tmp_path: Path) -> None:
+        """_summary_
+
+        Args:
+            tmp_path: _description_
         """
 
         # Write a dummy file for the config

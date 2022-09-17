@@ -1,5 +1,4 @@
-"""
-TODO
+"""TODO
 """
 
 from pathlib import Path
@@ -12,13 +11,16 @@ from cppython.console.vcs.base import VCS
 
 
 class Git(VCS):
-    """
-    Git implementation hooks
-    """
+    """Git implementation hooks"""
 
     def is_repository(self, path: Path) -> bool:
-        """
-        TODO
+        """_summary_
+
+        Args:
+            path: _description_
+
+        Returns:
+            _description_
         """
 
         try:
@@ -29,8 +31,13 @@ class Git(VCS):
             return False
 
     def extract_version(self, path: Path) -> Version:
-        """
-        TODO
+        """_summary_
+
+        Args:
+            path: _description_
+
+        Returns:
+            _description_
         """
 
         repo = Repo(str(path))

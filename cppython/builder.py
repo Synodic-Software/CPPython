@@ -1,16 +1,18 @@
-"""
-TODO
+"""Everything needed to build a CPPython project
 """
 
 from importlib import metadata
 from pathlib import Path
-from typing import Type
+from typing import Any
 
 from cppython_core.schema import (
+    ConfigurePreset,
     CPPythonData,
     CPPythonDataResolved,
     Generator,
     GeneratorConfiguration,
+    GeneratorDataResolvedT,
+    GeneratorDataT,
     PEP621Resolved,
     PluginT,
     ProjectConfiguration,
@@ -19,21 +21,24 @@ from cppython_core.schema import (
 )
 from pydantic import create_model
 
-from cppython.schema import CMakePresets, ConfigurePreset
+from cppython.schema import CMakePresets
 from cppython.utility import read_json, write_json, write_model_json
 
 
 class Builder:
-    """
-    TODO
-    """
+    """Helper class for building CPPython projects"""
 
     def __init__(self, configuration: ProjectConfiguration) -> None:
         self.configuration = configuration
 
-    def gather_plugins(self, plugin_type: Type[PluginT]) -> list[Type[PluginT]]:
-        """
-        TODO
+    def gather_plugins(self, plugin_type: type[PluginT]) -> list[type[PluginT]]:
+        """Plugin discovery routine
+
+        Args:
+            plugin_type: The type of plugin to search for. Discovered via the 'name' and 'group' methods of the plugin
+
+        Returns:
+            The list of plugin types discovered which should be instantiated
         """
         plugins = []
         entry_points = metadata.entry_points(group=f"cppython.{plugin_type.group()}")
@@ -45,11 +50,16 @@ class Builder:
 
         return plugins
 
-    def generate_model(self, plugins: list[Type[Generator]]) -> Type[PyProject]:
+    def generate_model(self, plugins: list[type[Generator[GeneratorDataT, GeneratorDataResolvedT]]]) -> type[PyProject]:
+        """_summary_
+
+        Args:
+            plugins: _description_
+
+        Returns:
+            _description_
         """
-        TODO: Proper return type hint
-        """
-        plugin_fields = {}
+        plugin_fields: dict[str, Any] = {}
         for plugin_type in plugins:
             plugin_fields[plugin_type.name()] = (plugin_type.data_type(), ...)
 
@@ -71,12 +81,19 @@ class Builder:
             __base__=PyProject,
         )
 
-    def generate_resolved_cppython_model(self, plugins: list[Type[Generator]]) -> Type[CPPythonDataResolved]:
-        """
-        TODO
+    def generate_resolved_cppython_model(
+        self, plugins: list[type[Generator[GeneratorDataT, GeneratorDataResolvedT]]]
+    ) -> type[CPPythonDataResolved]:
+        """_summary_
+
+        Args:
+            plugins: _description_
+
+        Returns:
+            _description_
         """
 
-        plugin_fields = {}
+        plugin_fields: dict[str, Any] = {}
         for plugin_type in plugins:
             # The unresolved type is still appended to the CPPythonDataResolved type
             #   as sub-resolution still needs to happen at this stage of the builder
@@ -90,36 +107,59 @@ class Builder:
 
     def create_generators(
         self,
-        plugins: list[Type[Generator]],
+        plugins: list[type[Generator[GeneratorDataT, GeneratorDataResolvedT]]],
         project_configuration: ProjectConfiguration,
         configuration: GeneratorConfiguration,
-        project: PEP621Resolved,
-        cppython: CPPythonDataResolved,
-    ) -> list[Generator]:
+        static_resolved_project_data: tuple[PEP621Resolved, CPPythonDataResolved],
+    ) -> list[Generator[GeneratorDataT, GeneratorDataResolvedT]]:
+        """_summary_
+
+        Args:
+            plugins: _description_
+            project_configuration: _description_
+            configuration: _description_
+            static_resolved_project_data: _description_
+
+        Returns:
+            _description_
         """
-        TODO
-        """
+
+        project, cppython = static_resolved_project_data
+
         _generators = []
         for plugin_type in plugins:
             name = plugin_type.name()
             generator_data = getattr(cppython, name)
             resolved_generator_data = generator_data.resolve(project_configuration)
-            _generators.append(plugin_type(configuration, project, cppython, resolved_generator_data))
+            resolved_cppython_data = cppython.generator_resolve(plugin_type)
+
+            _generators.append(plugin_type(configuration, project, resolved_cppython_data, resolved_generator_data))
 
         return _generators
 
     def write_presets(self, path: Path, generator_output: list[tuple[str, ConfigurePreset]]) -> Path:
-        """
-        Write the cppython presets.
-        Returns the
+        """Write the cppython presets.
+
+        Args:
+            path: _description_
+            generator_output: _description_
+
+        Returns:
+            _description_
         """
 
         path.mkdir(parents=True, exist_ok=True)
 
         def write_generator_presets(path: Path, generator_name: str, configure_preset: ConfigurePreset) -> Path:
-            """
-            Write a generator preset.
-            @returns - The written json file
+            """Write a generator preset.
+
+            Args:
+                path: _description_
+                generator_name: _description_
+                configure_preset: _description_
+
+            Returns:
+                _description_
             """
             generator_tool_path = path / generator_name
             generator_tool_path.mkdir(parents=True, exist_ok=True)
@@ -154,10 +194,12 @@ class Builder:
         write_model_json(json_path, presets)
         return json_path
 
-    def write_root_presets(self, path: Path):
-        """
-        Read the top level json file and replace the include reference.
+    def write_root_presets(self, path: Path) -> None:
+        """Read the top level json file and replace the include reference.
         Receives a relative path to the tool cmake json file
+
+        Args:
+            path: _description_
         """
 
         root_preset_path = self.configuration.pyproject_file.parent / "CMakePresets.json"

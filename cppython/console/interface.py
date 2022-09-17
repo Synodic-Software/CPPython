@@ -1,21 +1,27 @@
-"""
-A click CLI for CPPython interfacing
+"""A click CLI for CPPython interfacing
 """
 
 from pathlib import Path
-from typing import Any, Type
+from typing import Any
 
 import click
 import tomlkit
-from cppython_core.schema import GeneratorDataT, Interface, InterfaceConfiguration
+from cppython_core.schema import (
+    GeneratorDataT,
+    Interface,
+    InterfaceConfiguration,
+    ProjectConfiguration,
+)
 
 from cppython.console.vcs.git import Git
-from cppython.project import Project, ProjectConfiguration
+from cppython.project import Project
 
 
 def _find_pyproject_file() -> Path:
-    """
-    TODO
+    """_summary_
+
+    Returns:
+        _description_
     """
 
     # Search for a path upward
@@ -32,27 +38,13 @@ def _find_pyproject_file() -> Path:
     return path
 
 
-def _create_pyproject(path: Path) -> dict[str, Any]:
-    """
-    TODO
-    """
+class Configuration:
+    """The data object that will be expanded alongside 'pass_obj'"""
 
-    # Load file
-    data = tomlkit.loads(path.read_text(encoding="utf-8"))
-
-    # Interpret and validate data
-    return data
-
-
-class Config:
-    """
-    The data object that will be expanded alongside 'pass_obj'
-    """
-
-    def __init__(self):
+    def __init__(self) -> None:
         path = _find_pyproject_file()
         file_path = path / "pyproject.toml"
-        self.pyproject_data = _create_pyproject(file_path)
+        self.pyproject_data = tomlkit.loads(file_path.read_text(encoding="utf-8"))
 
         configuration = InterfaceConfiguration()
         self.interface = ConsoleInterface(configuration)
@@ -63,39 +55,48 @@ class Config:
         self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version.base_version)
 
     def create_project(self) -> Project:
-        """
-        TODO
+        """_summary_
+
+        Returns:
+            _description_
         """
         return Project(self.configuration, self.interface, self.pyproject_data)
 
 
-pass_config = click.make_pass_decorator(Config, ensure=True)
+pass_config = click.make_pass_decorator(Configuration, ensure=True)
 
 
 @click.group()
 @click.option("-v", "--verbose", count=True, help="Print additional output")
 @pass_config
-def cli(config, verbose: int):
-    """
-    entry_point group for the CLI commands
+def cli(config: Configuration, verbose: int) -> None:
+    """entry_point group for the CLI commands
+
+    Args:
+        config: _description_
+        verbose: _description_
     """
     config.configuration.verbosity = verbose
 
 
 @cli.command()
 @pass_config
-def info(config):
-    """
-    TODO
+def info(config: Configuration) -> None:
+    """_summary_
+
+    Args:
+        config: _description_
     """
     config.create_project()
 
 
 @cli.command()
 @pass_config
-def install(config):
-    """
-    TODO
+def install(config: Configuration) -> None:
+    """_summary_
+
+    Args:
+        config: _description_
     """
     project = config.create_project()
     project.install()
@@ -103,43 +104,42 @@ def install(config):
 
 @cli.command()
 @pass_config
-def update(config):
-    """
-    TODO
+def update(config: Configuration) -> None:
+    """_summary_
+
+    Args:
+        config: _description_
     """
     project = config.create_project()
     project.update()
 
 
-@cli.command()
-@pass_config
-def build(config):
-    """
-    TODO
-    """
-    project = config.create_project()
-    project.build()
-
-
 class ConsoleInterface(Interface):
-    """
-    Interface implementation to pass to the project
-    """
+    """Interface implementation to pass to the project
 
-    def __init__(self, configuration: InterfaceConfiguration) -> None:
-        super().__init__(configuration)
+    Args:
+        Interface: _description_
+    """
 
     @staticmethod
     def name() -> str:
+        """_summary_
+
+        Returns:
+            _description_
+        """
         return "console"
 
-    def read_generator_data(self, generator_data_type: Type[GeneratorDataT]) -> GeneratorDataT:
-        """
-        Requests generator information
+    def read_generator_data(self, generator_data_type: type[GeneratorDataT]) -> GeneratorDataT:
+        """Requests generator information
+
+        Args:
+            generator_data_type: _description_
+
+        Returns:
+            _description_
         """
         return generator_data_type()
 
     def write_pyproject(self) -> None:
-        """
-        Write output
-        """
+        """Write output"""
