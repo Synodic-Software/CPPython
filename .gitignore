@@ -15,6 +15,9 @@ dist/
 .pdm.toml
 __pypackages__/
 
+#Coverage
+.coverage
+
 #VisualStudioCode
 .vscode/*
 !.vscode/settings.json
