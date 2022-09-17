@@ -1,6 +1,8 @@
 name: Update Python Development Release
 on:
-  - push
+  push: 
+    branches: 
+      - '**'
 
 jobs:
   publish_release:
