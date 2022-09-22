@@ -7,7 +7,6 @@ from typing import Any
 
 from cppython_core.schema import (
     CPPythonDataResolved,
-    Generator,
     GeneratorConfiguration,
     Interface,
     PEP621Resolved,
@@ -25,28 +24,27 @@ class Project(API):
         self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
     ) -> None:
         self._enabled = False
-        self._configuration = configuration
 
+        # Default logging levels
         levels = [logging.WARNING, logging.INFO, logging.DEBUG]
 
         # Add default output stream
-        console_handler = logging.StreamHandler()
         self.logger = logging.getLogger("cppython")
-        self.logger.addHandler(console_handler)
+        self.logger.addHandler(logging.StreamHandler())
         self.logger.setLevel(levels[configuration.verbosity])
 
         self.logger.info("Initializing project")
 
-        self._builder = Builder(self.configuration)
+        builder = Builder(configuration, self.logger)
 
-        if not (plugins := self._builder.gather_plugins(Generator)):
+        if not (plugins := builder.discover_generators()):
             self.logger.error("No generator plugin was found")
             return
 
         for plugin in plugins:
             self.logger.warning("Generator plugin found: %s", plugin.name())
 
-        extended_pyproject_type = self._builder.generate_model(plugins)
+        extended_pyproject_type = builder.generate_model(plugins)
 
         if (pyproject := extended_pyproject_type(**pyproject_data)) is None:
             self.logger.error("Data is not defined")
@@ -64,15 +62,15 @@ class Project(API):
 
         self._project = pyproject.project
 
-        resolved_cppython_model = self._builder.generate_resolved_cppython_model(plugins)
-        self._resolved_project_data = pyproject.project.resolve(self.configuration)
-        self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, self.configuration)
+        resolved_cppython_model = builder.generate_resolved_cppython_model(plugins)
+        self._resolved_project_data = pyproject.project.resolve(configuration)
+        self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, configuration)
 
         self._interface = interface
 
-        generator_configuration = GeneratorConfiguration(root_directory=self.configuration.pyproject_file.parent)
-        self._generators = self._builder.create_generators(
-            plugins, self.configuration, generator_configuration, (self.project, self.cppython)
+        generator_configuration = GeneratorConfiguration(root_directory=configuration.pyproject_file.parent)
+        self._generators = builder.create_generators(
+            plugins, configuration, generator_configuration, (self.project, self.cppython)
         )
 
         self.logger.info("Initialized project successfully")
@@ -85,15 +83,6 @@ class Project(API):
             _description_
         """
         return self._enabled
-
-    @property
-    def configuration(self) -> ProjectConfiguration:
-        """_summary_
-
-        Returns:
-            _description_
-        """
-        return self._configuration
 
     @property
     def project(self) -> PEP621Resolved:
@@ -129,7 +118,6 @@ class Project(API):
             if not generator.tooling_downloaded(path):
                 self.logger.warning("Downloading the %s requirements to %s", generator.name(), path)
 
-                # TODO: Make async with progress bar
                 await generator.download_tooling(path)
                 self.logger.warning("Download complete")
             else:
@@ -154,7 +142,6 @@ class Project(API):
 
         generator_output = []
 
-        # TODO: Async
         for generator in self._generators:
             self.logger.info("Installing %s generator", generator.name())
 
@@ -166,8 +153,8 @@ class Project(API):
                 self.logger.error("Generator %s failed to install", generator.name())
                 raise exception
 
-        project_presets = self._builder.write_presets(preset_path, generator_output)
-        self._builder.write_root_presets(project_presets.relative_to(preset_path))
+        project_presets = builder.write_presets(preset_path, generator_output)
+        builder.write_root_presets(project_presets.relative_to(preset_path))
 
     def update(self) -> None:
         """_summary_
@@ -188,7 +175,6 @@ class Project(API):
 
         generator_output = []
 
-        # TODO: Async
         for generator in self._generators:
             self.logger.info("Updating %s generator", generator.name())
 
@@ -200,5 +186,5 @@ class Project(API):
                 self.logger.error("Generator %s failed to update", generator.name())
                 raise exception
 
-        project_presets = self._builder.write_presets(preset_path, generator_output)
-        self._builder.write_root_presets(project_presets.relative_to(preset_path))
+        project_presets = builder.write_presets(preset_path, generator_output)
+        builder.write_root_presets(project_presets.relative_to(preset_path))

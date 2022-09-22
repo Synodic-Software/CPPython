@@ -2,6 +2,7 @@
 """
 
 from importlib import metadata
+from logging import Logger
 from pathlib import Path
 from typing import Any
 
@@ -14,7 +15,7 @@ from cppython_core.schema import (
     GeneratorDataResolvedT,
     GeneratorDataT,
     PEP621Resolved,
-    PluginT,
+    Plugin,
     ProjectConfiguration,
     PyProject,
     ToolData,
@@ -25,28 +26,80 @@ from cppython.schema import CMakePresets
 from cppython.utility import read_json, write_json, write_model_json
 
 
+class PluginBuilder:
+    """_summary_
+
+    Returns:
+        _description_
+    """
+
+    def __init__(self, group: str, logger: Logger) -> None:
+        self._group = group
+        self._logger = logger
+
+    def gather_entries(self) -> list[metadata.EntryPoint]:
+        """_summary_
+
+        Returns:
+            _description_
+        """
+        return list(metadata.entry_points(group=f"cppython.{self._group}"))
+
+    def load(self, entry_points: list[metadata.EntryPoint]) -> list[type[Plugin]]:
+        """_summary_
+
+        Args:
+            entry_points: _description_
+
+        Raises:
+            TypeError: _description_
+
+        Returns:
+            _description_
+        """
+
+        plugins = []
+
+        for entry_point in entry_points:
+            plugin = entry_point.load()
+
+            if not issubclass(plugin, Plugin):
+                raise TypeError("The CPPython plugin must be an instance of Plugin")
+
+            plugins.append(plugin)
+
+        return plugins
+
+
 class Builder:
     """Helper class for building CPPython projects"""
 
-    def __init__(self, configuration: ProjectConfiguration) -> None:
+    def __init__(self, configuration: ProjectConfiguration, logger: Logger) -> None:
         self.configuration = configuration
+        self.logger = logger
 
-    def gather_plugins(self, plugin_type: type[PluginT]) -> list[type[PluginT]]:
-        """Plugin discovery routine
+    def discover_generators(self) -> list[type[Generator[Any, Any]]]:
+        """_summary_
 
-        Args:
-            plugin_type: The type of plugin to search for. Discovered via the 'name' and 'group' methods of the plugin
+        Raises:
+            TypeError: _description_
 
         Returns:
-            The list of plugin types discovered which should be instantiated
+            _description_
         """
-        plugins = []
-        entry_points = metadata.entry_points(group=f"cppython.{plugin_type.group()}")
+        generator_builder = PluginBuilder(Generator.group(), self.logger)
 
-        for entry_point in entry_points:
-            loaded_plugin_type = entry_point.load()
-            if issubclass(loaded_plugin_type, plugin_type) & (loaded_plugin_type is not plugin_type):
-                plugins.append(loaded_plugin_type)
+        # Gather generator entry points without any filtering
+        generator_entry_points = generator_builder.gather_entries()
+        generator_types = generator_builder.load(generator_entry_points)
+
+        plugins = []
+
+        for generator_type in generator_types:
+            if not issubclass(generator_type, Generator):
+                raise TypeError("The CPPython plugin must be an instance of Plugin")
+
+            plugins.append(generator_type)
 
         return plugins
 
