@@ -7,10 +7,10 @@ from typing import Any
 
 from cppython_core.schema import (
     CPPythonDataResolved,
-    GeneratorConfiguration,
     Interface,
     PEP621Resolved,
     ProjectConfiguration,
+    ProviderConfiguration,
 )
 
 from cppython.builder import Builder
@@ -37,12 +37,12 @@ class Project(API):
 
         builder = Builder(configuration, self.logger)
 
-        if not (plugins := builder.discover_generators()):
-            self.logger.error("No generator plugin was found")
+        if not (plugins := builder.discover_providers()):
+            self.logger.error("No provider plugin was found")
             return
 
         for plugin in plugins:
-            self.logger.warning("Generator plugin found: %s", plugin.name())
+            self.logger.warning("Provider plugin found: %s", plugin.name())
 
         extended_pyproject_type = builder.generate_model(plugins)
 
@@ -68,9 +68,9 @@ class Project(API):
 
         self._interface = interface
 
-        generator_configuration = GeneratorConfiguration(root_directory=configuration.pyproject_file.parent)
-        self._generators = builder.create_generators(
-            plugins, configuration, generator_configuration, (self.project, self.cppython)
+        provider_configuration = ProviderConfiguration(root_directory=configuration.pyproject_file.parent)
+        self._providers = builder.create_providers(
+            plugins, configuration, provider_configuration, (self.project, self.cppython)
         )
 
         self.logger.info("Initialized project successfully")
@@ -102,26 +102,26 @@ class Project(API):
         """
         return self._resolved_cppython_data
 
-    async def download_generator_tools(self) -> None:
-        """Download the generator tooling if required"""
+    async def download_provider_tools(self) -> None:
+        """Download the provider tooling if required"""
         if not self._enabled:
-            self.logger.info("Skipping 'download_generator_tools' because the project is not enabled")
+            self.logger.info("Skipping 'download_provider_tools' because the project is not enabled")
             return
 
         base_path = self.cppython.install_path
 
-        for generator in self._generators:
-            path = base_path / generator.name()
+        for provider in self._providers:
+            path = base_path / provider.name()
 
             path.mkdir(parents=True, exist_ok=True)
 
-            if not generator.tooling_downloaded(path):
-                self.logger.warning("Downloading the %s requirements to %s", generator.name(), path)
+            if not provider.tooling_downloaded(path):
+                self.logger.warning("Downloading the %s requirements to %s", provider.name(), path)
 
-                await generator.download_tooling(path)
+                await provider.download_tooling(path)
                 self.logger.warning("Download complete")
             else:
-                self.logger.info("The %s generator is already downloaded", generator.name())
+                self.logger.info("The %s provider is already downloaded", provider.name())
 
     # API Contract
     def install(self) -> None:
@@ -135,25 +135,25 @@ class Project(API):
             return
 
         self.logger.info("Installing tools")
-        asyncio.run(self.download_generator_tools())
+        asyncio.run(self.download_provider_tools())
 
         self.logger.info("Installing project")
         preset_path = self.cppython.build_path
 
-        generator_output = []
+        provider_output = []
 
-        for generator in self._generators:
-            self.logger.info("Installing %s generator", generator.name())
+        for provider in self._providers:
+            self.logger.info("Installing %s provider", provider.name())
 
             try:
-                generator.install()
-                config_preset = generator.generate_cmake_config()
-                generator_output.append((generator.name(), config_preset))
+                provider.install()
+                config_preset = provider.generate_cmake_config()
+                provider_output.append((provider.name(), config_preset))
             except Exception as exception:
-                self.logger.error("Generator %s failed to install", generator.name())
+                self.logger.error("Provider %s failed to install", provider.name())
                 raise exception
 
-        project_presets = builder.write_presets(preset_path, generator_output)
+        project_presets = builder.write_presets(preset_path, provider_output)
         builder.write_root_presets(project_presets.relative_to(preset_path))
 
     def update(self) -> None:
@@ -167,24 +167,24 @@ class Project(API):
             return
 
         self.logger.info("Updating tools")
-        asyncio.run(self.download_generator_tools())
+        asyncio.run(self.download_provider_tools())
 
         self.logger.info("Updating project")
 
         preset_path = self.cppython.build_path
 
-        generator_output = []
+        provider_output = []
 
-        for generator in self._generators:
-            self.logger.info("Updating %s generator", generator.name())
+        for provider in self._providers:
+            self.logger.info("Updating %s provider", provider.name())
 
             try:
-                generator.update()
-                config_preset = generator.generate_cmake_config()
-                generator_output.append((generator.name(), config_preset))
+                provider.update()
+                config_preset = provider.generate_cmake_config()
+                provider_output.append((provider.name(), config_preset))
             except Exception as exception:
-                self.logger.error("Generator %s failed to update", generator.name())
+                self.logger.error("Provider %s failed to update", provider.name())
                 raise exception
 
-        project_presets = builder.write_presets(preset_path, generator_output)
+        project_presets = builder.write_presets(preset_path, provider_output)
         builder.write_root_presets(project_presets.relative_to(preset_path))

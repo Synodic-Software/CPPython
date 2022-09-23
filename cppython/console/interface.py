@@ -7,10 +7,10 @@ from typing import Any
 import click
 import tomlkit
 from cppython_core.schema import (
-    GeneratorDataT,
     Interface,
     InterfaceConfiguration,
     ProjectConfiguration,
+    ProviderDataT,
 )
 
 from cppython.console.vcs.git import Git
@@ -130,16 +130,16 @@ class ConsoleInterface(Interface):
         """
         return "console"
 
-    def read_generator_data(self, generator_data_type: type[GeneratorDataT]) -> GeneratorDataT:
-        """Requests generator information
+    def read_provider_data(self, provider_data_type: type[ProviderDataT]) -> ProviderDataT:
+        """Requests provider information
 
         Args:
-            generator_data_type: _description_
+            provider_data_type: _description_
 
         Returns:
             _description_
         """
-        return generator_data_type()
+        return provider_data_type()
 
     def write_pyproject(self) -> None:
         """Write output"""

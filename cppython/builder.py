@@ -10,13 +10,13 @@ from cppython_core.schema import (
     ConfigurePreset,
     CPPythonData,
     CPPythonDataResolved,
-    Generator,
-    GeneratorConfiguration,
-    GeneratorDataResolvedT,
-    GeneratorDataT,
     PEP621Resolved,
     Plugin,
     ProjectConfiguration,
+    Provider,
+    ProviderConfiguration,
+    ProviderDataResolvedT,
+    ProviderDataT,
     PyProject,
     ToolData,
 )
@@ -78,7 +78,7 @@ class Builder:
         self.configuration = configuration
         self.logger = logger
 
-    def discover_generators(self) -> list[type[Generator[Any, Any]]]:
+    def discover_providers(self) -> list[type[Provider[Any, Any]]]:
         """_summary_
 
         Raises:
@@ -87,23 +87,23 @@ class Builder:
         Returns:
             _description_
         """
-        generator_builder = PluginBuilder(Generator.group(), self.logger)
+        provider_builder = PluginBuilder(Provider.group(), self.logger)
 
-        # Gather generator entry points without any filtering
-        generator_entry_points = generator_builder.gather_entries()
-        generator_types = generator_builder.load(generator_entry_points)
+        # Gather provider entry points without any filtering
+        provider_entry_points = provider_builder.gather_entries()
+        provider_types = provider_builder.load(provider_entry_points)
 
         plugins = []
 
-        for generator_type in generator_types:
-            if not issubclass(generator_type, Generator):
+        for provider_type in provider_types:
+            if not issubclass(provider_type, Provider):
                 raise TypeError("The CPPython plugin must be an instance of Plugin")
 
-            plugins.append(generator_type)
+            plugins.append(provider_type)
 
         return plugins
 
-    def generate_model(self, plugins: list[type[Generator[GeneratorDataT, GeneratorDataResolvedT]]]) -> type[PyProject]:
+    def generate_model(self, plugins: list[type[Provider[ProviderDataT, ProviderDataResolvedT]]]) -> type[PyProject]:
         """_summary_
 
         Args:
@@ -135,7 +135,7 @@ class Builder:
         )
 
     def generate_resolved_cppython_model(
-        self, plugins: list[type[Generator[GeneratorDataT, GeneratorDataResolvedT]]]
+        self, plugins: list[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
     ) -> type[CPPythonDataResolved]:
         """_summary_
 
@@ -158,13 +158,13 @@ class Builder:
             __base__=CPPythonDataResolved,
         )
 
-    def create_generators(
+    def create_providers(
         self,
-        plugins: list[type[Generator[GeneratorDataT, GeneratorDataResolvedT]]],
+        plugins: list[type[Provider[ProviderDataT, ProviderDataResolvedT]]],
         project_configuration: ProjectConfiguration,
-        configuration: GeneratorConfiguration,
+        configuration: ProviderConfiguration,
         static_resolved_project_data: tuple[PEP621Resolved, CPPythonDataResolved],
-    ) -> list[Generator[GeneratorDataT, GeneratorDataResolvedT]]:
+    ) -> list[Provider[ProviderDataT, ProviderDataResolvedT]]:
         """_summary_
 
         Args:
@@ -179,23 +179,23 @@ class Builder:
 
         project, cppython = static_resolved_project_data
 
-        _generators = []
+        _providers = []
         for plugin_type in plugins:
             name = plugin_type.name()
-            generator_data = getattr(cppython, name)
-            resolved_generator_data = generator_data.resolve(project_configuration)
-            resolved_cppython_data = cppython.generator_resolve(plugin_type)
+            provider_data = getattr(cppython, name)
+            resolved_provider_data = provider_data.resolve(project_configuration)
+            resolved_cppython_data = cppython.provider_resolve(plugin_type)
 
-            _generators.append(plugin_type(configuration, project, resolved_cppython_data, resolved_generator_data))
+            _providers.append(plugin_type(configuration, project, resolved_cppython_data, resolved_provider_data))
 
-        return _generators
+        return _providers
 
-    def write_presets(self, path: Path, generator_output: list[tuple[str, ConfigurePreset]]) -> Path:
+    def write_presets(self, path: Path, provider_output: list[tuple[str, ConfigurePreset]]) -> Path:
         """Write the cppython presets.
 
         Args:
             path: _description_
-            generator_output: _description_
+            provider_output: _description_
 
         Returns:
             _description_
@@ -203,24 +203,24 @@ class Builder:
 
         path.mkdir(parents=True, exist_ok=True)
 
-        def write_generator_presets(path: Path, generator_name: str, configure_preset: ConfigurePreset) -> Path:
-            """Write a generator preset.
+        def write_provider_presets(path: Path, provider_name: str, configure_preset: ConfigurePreset) -> Path:
+            """Write a provider preset.
 
             Args:
                 path: _description_
-                generator_name: _description_
+                provider_name: _description_
                 configure_preset: _description_
 
             Returns:
                 _description_
             """
-            generator_tool_path = path / generator_name
-            generator_tool_path.mkdir(parents=True, exist_ok=True)
+            provider_tool_path = path / provider_name
+            provider_tool_path.mkdir(parents=True, exist_ok=True)
 
             configure_preset.hidden = True
             presets = CMakePresets(configurePresets=[configure_preset])
 
-            json_path = generator_tool_path / f"{generator_name}.json"
+            json_path = provider_tool_path / f"{provider_name}.json"
 
             write_model_json(json_path, presets)
 
@@ -231,12 +231,12 @@ class Builder:
 
         path = path / "cppython"
 
-        for generator_name, configure_preset in generator_output:
-            preset_file = write_generator_presets(path, generator_name, configure_preset)
+        for provider_name, configure_preset in provider_output:
+            preset_file = write_provider_presets(path, provider_name, configure_preset)
 
             relative_file = preset_file.relative_to(path)
 
-            names.append(generator_name)
+            names.append(provider_name)
             includes.append(str(relative_file))
 
         configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)

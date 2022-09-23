@@ -13,7 +13,7 @@ from cppython_core.schema import (
     ToolData,
 )
 from pytest_cppython.fixtures import CPPythonFixtures
-from pytest_cppython.mock import MockGeneratorData
+from pytest_cppython.mock import MockProviderData
 
 
 class CPPythonProjectFixtures(CPPythonFixtures):
@@ -65,7 +65,7 @@ class CPPythonProjectFixtures(CPPythonFixtures):
         """
 
         mocked_pyproject = project.dict(by_alias=True)
-        mocked_pyproject["tool"]["cppython"]["mock"] = MockGeneratorData()
+        mocked_pyproject["tool"]["cppython"]["mock"] = MockProviderData()
 
         return mocked_pyproject
 

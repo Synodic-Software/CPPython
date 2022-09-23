@@ -10,11 +10,11 @@ from cppython_core.schema import (
     PEP621,
     ConfigurePreset,
     CPPythonData,
-    GeneratorConfiguration,
     ProjectConfiguration,
+    ProviderConfiguration,
     PyProject,
 )
-from pytest_cppython.mock import MockGenerator, MockGeneratorData
+from pytest_cppython.mock import MockProvider, MockProviderData
 from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
@@ -30,7 +30,7 @@ class ExtendedCPPython(CPPythonData):
         CPPythonData: _description_
     """
 
-    mock: MockGeneratorData
+    mock: MockProviderData
 
 
 class TestProject(CPPythonProjectFixtures):
@@ -65,7 +65,7 @@ class TestProject(CPPythonProjectFixtures):
             mock_project: _description_
         """
 
-        mocked_plugin_list = [MockGenerator]
+        mocked_plugin_list = [MockProvider]
         mocker.patch("cppython.builder.Builder.gather_plugins", return_value=mocked_plugin_list)
 
         interface_mock = mocker.MagicMock()
@@ -87,11 +87,11 @@ class TestBuilder(CPPythonProjectFixtures):
         """
 
         builder = Builder(project_configuration)
-        plugins = builder.gather_plugins(MockGenerator)
+        plugins = builder.gather_plugins(MockProvider)
 
         assert len(plugins) == 0
 
-    def test_generator_data_construction(
+    def test_provider_data_construction(
         self, mocker: MockerFixture, project_configuration: ProjectConfiguration, project: PyProject
     ) -> None:
         """_summary_
@@ -107,22 +107,22 @@ class TestBuilder(CPPythonProjectFixtures):
 
         assert model_type.__base__ == PyProject
 
-        generator_type = mocker.Mock()
-        generator_type.name.return_value = "mock"
-        generator_type.data_type.return_value = MockGeneratorData
+        provider_type = mocker.Mock()
+        provider_type.name.return_value = "mock"
+        provider_type.data_type.return_value = MockProviderData
 
-        model_type = builder.generate_model([generator_type])
+        model_type = builder.generate_model([provider_type])
 
         project_data = project.dict(by_alias=True)
 
-        mock_data = MockGeneratorData()
+        mock_data = MockProviderData()
         project_data["tool"]["cppython"]["mock"] = mock_data.dict(by_alias=True)
         result = model_type(**project_data)
 
         assert result.tool is not None
         assert result.tool.cppython is not None
 
-    def test_generator_creation(
+    def test_provider_creation(
         self, mocker: MockerFixture, project_configuration: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData
     ) -> None:
         """_summary_
@@ -136,37 +136,37 @@ class TestBuilder(CPPythonProjectFixtures):
 
         builder = Builder(project_configuration)
 
-        generator_configuration = GeneratorConfiguration(root_directory=project_configuration.pyproject_file.parent)
+        provider_configuration = ProviderConfiguration(root_directory=project_configuration.pyproject_file.parent)
 
         resolved = builder.generate_resolved_cppython_model([])
-        generators = builder.create_generators(
+        providers = builder.create_providers(
             [],
             project_configuration,
-            generator_configuration,
+            provider_configuration,
             (pep621.resolve(project_configuration), cppython.resolve(resolved, project_configuration)),
         )
 
-        assert not generators
+        assert not providers
 
-        generator_type = mocker.Mock()
-        generator_type.name.return_value = "mock"
-        generator_type.data_type.return_value = MockGeneratorData
+        provider_type = mocker.Mock()
+        provider_type.name.return_value = "mock"
+        provider_type.data_type.return_value = MockProviderData
 
-        mock_data = MockGeneratorData()
+        mock_data = MockProviderData()
         extended_cppython_dict = cppython.dict(exclude_defaults=True)
         extended_cppython_dict["mock"] = mock_data
         extended_cppython = ExtendedCPPython(**extended_cppython_dict)
 
-        resolved = builder.generate_resolved_cppython_model([generator_type])
+        resolved = builder.generate_resolved_cppython_model([provider_type])
 
-        generators = builder.create_generators(
-            [generator_type],
+        providers = builder.create_providers(
+            [provider_type],
             project_configuration,
-            generator_configuration,
+            provider_configuration,
             (pep621.resolve(project_configuration), extended_cppython.resolve(resolved, project_configuration)),
         )
 
-        assert len(generators) == 1
+        assert len(providers) == 1
 
     def test_presets(self, tmp_path: Path) -> None:
         """_summary_
@@ -189,8 +189,8 @@ class TestBuilder(CPPythonProjectFixtures):
 
         configure_preset = ConfigurePreset(name="test_preset", toolchainFile=str(input_toolchain))
 
-        generator_output = [("test", configure_preset)]
-        builder.write_presets(tmp_path, generator_output)
+        provider_output = [("test", configure_preset)]
+        builder.write_presets(tmp_path, provider_output)
 
         cppython_tool = tmp_path / "cppython"
         assert cppython_tool.exists()
@@ -228,8 +228,8 @@ class TestBuilder(CPPythonProjectFixtures):
                     "name": "default",
                     "inherits": ["cppython"],
                     "hidden": True,
-                    "description": "Tests that generator isn't removed",
-                    "generator": "Should exist",
+                    "description": "Tests that provider isn't removed",
+                    "provider": "Should exist",
                 },
             ],
         }
