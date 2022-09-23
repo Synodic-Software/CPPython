@@ -138,23 +138,15 @@ class Project(API):
         asyncio.run(self.download_provider_tools())
 
         self.logger.info("Installing project")
-        preset_path = self.cppython.build_path
-
-        provider_output = []
 
         for provider in self._providers:
             self.logger.info("Installing %s provider", provider.name())
 
             try:
                 provider.install()
-                config_preset = provider.generate_cmake_config()
-                provider_output.append((provider.name(), config_preset))
             except Exception as exception:
                 self.logger.error("Provider %s failed to install", provider.name())
                 raise exception
-
-        project_presets = builder.write_presets(preset_path, provider_output)
-        builder.write_root_presets(project_presets.relative_to(preset_path))
 
     def update(self) -> None:
         """_summary_
@@ -171,20 +163,11 @@ class Project(API):
 
         self.logger.info("Updating project")
 
-        preset_path = self.cppython.build_path
-
-        provider_output = []
-
         for provider in self._providers:
             self.logger.info("Updating %s provider", provider.name())
 
             try:
                 provider.update()
-                config_preset = provider.generate_cmake_config()
-                provider_output.append((provider.name(), config_preset))
             except Exception as exception:
                 self.logger.error("Provider %s failed to update", provider.name())
                 raise exception
-
-        project_presets = builder.write_presets(preset_path, provider_output)
-        builder.write_root_presets(project_presets.relative_to(preset_path))

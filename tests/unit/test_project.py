@@ -4,12 +4,10 @@
 from __future__ import annotations
 
 from logging import getLogger
-from pathlib import Path
 from typing import Any
 
 from cppython_core.schema import (
     PEP621,
-    ConfigurePreset,
     CPPythonData,
     ProjectConfiguration,
     ProviderConfiguration,
@@ -168,78 +166,3 @@ class TestBuilder(CPPythonProjectFixtures):
         )
 
         assert len(providers) == 1
-
-    def test_presets(self, tmp_path: Path) -> None:
-        """_summary_
-
-        Args:
-            tmp_path: _description_
-        """
-
-        # Write a dummy file for the config
-        test_file = tmp_path / "pyproject.toml"
-        test_file.write_text("Test File", encoding="utf-8")
-
-        configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
-        builder = Builder(configuration, getLogger())
-
-        input_toolchain = tmp_path / "input.cmake"
-
-        with open(input_toolchain, "w", encoding="utf8") as file:
-            file.write("")
-
-        configure_preset = ConfigurePreset(name="test_preset", toolchainFile=str(input_toolchain))
-
-        provider_output = [("test", configure_preset)]
-        builder.write_presets(tmp_path, provider_output)
-
-        cppython_tool = tmp_path / "cppython"
-        assert cppython_tool.exists()
-
-        cppython_file = cppython_tool / "cppython.json"
-        assert cppython_file.exists()
-
-        test_tool = cppython_tool / "test"
-        assert test_tool.exists()
-
-        test_file = test_tool / "test.json"
-        assert test_file.exists()
-
-    def test_root_unmodified(self, tmp_path: Path) -> None:
-        """_summary_
-
-        Args:
-            tmp_path: _description_
-        """
-
-        # Write a dummy file for the config
-        test_file = tmp_path / "pyproject.toml"
-        test_file.write_text("Test File", encoding="utf-8")
-        configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
-
-        builder = Builder(configuration, getLogger())
-
-        # TODO: Translate into reuseable testing data
-        output = {
-            "version": 4,
-            "cmakeMinimumRequired": {"major": 3, "minor": 23, "patch": 1},
-            "include": ["should/be/replaced/cppython.json"],
-            "configurePresets": [
-                {
-                    "name": "default",
-                    "inherits": ["cppython"],
-                    "hidden": True,
-                    "description": "Tests that provider isn't removed",
-                    "provider": "Should exist",
-                },
-            ],
-        }
-
-        input_preset = tmp_path / "CMakePresets.json"
-        write_json(input_preset, output)
-
-        builder.write_root_presets(tmp_path / "test_location")
-
-        data = read_json(input_preset)
-
-        # TODO: Assert the differences affect nothing but what is written by the builder

@@ -1,5 +1,5 @@
 [project]
-description = " A Python package manager agnostic plugin integrating a transparent Conan and CMake workflow."
+description = "A Python management solution for C++ dependencies"
 name = "cppython"
 
 license-expression = "MIT"
