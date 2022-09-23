@@ -1,10 +1,10 @@
-"""
-TODO
+"""TODO
 """
 
 
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Any
 
 from packaging.version import Version
 
@@ -14,7 +14,7 @@ class VCS(ABC):
 
     subclasses: list[type["VCS"]] = []
 
-    def __init_subclass__(cls, **kwargs) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
         cls.subclasses.append(cls)
 

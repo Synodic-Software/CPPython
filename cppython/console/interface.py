@@ -2,7 +2,6 @@
 """
 
 from pathlib import Path
-from typing import Any
 
 import click
 import tomlkit
@@ -13,7 +12,6 @@ from cppython_core.schema import (
     ProviderDataT,
 )
 
-from cppython.console.vcs.git import Git
 from cppython.project import Project
 
 
@@ -39,7 +37,7 @@ def _find_pyproject_file() -> Path:
 
 
 class Configuration:
-    """The data object that will be expanded alongside 'pass_obj'"""
+    """Click configuration object"""
 
     def __init__(self) -> None:
         path = _find_pyproject_file()
@@ -63,6 +61,7 @@ class Configuration:
         return Project(self.configuration, self.interface, self.pyproject_data)
 
 
+# Attach our config object to click's hook
 pass_config = click.make_pass_decorator(Configuration, ensure=True)
 
 
