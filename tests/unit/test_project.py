@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+from logging import getLogger
 from pathlib import Path
 from typing import Any
 
@@ -86,8 +87,8 @@ class TestBuilder(CPPythonProjectFixtures):
             project_configuration: _description_
         """
 
-        builder = Builder(project_configuration)
-        plugins = builder.gather_plugins(MockProvider)
+        builder = Builder(project_configuration, getLogger())
+        plugins = builder.discover_providers()
 
         assert len(plugins) == 0
 
@@ -102,7 +103,7 @@ class TestBuilder(CPPythonProjectFixtures):
             project: _description_
         """
 
-        builder = Builder(project_configuration)
+        builder = Builder(project_configuration, getLogger())
         model_type = builder.generate_model([])
 
         assert model_type.__base__ == PyProject
@@ -134,7 +135,7 @@ class TestBuilder(CPPythonProjectFixtures):
             cppython: _description_
         """
 
-        builder = Builder(project_configuration)
+        builder = Builder(project_configuration, getLogger())
 
         provider_configuration = ProviderConfiguration(root_directory=project_configuration.pyproject_file.parent)
 
@@ -180,7 +181,7 @@ class TestBuilder(CPPythonProjectFixtures):
         test_file.write_text("Test File", encoding="utf-8")
 
         configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
-        builder = Builder(configuration)
+        builder = Builder(configuration, getLogger())
 
         input_toolchain = tmp_path / "input.cmake"
 
@@ -216,7 +217,7 @@ class TestBuilder(CPPythonProjectFixtures):
         test_file.write_text("Test File", encoding="utf-8")
         configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
 
-        builder = Builder(configuration)
+        builder = Builder(configuration, getLogger())
 
         # TODO: Translate into reuseable testing data
         output = {
