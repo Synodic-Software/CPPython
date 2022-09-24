@@ -58,12 +58,14 @@ class Configuration:
 
         plugins: list[type[VersionControl]] = []
 
+        # Verify the plugin type
         for vcs_type in vcs_types:
             if not issubclass(vcs_type, VersionControl):
                 raise TypeError("The VCS plugin must be an instance of VersionControl")
 
             plugins.append(vcs_type)
 
+        # Extract the first plugin that identifies the repository
         plugin = None
         for plugin_type in plugins:
             plugin = plugin_type()
