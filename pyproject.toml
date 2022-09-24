@@ -46,6 +46,10 @@ test = [
   "pytest-cppython>=0.2.0.dev0",
 ]
 
+# Plugin registration
+[project.entry-points."cppython.version_control"]
+cmake = "cppython.plugins.git:Git"
+
 [project.scripts]
 cppython = "cppython.console.interface:cli"
 

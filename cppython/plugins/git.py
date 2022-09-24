@@ -3,14 +3,13 @@
 
 from pathlib import Path
 
+from cppython_core.schema import VersionControl
 from dulwich.porcelain import tag_list
 from dulwich.repo import Repo
 from packaging.version import Version
 
-from cppython.console.vcs.base import VCS
 
-
-class Git(VCS):
+class Git(VersionControl):
     """Git implementation hooks"""
 
     def is_repository(self, path: Path) -> bool:

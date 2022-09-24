@@ -1,6 +1,7 @@
 """A click CLI for CPPython interfacing
 """
 
+from logging import getLogger
 from pathlib import Path
 
 import click
@@ -10,8 +11,10 @@ from cppython_core.schema import (
     InterfaceConfiguration,
     ProjectConfiguration,
     ProviderDataT,
+    VersionControl,
 )
 
+from cppython.builder import PluginBuilder
 from cppython.project import Project
 
 
@@ -47,9 +50,30 @@ class Configuration:
         configuration = InterfaceConfiguration()
         self.interface = ConsoleInterface(configuration)
 
-        # TODO: Don't assume git SCM. Implement importing and scm selection
+        plugin_builder = PluginBuilder("version_control", getLogger())
 
-        version = Git().extract_version(path)
+        # Don't filter entries
+        entries = plugin_builder.gather_entries()
+        vcs_types = plugin_builder.load(entries)
+
+        plugins: list[type[VersionControl]] = []
+
+        for vcs_type in vcs_types:
+            if not issubclass(vcs_type, VersionControl):
+                raise TypeError("The VCS plugin must be an instance of VersionControl")
+
+            plugins.append(vcs_type)
+
+        plugin = None
+        for plugin_type in plugins:
+            plugin = plugin_type()
+            plugin.is_repository(path)
+            break
+
+        if plugin is None:
+            raise TypeError("No VCS plugin found")
+
+        version = plugin.extract_version(path)
         self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version.base_version)
 
     def create_project(self) -> Project:
@@ -59,6 +83,15 @@ class Configuration:
             _description_
         """
         return Project(self.configuration, self.interface, self.pyproject_data)
+
+    def query_vcs(self) -> str:
+        """_summary_
+
+        Returns:
+            _description_
+        """
+
+        return "TODO"
 
 
 # Attach our config object to click's hook
