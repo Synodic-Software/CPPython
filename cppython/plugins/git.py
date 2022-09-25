@@ -11,6 +11,15 @@ from dulwich.repo import Repo
 class Git(VersionControl):
     """Git implementation hooks"""
 
+    @staticmethod
+    def name() -> str:
+        """_summary_
+
+        Returns:
+            _description_
+        """
+        return "git"
+
     def is_repository(self, path: Path) -> bool:
         """_summary_
 
