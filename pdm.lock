@@ -62,7 +62,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.5.1.dev9"
+version = "0.5.1.dev11"
 requires_python = ">=3.10"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -215,7 +215,7 @@ dependencies = [
 
 [[package]]
 name = "pytest-cppython"
-version = "0.2.1.dev23"
+version = "0.2.1.dev24"
 requires_python = ">=3.10"
 summary = "A pytest plugin that imports CPPython testing types"
 dependencies = [
@@ -360,9 +360,9 @@ content_hash = "sha256:36f6ce0ba4d4d01b2de31a89bcab8de8bc06b64b4cd12ee268bfdc9bf
     {url = "https://files.pythonhosted.org/packages/ff/3b/b3f7aabd4045d9f8bda678fdc7d9b41055ac134756aa2c02b1e8f417ca30/coverage-6.4.4-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d5dd4b8e9cd0deb60e6fcc7b0647cbc1da6c33b9e786f9c79721fd303994832f"},
     {url = "https://files.pythonhosted.org/packages/ff/ea/6c2a493978acccf81e15cc33089156dbfa89db9c68a4b36e018a4a7fbfe7/coverage-6.4.4-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e431e305a1f3126477abe9a184624a85308da8edf8486a863601d58419d26ffa"},
 ]
-"cppython-core 0.5.1.dev9" = [
-    {url = "https://files.pythonhosted.org/packages/24/55/68da04760adf555cbfac56de5bdc414780e3ff8fb34fd98f90b03f8c3f51/cppython_core-0.5.1.dev9-py3-none-any.whl", hash = "sha256:5abc8e4020baa99d7d12ee8ad21dc93f8e0a65690a2a9557a1d799461c5d2f6b"},
-    {url = "https://files.pythonhosted.org/packages/ba/f9/9bf45186837df6f2d37e32ec7003511a33b33aed170f06be369ec19e6735/cppython-core-0.5.1.dev9.tar.gz", hash = "sha256:0ba195080c84fdfc6ca97fc6eb4d81d41040a266c8e97e2cb5e79118d09a1dd2"},
+"cppython-core 0.5.1.dev11" = [
+    {url = "https://files.pythonhosted.org/packages/1c/d8/2aa4e239ea83cf0d4158c7c7777c4318ecdda5d8f273e233c0d19c01d96d/cppython-core-0.5.1.dev11.tar.gz", hash = "sha256:06626f27ab81a067104bce0466bfedc821bdd3ff7eabbc6d133fb0774bfed734"},
+    {url = "https://files.pythonhosted.org/packages/c0/3a/e47ba710bf97702061129949fd5f0b805efbb4c8d68e4081b142fe8ebe8a/cppython_core-0.5.1.dev11-py3-none-any.whl", hash = "sha256:9d6a9e9935a1f22f3f0e4835bc4602a958506d0c5738dafe6bf89f391e38a502"},
 ]
 "dill 0.3.5.1" = [
     {url = "https://files.pythonhosted.org/packages/12/ff/3b1a8f5d59600393506c64fa14d13afdfe6fe79ed65a18d64026fe9f8356/dill-0.3.5.1-py2.py3-none-any.whl", hash = "sha256:33501d03270bbe410c72639b350e941882a8b0fd55357580fbc873fba0c59302"},
@@ -555,9 +555,9 @@ content_hash = "sha256:36f6ce0ba4d4d01b2de31a89bcab8de8bc06b64b4cd12ee268bfdc9bf
     {url = "https://files.pythonhosted.org/packages/20/49/b3e0edec68d81846f519c602ac38af9db86e1e71275528b3e814ae236063/pytest_cov-3.0.0-py3-none-any.whl", hash = "sha256:578d5d15ac4a25e5f961c938b85a05b09fdaae9deef3bb6de9a6e766622ca7a6"},
     {url = "https://files.pythonhosted.org/packages/61/41/e046526849972555928a6d31c2068410e47a31fb5ab0a77f868596811329/pytest-cov-3.0.0.tar.gz", hash = "sha256:e7f0f5b1617d2210a2cabc266dfe2f4c75a8d32fb89eafb7ad9d06f6d076d470"},
 ]
-"pytest-cppython 0.2.1.dev23" = [
-    {url = "https://files.pythonhosted.org/packages/0d/b0/5fb56e8c74ff3ad3740fdf2cebd727473ccddd10625f88a9bc29107ed19f/pytest_cppython-0.2.1.dev23-py3-none-any.whl", hash = "sha256:7826fc5c019d6b789e17b1c48b818a7382994d8aa0c0ceefed40b9bfeea2f459"},
-    {url = "https://files.pythonhosted.org/packages/e1/4a/880d457a906294fbf9b9a1b9185cb992805b9476bdcb0c547fb4d03e6cb7/pytest-cppython-0.2.1.dev23.tar.gz", hash = "sha256:9dd17203dde7a7021ac7a33d6f07f1f0ff398908f36f54b59c999c71d9c02cdb"},
+"pytest-cppython 0.2.1.dev24" = [
+    {url = "https://files.pythonhosted.org/packages/09/a5/985e862ab50441e5c98566d4455d656b314c58a0417275317cb7e52800b1/pytest-cppython-0.2.1.dev24.tar.gz", hash = "sha256:caea0ce2dd66a64c8aad1597c7e3ea13eee61ab96c637b63b98961d4f32840e5"},
+    {url = "https://files.pythonhosted.org/packages/12/60/26a39e7616efabcfe3d7d94bbe86bbd386b7da36477006858cf62c080ba0/pytest_cppython-0.2.1.dev24-py3-none-any.whl", hash = "sha256:cc61d408c164433b0fcf4ab5c350aa81c197a02ca17526d24c516d110a5a5d02"},
 ]
 "pytest-mock 3.8.2" = [
     {url = "https://files.pythonhosted.org/packages/64/ec/e21d6a5c31df566847de2dc7e7c1870c67cf10cb97cb0a1ea0e389446e60/pytest_mock-3.8.2-py3-none-any.whl", hash = "sha256:8a9e226d6c0ef09fcf20c94eb3405c388af438a90f3e39687f84166da82d5948"},

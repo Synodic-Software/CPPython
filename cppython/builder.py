@@ -1,6 +1,7 @@
 """Everything needed to build a CPPython project
 """
 
+from collections.abc import Sequence
 from importlib import metadata
 from logging import Logger
 from typing import Any
@@ -98,7 +99,9 @@ class Builder:
 
         return plugins
 
-    def generate_model(self, plugins: list[type[Provider[ProviderDataT, ProviderDataResolvedT]]]) -> type[PyProject]:
+    def generate_model(
+        self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
+    ) -> type[PyProject]:
         """_summary_
 
         Args:
@@ -130,7 +133,7 @@ class Builder:
         )
 
     def generate_resolved_cppython_model(
-        self, plugins: list[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
+        self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
     ) -> type[CPPythonDataResolved]:
         """_summary_
 
@@ -155,7 +158,7 @@ class Builder:
 
     def create_providers(
         self,
-        plugins: list[type[Provider[ProviderDataT, ProviderDataResolvedT]]],
+        plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]],
         project_configuration: ProjectConfiguration,
         configuration: ProviderConfiguration,
         static_resolved_project_data: tuple[PEP621Resolved, CPPythonDataResolved],

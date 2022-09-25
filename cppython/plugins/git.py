@@ -4,9 +4,8 @@
 from pathlib import Path
 
 from cppython_core.schema import VersionControl
-from dulwich.porcelain import tag_list
+from dulwich.errors import NotGitRepository
 from dulwich.repo import Repo
-from packaging.version import Version
 
 
 class Git(VersionControl):
@@ -26,10 +25,10 @@ class Git(VersionControl):
             Repo(str(path))
             return True
 
-        except Exception:
+        except NotGitRepository:
             return False
 
-    def extract_version(self, path: Path) -> Version:
+    def extract_version(self, path: Path) -> str:
         """_summary_
 
         Args:
@@ -38,12 +37,4 @@ class Git(VersionControl):
         Returns:
             _description_
         """
-
-        repo = Repo(str(path))
-        tags = tag_list(repo)
-
-        try:
-            tag = tags[-1].decode("utf-8")
-        except Exception:
-            tag = "v0.1.0"
-        return Version(tag)
+        return "0.1.0"

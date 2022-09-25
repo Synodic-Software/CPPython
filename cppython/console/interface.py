@@ -76,7 +76,7 @@ class Configuration:
             raise TypeError("No VCS plugin found")
 
         version = plugin.extract_version(path)
-        self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version.base_version)
+        self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version)
 
     def create_project(self) -> Project:
         """_summary_
