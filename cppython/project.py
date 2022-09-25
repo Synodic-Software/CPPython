@@ -77,19 +77,19 @@ class Project(API):
 
     @property
     def enabled(self) -> bool:
-        """_summary_
+        """Queries if the project was is initialized for full functionality
 
         Returns:
-            _description_
+            The query result
         """
         return self._enabled
 
     @property
     def project(self) -> PEP621Resolved:
-        """_summary_
+        """Resolved project data
 
         Returns:
-            _description_
+            The resolved 'project' table
         """
         return self._resolved_project_data
 
@@ -98,7 +98,7 @@ class Project(API):
         """The resolved CPPython data
 
         Returns:
-            _description_
+            Resolved 'cppython' table
         """
         return self._resolved_cppython_data
 
@@ -125,10 +125,10 @@ class Project(API):
 
     # API Contract
     def install(self) -> None:
-        """_summary_
+        """Installs project dependencies
 
         Raises:
-            Exception: _description_
+            Exception: Raised if failed
         """
         if not self._enabled:
             self.logger.info("Skipping install because the project is not enabled")
@@ -149,10 +149,10 @@ class Project(API):
                 raise exception
 
     def update(self) -> None:
-        """_summary_
+        """Updates project dependencies
 
         Raises:
-            Exception: _description_
+            Exception: Raised if failed
         """
         if not self._enabled:
             self.logger.info("Skipping update because the project is not enabled")

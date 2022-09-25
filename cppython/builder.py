@@ -30,24 +30,24 @@ class PluginBuilder:
         self._logger = logger
 
     def gather_entries(self) -> list[metadata.EntryPoint]:
-        """_summary_
+        """Gather all the available entry points for the grouping
 
         Returns:
-            _description_
+            List of entries
         """
         return list(metadata.entry_points(group=f"cppython.{self._group}"))
 
     def load(self, entry_points: list[metadata.EntryPoint]) -> list[type[Plugin]]:
-        """_summary_
+        """Loads a set of entry points
 
         Args:
-            entry_points: _description_
+            entry_points: The entry points to load
 
         Raises:
-            TypeError: _description_
+            TypeError: If an entry point is not a subclass of the 'Plugin' type
 
         Returns:
-            _description_
+            List of plugin types
         """
 
         plugins = []
@@ -71,13 +71,13 @@ class Builder:
         self.logger = logger
 
     def discover_providers(self) -> list[type[Provider[Any, Any]]]:
-        """_summary_
+        """Discovers Provider plugin types
 
         Raises:
-            TypeError: _description_
+            TypeError: Raised if the Plugin type is not subclass of 'Provider'
 
         Returns:
-            _description_
+            List of Provider types
         """
         provider_builder = PluginBuilder(Provider.group(), self.logger)
 
@@ -98,13 +98,13 @@ class Builder:
     def generate_model(
         self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
     ) -> type[PyProject]:
-        """_summary_
+        """Constructs a dynamic type that contains plugin specific data requirements
 
         Args:
-            plugins: _description_
+            plugins: List of Provider types
 
         Returns:
-            _description_
+            An extended PyProject type containing dynamic plugin data requirements
         """
         plugin_fields: dict[str, Any] = {}
         for plugin_type in plugins:
@@ -131,13 +131,13 @@ class Builder:
     def generate_resolved_cppython_model(
         self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
     ) -> type[CPPythonDataResolved]:
-        """_summary_
+        """Constructs a dynamic resolved type that contains plugin specific data requirements
 
         Args:
-            plugins: _description_
+            plugins: List of Provider types
 
         Returns:
-            _description_
+            An extended CPPython resolved type containing dynamic plugin data requirements
         """
 
         plugin_fields: dict[str, Any] = {}
@@ -159,16 +159,16 @@ class Builder:
         configuration: ProviderConfiguration,
         static_resolved_project_data: tuple[PEP621Resolved, CPPythonDataResolved],
     ) -> list[Provider[ProviderDataT, ProviderDataResolvedT]]:
-        """_summary_
+        """Creates Providers from input data
 
         Args:
-            plugins: _description_
-            project_configuration: _description_
-            configuration: _description_
-            static_resolved_project_data: _description_
+            plugins: List of Provider plugins to construct
+            project_configuration: Project configuration data
+            configuration: Provider configuration data
+            static_resolved_project_data: Resolved project data
 
         Returns:
-            _description_
+            List of constructed providers
         """
 
         project, cppython = static_resolved_project_data

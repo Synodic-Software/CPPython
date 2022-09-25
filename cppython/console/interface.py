@@ -19,10 +19,10 @@ from cppython.project import Project
 
 
 def _find_pyproject_file() -> Path:
-    """_summary_
+    """Searches upward for a pyproject.toml file
 
     Returns:
-        _description_
+        The found directory
     """
 
     # Search for a path upward
@@ -79,18 +79,18 @@ class Configuration:
         self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version)
 
     def create_project(self) -> Project:
-        """_summary_
+        """Creates the project type from input data
 
         Returns:
-            _description_
+            The project
         """
         return Project(self.configuration, self.interface, self.pyproject_data)
 
     def query_vcs(self) -> str:
-        """_summary_
+        """Queries the VCS system for its version
 
         Returns:
-            _description_
+            The version
         """
 
         return "TODO"
@@ -107,8 +107,8 @@ def cli(config: Configuration, verbose: int) -> None:
     """entry_point group for the CLI commands
 
     Args:
-        config: _description_
-        verbose: _description_
+        config: The CLI configuration object
+        verbose: The verbosity level
     """
     config.configuration.verbosity = verbose
 
@@ -116,10 +116,10 @@ def cli(config: Configuration, verbose: int) -> None:
 @cli.command()
 @pass_config
 def info(config: Configuration) -> None:
-    """_summary_
+    """Prints project information
 
     Args:
-        config: _description_
+        config: The CLI configuration object
     """
     config.create_project()
 
@@ -127,10 +127,10 @@ def info(config: Configuration) -> None:
 @cli.command()
 @pass_config
 def install(config: Configuration) -> None:
-    """_summary_
+    """Install API call
 
     Args:
-        config: _description_
+        config: The CLI configuration object
     """
     project = config.create_project()
     project.install()
@@ -139,28 +139,24 @@ def install(config: Configuration) -> None:
 @cli.command()
 @pass_config
 def update(config: Configuration) -> None:
-    """_summary_
+    """Update API call
 
     Args:
-        config: _description_
+        config: The CLI configuration object
     """
     project = config.create_project()
     project.update()
 
 
 class ConsoleInterface(Interface):
-    """Interface implementation to pass to the project
-
-    Args:
-        Interface: _description_
-    """
+    """Interface implementation to pass to the project"""
 
     @staticmethod
     def name() -> str:
-        """_summary_
+        """Returns the name of the interface
 
         Returns:
-            _description_
+            The name
         """
         return "console"
 
@@ -168,10 +164,10 @@ class ConsoleInterface(Interface):
         """Requests provider information
 
         Args:
-            provider_data_type: _description_
+            provider_data_type: The type to construct
 
         Returns:
-            _description_
+            The constructed provider data type
         """
         return provider_data_type()
 

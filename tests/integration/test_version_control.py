@@ -7,9 +7,4 @@ from cppython.plugins.git import Git
 
 
 class TestGitInterface(VersionControlIntegrationTests[Git]):
-    """_summary_
-
-    Args:
-        CPPythonProjectFixtures: _description_
-        InterfaceUnitTests: _description_
-    """
+    """Integration tests for the Git VCS plugin"""

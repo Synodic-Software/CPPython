@@ -13,21 +13,21 @@ class Git(VersionControl):
 
     @staticmethod
     def name() -> str:
-        """_summary_
+        """The VCS name
 
         Returns:
-            _description_
+            The name
         """
         return "git"
 
     def is_repository(self, path: Path) -> bool:
-        """_summary_
+        """Queries repository status of a path
 
         Args:
-            path: _description_
+            path: The input path to query
 
         Returns:
-            _description_
+            Whether the given path is a repository root
         """
 
         try:
@@ -38,12 +38,12 @@ class Git(VersionControl):
             return False
 
     def extract_version(self, path: Path) -> str:
-        """_summary_
+        """Extracts the system's version metadata
 
         Args:
-            path: _description_
+            path: The repository path
 
         Returns:
-            _description_
+            A version
         """
         return "0.1.0"

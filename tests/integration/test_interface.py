@@ -18,8 +18,8 @@ class TestCLIInterface(InterfaceIntegrationTests[ConsoleInterface]):
         """Override of the plugin provided interface fixture.
 
         Args:
-            interface_type: _description_
-            interface_configuration: _description_
+            interface_type: The input interface type
+            interface_configuration: Interface configuration for construction
 
         Returns:
             ConsoleInterface -- The Interface object to use for the CPPython defined tests

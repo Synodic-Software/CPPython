@@ -17,17 +17,17 @@ class TestCLIInterface(CPPythonProjectFixtures, InterfaceUnitTests[ConsoleInterf
         """A required testing hook that allows type generation
 
         Returns:
-            _description_
+            The interface type
         """
         return ConsoleInterface
 
     def test_config(self) -> None:
-        """_summary_"""
+        """Verify that the configuration object can be constructed"""
 
         Configuration()
 
     def test_verbosity(self) -> None:
-        """_summary_"""
+        """Test that verbosity is passed through to the CLI"""
 
         config = Configuration()
 

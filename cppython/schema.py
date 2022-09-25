@@ -9,19 +9,11 @@ class API:
 
     @abstractmethod
     def install(self) -> None:
-        """_summary_
-
-        Raises:
-            NotImplementedError: _description_
-        """
+        """Installs project dependencies"""
         raise NotImplementedError()
 
     @abstractmethod
     def update(self) -> None:
-        """_summary_
-
-        Raises:
-            NotImplementedError: _description_
-        """
+        """Updates project dependencies"""
 
         raise NotImplementedError()

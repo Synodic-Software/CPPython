@@ -10,51 +10,44 @@ from pytest_cppython.mock import MockProviderData
 
 
 class CPPythonProjectFixtures(CPPythonFixtures):
-    """_summary_
-
-    Args:
-        CPPythonFixtures: _description_
-
-    Returns:
-        _description_
-    """
+    """Additional fixtures to help test projects"""
 
     @pytest.fixture(name="tool", scope="session")
     def fixture_tool(self, cppython: CPPythonData) -> ToolData:
-        """_summary_
+        """The tool data
 
         Args:
-            cppython: _description_
+            cppython: The parameterized cppython table
 
         Returns:
-            _description_
+            Wrapped CPPython data
         """
 
         return ToolData(cppython=cppython)
 
     @pytest.fixture(name="project", scope="session")
     def fixture_project(self, tool: ToolData, pep621: PEP621) -> PyProject:
-        """_summary_
+        """Parameterized construction of PyProject data
 
         Args:
-            tool: _description_
-            pep621: _description_
+            tool: The tool table with internal cppython data
+            pep621: The project table
 
         Returns:
-            _description_
+            All the data as one object
         """
 
         return PyProject(project=pep621, tool=tool)
 
     @pytest.fixture(name="mock_project", scope="session")
     def fixture_mock_project(self, project: PyProject) -> dict[str, Any]:
-        """_summary_
+        """Extension of the 'project' fixture with mock data attached
 
         Args:
-            project: _description_
+            project: The input project
 
         Returns:
-            _description_
+            All the data as a dictionary
         """
 
         mocked_pyproject = project.dict(by_alias=True)
