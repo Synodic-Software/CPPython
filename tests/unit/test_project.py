@@ -18,7 +18,6 @@ from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
 from cppython.project import Project
-from cppython.utility import read_json, write_json
 from tests.data.fixtures import CPPythonProjectFixtures
 
 
@@ -138,14 +137,6 @@ class TestBuilder(CPPythonProjectFixtures):
         provider_configuration = ProviderConfiguration(root_directory=project_configuration.pyproject_file.parent)
 
         resolved = builder.generate_resolved_cppython_model([])
-        providers = builder.create_providers(
-            [],
-            project_configuration,
-            provider_configuration,
-            (pep621.resolve(project_configuration), cppython.resolve(resolved, project_configuration)),
-        )
-
-        assert not providers
 
         provider_type = mocker.Mock()
         provider_type.name.return_value = "mock"
