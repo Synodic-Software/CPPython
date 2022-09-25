@@ -1,4 +1,4 @@
-"""TODO
+"""Git VCS plugin
 """
 
 from pathlib import Path

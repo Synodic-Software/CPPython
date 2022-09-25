@@ -1,4 +1,4 @@
-"""TODO
+"""Tests the cppython built-in VCS plugin
 """
 
 from pytest_cppython.plugin import VersionControlIntegrationTests

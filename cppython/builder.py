@@ -23,11 +23,7 @@ from pydantic import create_model
 
 
 class PluginBuilder:
-    """_summary_
-
-    Returns:
-        _description_
-    """
+    """Collection of utilities to collect and build plugins"""
 
     def __init__(self, group: str, logger: Logger) -> None:
         self._group = group

@@ -1,4 +1,4 @@
-"""TODO
+"""Unit tests for the cppython VCS plugin
 """
 
 import pytest
