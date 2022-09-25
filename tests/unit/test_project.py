@@ -127,7 +127,7 @@ class TestBuilder(CPPythonProjectFixtures):
 
         Args:
             mocker: _description_
-            project_configuration: _description_
+            workspace: _description_
             pep621: _description_
             cppython: _description_
         """
@@ -143,7 +143,7 @@ class TestBuilder(CPPythonProjectFixtures):
         provider_type.data_type.return_value = MockProviderData
 
         mock_data = MockProviderData()
-        extended_cppython_dict = cppython.dict(exclude_defaults=True)
+        extended_cppython_dict = cppython.dict(by_alias=True)
         extended_cppython_dict["mock"] = mock_data
         extended_cppython = ExtendedCPPython(**extended_cppython_dict)
 
