@@ -3,13 +3,9 @@
 
 import pytest
 from click.testing import CliRunner
-from cppython_core.schema import ProjectConfiguration, PyProject
 from pytest_cppython.plugin import InterfaceUnitTests
-from pytest_mock.plugin import MockerFixture
 
 from cppython.console.interface import Configuration, ConsoleInterface, cli
-from cppython.project import Project
-from cppython.schema import API
 from tests.data.fixtures import CPPythonProjectFixtures
 
 
