@@ -1,225 +1,147 @@
-"""
-Test the functions related to the internal interface implementation and the 'Interface' interface itself
+"""Test the functions related to the internal interface implementation and the 'Interface' interface itself
 """
 
 from __future__ import annotations
 
-from pathlib import Path
+from logging import getLogger
+from typing import Any
 
 from cppython_core.schema import (
     PEP621,
-    ConfigurePreset,
     CPPythonData,
-    CPPythonDataResolved,
-    Generator,
-    GeneratorConfiguration,
-    PEP621Resolved,
+    ProjectConfiguration,
+    ProviderConfiguration,
     PyProject,
-    ToolData,
 )
-from pytest_cppython.mock import MockGenerator, MockGeneratorData
+from pytest_cppython.mock import MockProvider, MockProviderData
 from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
-from cppython.project import Project, ProjectConfiguration
-from cppython.utility import read_json, write_json
-
-default_pep621 = PEP621(name="test_name", version="1.0")
-default_cppython_data = CPPythonData()
-default_tool_data = ToolData(**{"cppython": default_cppython_data})
-default_pyproject = PyProject(**{"project": default_pep621, "tool": default_tool_data})
-
-mocked_pyproject = default_pyproject.dict(by_alias=True)
-mocked_pyproject["tool"]["cppython"]["mock"] = MockGeneratorData()
+from cppython.project import Project
+from tests.data.fixtures import CPPythonProjectFixtures
 
 
-class ExtendedCPPython(CPPythonData):
-    """
-    TODO
-    """
+class MockExtendedCPPython(CPPythonData):
+    """Mocked extended data for comparison verification"""
 
-    mock: MockGeneratorData
+    mock: MockProviderData
 
 
-class TestProject:
-    """
-    TODO
-    """
+class TestProject(CPPythonProjectFixtures):
+    """Grouping for Project class testing"""
 
-    def test_construction_without_plugins(self, mocker: MockerFixture):
-        """
-        TODO
+    def test_construction_without_plugins(
+        self, mocker: MockerFixture, project: PyProject, workspace: ProjectConfiguration
+    ) -> None:
+        """Verification that no error is thrown and output is gracefully handled if no provider plugins are found
+
+        Args:
+            mocker: Mocking fixture for interface mocking
+            project: PyProject data to construct with
+            workspace: Temporary workspace for path resolution
         """
 
         interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        Project(configuration, interface_mock, default_pyproject.dict(by_alias=True))
+        Project(workspace, interface_mock, project.dict(by_alias=True))
 
-    def test_construction_with_plugins(self, mocker: MockerFixture):
-        """
-        TODO
+    def test_construction_with_plugins(
+        self, mocker: MockerFixture, workspace: ProjectConfiguration, mock_project: dict[str, Any]
+    ) -> None:
+        """Verification of full construction with mock provider plugin
+
+        Args:
+            mocker: Mocking fixture for interface mocking
+            workspace: Temporary workspace for path resolution
+            mock_project: PyProject data to construct with
         """
 
-        mocked_plugin_list = [MockGenerator]
-        mocker.patch("cppython.builder.Builder.gather_plugins", return_value=mocked_plugin_list)
+        mocked_plugin_list = [MockProvider]
+        mocker.patch("cppython.builder.Builder.discover_providers", return_value=mocked_plugin_list)
 
         interface_mock = mocker.MagicMock()
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        Project(configuration, interface_mock, mocked_pyproject)
+        Project(workspace, interface_mock, mock_project)
 
 
-class TestBuilder:
-    """
-    TODO
-    """
+class TestBuilder(CPPythonProjectFixtures):
+    """Tests of builder steps"""
 
-    def test_plugin_gather(self):
+    def test_plugin_gather(self, workspace: ProjectConfiguration) -> None:
+        """Verifies that provider discovery works with no results
+
+        Args:
+            workspace: Temporary workspace for path resolution
         """
-        TODO
-        """
 
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        builder = Builder(configuration)
-        plugins = builder.gather_plugins(Generator)
+        builder = Builder(workspace, getLogger())
+        plugins = builder.discover_providers()
 
         assert len(plugins) == 0
 
-    def test_generator_data_construction(self, mocker: MockerFixture):
-        """
-        TODO
+    def test_provider_data_construction(
+        self, mocker: MockerFixture, workspace: ProjectConfiguration, project: PyProject
+    ) -> None:
+        """Tests that the input data for providers can be constructed
+
+        Args:
+            mocker: Mocking fixture for interface mocking
+            workspace: Temporary workspace for path resolution
+            project: PyProject data to construct with
         """
 
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        builder = Builder(configuration)
+        builder = Builder(workspace, getLogger())
         model_type = builder.generate_model([])
 
         assert model_type.__base__ == PyProject
 
-        generator_type = mocker.Mock()
-        generator_type.name.return_value = "mock"
-        generator_type.data_type.return_value = MockGeneratorData
+        provider_type = mocker.Mock()
+        provider_type.name.return_value = "mock"
+        provider_type.data_type.return_value = MockProviderData
 
-        model_type = builder.generate_model([generator_type])
+        model_type = builder.generate_model([provider_type])
 
-        project_data = default_pyproject.dict(by_alias=True)
+        project_data = project.dict(by_alias=True)
 
-        mock_data = MockGeneratorData()
+        mock_data = MockProviderData()
         project_data["tool"]["cppython"]["mock"] = mock_data.dict(by_alias=True)
         result = model_type(**project_data)
 
         assert result.tool is not None
         assert result.tool.cppython is not None
-        assert result.tool.cppython.mock is not None
 
-    def test_generator_creation(self, mocker: MockerFixture):
+    def test_provider_creation(
+        self, mocker: MockerFixture, workspace: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData
+    ) -> None:
+        """Test that providers can be created with the mock data available
+
+        Args:
+            mocker: Mocking fixture for interface mocking
+            workspace: Temporary workspace for path resolution
+            pep621: One of many parameterized Project data tables
+            cppython: One of many parameterized CPPython data tables
         """
-        TODO
-        """
 
-        configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
-        builder = Builder(configuration)
+        builder = Builder(workspace, getLogger())
 
-        generator_configuration = GeneratorConfiguration(root_directory=configuration.pyproject_file.parent)
+        provider_configuration = ProviderConfiguration(root_directory=workspace.pyproject_file.parent)
 
         resolved = builder.generate_resolved_cppython_model([])
-        generators = builder.create_generators(
-            [],
-            configuration,
-            generator_configuration,
-            default_pep621.resolve(configuration),
-            default_cppython_data.resolve(resolved, configuration),
-        )
 
-        assert not generators
+        provider_type = mocker.Mock()
+        provider_type.name.return_value = "mock"
+        provider_type.data_type.return_value = MockProviderData
 
-        generator_type = mocker.Mock()
-        generator_type.name.return_value = "mock"
-        generator_type.data_type.return_value = MockGeneratorData
-
-        mock_data = MockGeneratorData()
-        extended_cppython_dict = default_cppython_data.dict(exclude_defaults=True)
+        mock_data = MockProviderData()
+        extended_cppython_dict = cppython.dict(by_alias=True)
         extended_cppython_dict["mock"] = mock_data
-        extended_cppython = ExtendedCPPython(**extended_cppython_dict)
+        extended_cppython = MockExtendedCPPython(**extended_cppython_dict)
 
-        resolved = builder.generate_resolved_cppython_model([generator_type])
+        resolved = builder.generate_resolved_cppython_model([provider_type])
 
-        generators = builder.create_generators(
-            [generator_type],
-            configuration,
-            generator_configuration,
-            default_pep621.resolve(configuration),
-            extended_cppython.resolve(resolved, configuration),
+        providers = builder.create_providers(
+            [provider_type],
+            workspace,
+            provider_configuration,
+            (pep621.resolve(workspace), extended_cppython.resolve(resolved, workspace)),
         )
 
-        assert len(generators) == 1
-
-    def test_presets(self, tmp_path: Path):
-        """
-        TODO
-        """
-
-        # Write a dummy file for the config
-        test_file = tmp_path / "pyproject.toml"
-        test_file.write_text("Test File", encoding="utf-8")
-
-        configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
-        builder = Builder(configuration)
-
-        input_toolchain = tmp_path / "input.cmake"
-
-        with open(input_toolchain, "w", encoding="utf8") as file:
-            file.write("")
-
-        configure_preset = ConfigurePreset(name="test_preset", toolchainFile=str(input_toolchain))
-
-        generator_output = [("test", configure_preset)]
-        builder.write_presets(tmp_path, generator_output)
-
-        cppython_tool = tmp_path / "cppython"
-        assert cppython_tool.exists()
-
-        cppython_file = cppython_tool / "cppython.json"
-        assert cppython_file.exists()
-
-        test_tool = cppython_tool / "test"
-        assert test_tool.exists()
-
-        test_file = test_tool / "test.json"
-        assert test_file.exists()
-
-    def test_root_unmodified(self, tmp_path: Path):
-        """
-        TODO
-        """
-
-        # Write a dummy file for the config
-        test_file = tmp_path / "pyproject.toml"
-        test_file.write_text("Test File", encoding="utf-8")
-        configuration = ProjectConfiguration(pyproject_file=test_file, version="1.0.0")
-
-        builder = Builder(configuration)
-
-        # TODO: Translate into reuseable testing data
-        output = {
-            "version": 4,
-            "cmakeMinimumRequired": {"major": 3, "minor": 23, "patch": 1},
-            "include": ["should/be/replaced/cppython.json"],
-            "configurePresets": [
-                {
-                    "name": "default",
-                    "inherits": ["cppython"],
-                    "hidden": True,
-                    "description": "Tests that generator isn't removed",
-                    "generator": "Should exist",
-                },
-            ],
-        }
-
-        input_preset = tmp_path / "CMakePresets.json"
-        write_json(input_preset, output)
-
-        builder.write_root_presets(tmp_path / "test_location")
-
-        data = read_json(input_preset)
-
-        # TODO: Assert the differences affect nothing but what is written by the builder
+        assert len(providers) == 1

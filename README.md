@@ -1,2 +1,2 @@
 # CPPython
-A library for managing dependencies with CMake for C++ projects.
+A Python management solution for C++ dependencies

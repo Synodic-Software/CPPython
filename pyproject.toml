@@ -1,5 +1,5 @@
 [project]
-description = " A Python package manager agnostic plugin integrating a transparent Conan and CMake workflow."
+description = "A Python management solution for C++ dependencies"
 name = "cppython"
 
 license-expression = "MIT"
@@ -37,6 +37,7 @@ lint = [
   "black>=22.6.0",
   "pylint>=2.14.5",
   "isort>=5.10.1",
+  "mypy>=0.971",
 ]
 test = [
   "pytest>=7.1.2",
@@ -45,10 +46,23 @@ test = [
   "pytest-cppython>=0.2.0.dev0",
 ]
 
+# Plugin registration
+[project.entry-points."cppython.version_control"]
+cmake = "cppython.plugins.git:Git"
+
 [project.scripts]
 cppython = "cppython.console.interface:cli"
 
+[tool.pdm.scripts]
+analyze = {shell = "pylint --verbose cppython tests"}
+format = {shell = "black --check --verbose ."}
+lint = {composite = ["analyze", "format", "sort-imports", "type-check"]}
+sort-imports = {shell = "isort --check-only --diff --verbose ."}
+test = {shell = "pytest --cov=cppython --verbose tests"}
+type-check = {shell = "mypy ."}
+
 [tool.pytest.ini_options]
+log_cli = true
 testpaths = [
   "tests",
 ]
@@ -59,13 +73,38 @@ preview = true
 
 [tool.isort]
 profile = "black"
+skip_gitignore = true
+
+[tool.mypy]
+exclude = "__pypackages__"
+plugins = ["pydantic.mypy"]
+strict = true
+
+[tool.pylint.MAIN]
+load-plugins = [
+  "pylint.extensions.code_style",
+  "pylint.extensions.typing",
+  "pylint.extensions.docstyle",
+  "pylint.extensions.docparams",
+  "pylint.extensions.private_import",
+  "pylint.extensions.bad_builtin",
+]
 
 [tool.pylint.messages_control]
-disable = "C0330, C0326, logging-fstring-interpolation"
 extension-pkg-whitelist = "pydantic"
 
 [tool.pylint.format]
 max-line-length = "120"
+
+[tool.pylint.parameter_documentation]
+accept-no-param-doc = false
+accept-no-raise-doc = false
+accept-no-return-doc = false
+accept-no-yields-doc = false
+default-docstring-type = "google"
+
+[tool.coverage.report]
+skip_empty = true
 
 [build-system]
 build-backend = "pdm.pep517.api"

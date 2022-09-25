@@ -19,5 +19,7 @@
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     },
-    "python.analysis.typeCheckingMode": "basic"
+    "python.linting.mypyEnabled": true,
+    "mypy.dmypyExecutable": "${workspaceRoot}/__pypackages__/3.10/Scripts/dmypy",
+    "mypy.runUsingActiveInterpreter": true
 }

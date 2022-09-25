@@ -1,17 +1,16 @@
-"""
-The central delegation of the CPPython project
+"""Manages data flow to and from plugins
 """
 
+import asyncio
 import logging
 from typing import Any
 
 from cppython_core.schema import (
     CPPythonDataResolved,
-    Generator,
-    GeneratorConfiguration,
     Interface,
     PEP621Resolved,
     ProjectConfiguration,
+    ProviderConfiguration,
 )
 
 from cppython.builder import Builder
@@ -19,40 +18,35 @@ from cppython.schema import API
 
 
 class Project(API):
-    """
-    The object constructed at each entry_point
-    """
+    """The object constructed at each entry_point"""
 
     def __init__(
         self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
     ) -> None:
         self._enabled = False
-        self._configuration = configuration
 
+        # Default logging levels
         levels = [logging.WARNING, logging.INFO, logging.DEBUG]
 
         # Add default output stream
-        console_handler = logging.StreamHandler()
         self.logger = logging.getLogger("cppython")
-        self.logger.addHandler(console_handler)
+        self.logger.addHandler(logging.StreamHandler())
         self.logger.setLevel(levels[configuration.verbosity])
 
         self.logger.info("Initializing project")
 
-        self._builder = Builder(self.configuration)
-        plugins = self._builder.gather_plugins(Generator)
+        builder = Builder(configuration, self.logger)
 
-        if not plugins:
-            self.logger.error("No generator plugin was found")
+        if not (plugins := builder.discover_providers()):
+            self.logger.error("No provider plugin was found")
             return
 
         for plugin in plugins:
-            self.logger.warning(f"Generator plugin found: {plugin.name()}")
+            self.logger.warning("Provider plugin found: %s", plugin.name())
 
-        extended_pyproject_type = self._builder.generate_model(plugins)
-        pyproject = extended_pyproject_type(**pyproject_data)
+        extended_pyproject_type = builder.generate_model(plugins)
 
-        if pyproject is None:
+        if (pyproject := extended_pyproject_type(**pyproject_data)) is None:
             self.logger.error("Data is not defined")
             return
 
@@ -68,148 +62,112 @@ class Project(API):
 
         self._project = pyproject.project
 
-        resolved_cppython_model = self._builder.generate_resolved_cppython_model(plugins)
-        self._resolved_project_data = pyproject.project.resolve(self.configuration)
-        self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, self.configuration)
+        resolved_cppython_model = builder.generate_resolved_cppython_model(plugins)
+        self._resolved_project_data = pyproject.project.resolve(configuration)
+        self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, configuration)
 
         self._interface = interface
 
-        generator_configuration = GeneratorConfiguration(root_directory=self.configuration.pyproject_file.parent)
-        self._generators = self._builder.create_generators(
-            plugins, self.configuration, generator_configuration, self.project, self.cppython
+        provider_configuration = ProviderConfiguration(root_directory=configuration.pyproject_file.parent)
+        self._providers = builder.create_providers(
+            plugins, configuration, provider_configuration, (self.project, self.cppython)
         )
 
         self.logger.info("Initialized project successfully")
 
     @property
     def enabled(self) -> bool:
-        """
-        TODO
+        """Queries if the project was is initialized for full functionality
+
+        Returns:
+            The query result
         """
         return self._enabled
 
     @property
-    def configuration(self) -> ProjectConfiguration:
-        """
-        TODO
-        """
-        return self._configuration
-
-    @property
     def project(self) -> PEP621Resolved:
-        """
-        The resolved pyproject project table
+        """Resolved project data
+
+        Returns:
+            The resolved 'project' table
         """
         return self._resolved_project_data
 
     @property
     def cppython(self) -> CPPythonDataResolved:
-        """
-        The resolved CPPython data
+        """The resolved CPPython data
+
+        Returns:
+            Resolved 'cppython' table
         """
         return self._resolved_cppython_data
 
-    def download_generator_tools(self) -> None:
-        """
-        Download the generator tooling if required
-        """
+    async def download_provider_tools(self) -> None:
+        """Download the provider tooling if required"""
         if not self._enabled:
-            self.logger.info("Skipping 'download_generator_tools' because the project is not enabled")
+            self.logger.info("Skipping 'download_provider_tools' because the project is not enabled")
             return
 
         base_path = self.cppython.install_path
 
-        for generator in self._generators:
-            path = base_path / generator.name()
+        for provider in self._providers:
+            path = base_path / provider.name()
 
             path.mkdir(parents=True, exist_ok=True)
 
-            if not generator.generator_downloaded(path):
-                self.logger.warning(f"Downloading the {generator.name()} requirements to {path}")
+            if not provider.tooling_downloaded(path):
+                self.logger.warning("Downloading the %s requirements to %s", provider.name(), path)
 
-                # TODO: Make async with progress bar
-                generator.download_generator(path)
+                await provider.download_tooling(path)
                 self.logger.warning("Download complete")
             else:
-                self.logger.info(f"The {generator.name()} generator is already downloaded")
-
-    def update_generator_tools(self) -> None:
-        """
-        Update the generator tooling if available
-        """
-        if not self._enabled:
-            self.logger.info("Skipping 'update_generator_tools' because the project is not enabled")
-            return
-
-        self.download_generator_tools()
-
-        base_path = self.cppython.install_path
-
-        for generator in self._generators:
-            path = base_path / generator.name()
-
-            generator.update_generator(path)
+                self.logger.info("The %s provider is already downloaded", provider.name())
 
     # API Contract
     def install(self) -> None:
-        """
-        TODO
+        """Installs project dependencies
+
+        Raises:
+            Exception: Raised if failed
         """
         if not self._enabled:
             self.logger.info("Skipping install because the project is not enabled")
             return
 
         self.logger.info("Installing tools")
-        self.download_generator_tools()
+        asyncio.run(self.download_provider_tools())
 
         self.logger.info("Installing project")
-        preset_path = self.cppython.build_path
 
-        generator_output = []
-
-        # TODO: Async
-        for generator in self._generators:
-            self.logger.info(f"Installing {generator.name()} generator")
+        for provider in self._providers:
+            self.logger.info("Installing %s provider", provider.name())
 
             try:
-                generator.install()
-                config_preset = generator.generate_cmake_config()
-                generator_output.append((generator.name(), config_preset))
+                provider.install()
             except Exception as exception:
-                self.logger.error(f"Generator {generator.name()} failed to install")
+                self.logger.error("Provider %s failed to install", provider.name())
                 raise exception
 
-        project_presets = self._builder.write_presets(preset_path, generator_output)
-        self._builder.write_root_presets(project_presets.relative_to(preset_path))
-
     def update(self) -> None:
-        """
-        TODO
+        """Updates project dependencies
+
+        Raises:
+            Exception: Raised if failed
         """
         if not self._enabled:
             self.logger.info("Skipping update because the project is not enabled")
             return
 
         self.logger.info("Updating tools")
-        self.update_generator_tools()
+        asyncio.run(self.download_provider_tools())
 
         self.logger.info("Updating project")
 
-        preset_path = self.cppython.build_path
-
-        generator_output = []
-
-        # TODO: Async
-        for generator in self._generators:
-            self.logger.info(f"Updating {generator.name()} generator")
+        for provider in self._providers:
+            self.logger.info("Updating %s provider", provider.name())
 
             try:
-                generator.update()
-                config_preset = generator.generate_cmake_config()
-                generator_output.append((generator.name(), config_preset))
+                provider.update()
             except Exception as exception:
-                self.logger.error(f"Generator {generator.name()} failed to update")
+                self.logger.error("Provider %s failed to update", provider.name())
                 raise exception
-
-        project_presets = self._builder.write_presets(preset_path, generator_output)
-        self._builder.write_root_presets(project_presets.relative_to(preset_path))

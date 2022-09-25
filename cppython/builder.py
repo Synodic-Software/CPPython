@@ -1,55 +1,112 @@
-"""
-TODO
+"""Everything needed to build a CPPython project
 """
 
+from collections.abc import Sequence
 from importlib import metadata
-from pathlib import Path
-from typing import Type
+from logging import Logger
+from typing import Any
 
 from cppython_core.schema import (
     CPPythonData,
     CPPythonDataResolved,
-    Generator,
-    GeneratorConfiguration,
     PEP621Resolved,
-    PluginT,
+    Plugin,
     ProjectConfiguration,
+    Provider,
+    ProviderConfiguration,
+    ProviderDataResolvedT,
+    ProviderDataT,
     PyProject,
     ToolData,
 )
 from pydantic import create_model
 
-from cppython.schema import CMakePresets, ConfigurePreset
-from cppython.utility import read_json, write_json, write_model_json
 
+class PluginBuilder:
+    """Collection of utilities to collect and build plugins"""
 
-class Builder:
-    """
-    TODO
-    """
+    def __init__(self, group: str, logger: Logger) -> None:
+        self._group = group
+        self._logger = logger
 
-    def __init__(self, configuration: ProjectConfiguration) -> None:
-        self.configuration = configuration
+    def gather_entries(self) -> list[metadata.EntryPoint]:
+        """Gather all the available entry points for the grouping
 
-    def gather_plugins(self, plugin_type: Type[PluginT]) -> list[Type[PluginT]]:
+        Returns:
+            List of entries
         """
-        TODO
+        return list(metadata.entry_points(group=f"cppython.{self._group}"))
+
+    def load(self, entry_points: list[metadata.EntryPoint]) -> list[type[Plugin]]:
+        """Loads a set of entry points
+
+        Args:
+            entry_points: The entry points to load
+
+        Raises:
+            TypeError: If an entry point is not a subclass of the 'Plugin' type
+
+        Returns:
+            List of plugin types
         """
+
         plugins = []
-        entry_points = metadata.entry_points(group=f"cppython.{plugin_type.group()}")
 
         for entry_point in entry_points:
-            loaded_plugin_type = entry_point.load()
-            if issubclass(loaded_plugin_type, plugin_type) & (loaded_plugin_type is not plugin_type):
-                plugins.append(loaded_plugin_type)
+            plugin = entry_point.load()
+
+            if not issubclass(plugin, Plugin):
+                raise TypeError("The CPPython plugin must be an instance of Plugin")
+
+            plugins.append(plugin)
 
         return plugins
 
-    def generate_model(self, plugins: list[Type[Generator]]) -> Type[PyProject]:
+
+class Builder:
+    """Helper class for building CPPython projects"""
+
+    def __init__(self, configuration: ProjectConfiguration, logger: Logger) -> None:
+        self.configuration = configuration
+        self.logger = logger
+
+    def discover_providers(self) -> list[type[Provider[Any, Any]]]:
+        """Discovers Provider plugin types
+
+        Raises:
+            TypeError: Raised if the Plugin type is not subclass of 'Provider'
+
+        Returns:
+            List of Provider types
         """
-        TODO: Proper return type hint
+        provider_builder = PluginBuilder(Provider.group(), self.logger)
+
+        # Gather provider entry points without any filtering
+        provider_entry_points = provider_builder.gather_entries()
+        provider_types = provider_builder.load(provider_entry_points)
+
+        plugins = []
+
+        for provider_type in provider_types:
+            if not issubclass(provider_type, Provider):
+                raise TypeError("The CPPython plugin must be an instance of Plugin")
+
+            plugins.append(provider_type)
+
+        return plugins
+
+    def generate_model(
+        self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
+    ) -> type[PyProject]:
+        """Constructs a dynamic type that contains plugin specific data requirements
+
+        Args:
+            plugins: List of Provider types
+
+        Returns:
+            An extended PyProject type containing dynamic plugin data requirements
         """
-        plugin_fields = {}
+        plugin_fields: dict[str, Any] = {}
         for plugin_type in plugins:
             plugin_fields[plugin_type.name()] = (plugin_type.data_type(), ...)
 
@@ -71,12 +128,19 @@ class Builder:
             __base__=PyProject,
         )
 
-    def generate_resolved_cppython_model(self, plugins: list[Type[Generator]]) -> Type[CPPythonDataResolved]:
-        """
-        TODO
+    def generate_resolved_cppython_model(
+        self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
+    ) -> type[CPPythonDataResolved]:
+        """Constructs a dynamic resolved type that contains plugin specific data requirements
+
+        Args:
+            plugins: List of Provider types
+
+        Returns:
+            An extended CPPython resolved type containing dynamic plugin data requirements
         """
 
-        plugin_fields = {}
+        plugin_fields: dict[str, Any] = {}
         for plugin_type in plugins:
             # The unresolved type is still appended to the CPPythonDataResolved type
             #   as sub-resolution still needs to happen at this stage of the builder
@@ -88,89 +152,34 @@ class Builder:
             __base__=CPPythonDataResolved,
         )
 
-    def create_generators(
+    def create_providers(
         self,
-        plugins: list[Type[Generator]],
+        plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]],
         project_configuration: ProjectConfiguration,
-        configuration: GeneratorConfiguration,
-        project: PEP621Resolved,
-        cppython: CPPythonDataResolved,
-    ) -> list[Generator]:
+        configuration: ProviderConfiguration,
+        static_resolved_project_data: tuple[PEP621Resolved, CPPythonDataResolved],
+    ) -> list[Provider[ProviderDataT, ProviderDataResolvedT]]:
+        """Creates Providers from input data
+
+        Args:
+            plugins: List of Provider plugins to construct
+            project_configuration: Project configuration data
+            configuration: Provider configuration data
+            static_resolved_project_data: Resolved project data
+
+        Returns:
+            List of constructed providers
         """
-        TODO
-        """
-        _generators = []
+
+        project, cppython = static_resolved_project_data
+
+        _providers = []
         for plugin_type in plugins:
             name = plugin_type.name()
-            generator_data = getattr(cppython, name)
-            resolved_generator_data = generator_data.resolve(project_configuration)
-            _generators.append(plugin_type(configuration, project, cppython, resolved_generator_data))
+            provider_data = getattr(cppython, name)
+            resolved_provider_data = provider_data.resolve(project_configuration)
+            resolved_cppython_data = cppython.provider_resolve(plugin_type)
 
-        return _generators
+            _providers.append(plugin_type(configuration, project, resolved_cppython_data, resolved_provider_data))
 
-    def write_presets(self, path: Path, generator_output: list[tuple[str, ConfigurePreset]]) -> Path:
-        """
-        Write the cppython presets.
-        Returns the
-        """
-
-        path.mkdir(parents=True, exist_ok=True)
-
-        def write_generator_presets(path: Path, generator_name: str, configure_preset: ConfigurePreset) -> Path:
-            """
-            Write a generator preset.
-            @returns - The written json file
-            """
-            generator_tool_path = path / generator_name
-            generator_tool_path.mkdir(parents=True, exist_ok=True)
-
-            configure_preset.hidden = True
-            presets = CMakePresets(configurePresets=[configure_preset])
-
-            json_path = generator_tool_path / f"{generator_name}.json"
-
-            write_model_json(json_path, presets)
-
-            return json_path
-
-        names = []
-        includes = []
-
-        path = path / "cppython"
-
-        for generator_name, configure_preset in generator_output:
-            preset_file = write_generator_presets(path, generator_name, configure_preset)
-
-            relative_file = preset_file.relative_to(path)
-
-            names.append(generator_name)
-            includes.append(str(relative_file))
-
-        configure_preset = ConfigurePreset(name="cppython", hidden=True, inherits=names)
-        presets = CMakePresets(configurePresets=[configure_preset], include=includes)
-
-        json_path = path / "cppython.json"
-
-        write_model_json(json_path, presets)
-        return json_path
-
-    def write_root_presets(self, path: Path):
-        """
-        Read the top level json file and replace the include reference.
-        Receives a relative path to the tool cmake json file
-        """
-
-        root_preset_path = self.configuration.pyproject_file.parent / "CMakePresets.json"
-
-        root_preset = read_json(root_preset_path)
-        root_model = CMakePresets.parse_obj(root_preset)
-
-        if root_model.include is not None:
-            for index, include_path in enumerate(root_model.include):
-                if Path(include_path).name == "cppython.json":
-                    root_model.include[index] = "build/" + path.as_posix()
-
-            # 'dict.update' wont apply to nested types, manual replacement
-            root_preset["include"] = root_model.include
-
-            write_json(root_preset_path, root_preset)
+        return _providers
