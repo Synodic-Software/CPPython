@@ -39,35 +39,35 @@ class TestProject(CPPythonProjectFixtures):
     """
 
     def test_construction_without_plugins(
-        self, mocker: MockerFixture, project: PyProject, project_configuration: ProjectConfiguration
+        self, mocker: MockerFixture, project: PyProject, workspace: ProjectConfiguration
     ) -> None:
         """_summary_
 
         Args:
             mocker: _description_
             project: _description_
-            project_configuration: _description_
+            workspace: _description_
         """
 
         interface_mock = mocker.MagicMock()
-        Project(project_configuration, interface_mock, project.dict(by_alias=True))
+        Project(workspace, interface_mock, project.dict(by_alias=True))
 
     def test_construction_with_plugins(
-        self, mocker: MockerFixture, project_configuration: ProjectConfiguration, mock_project: dict[str, Any]
+        self, mocker: MockerFixture, workspace: ProjectConfiguration, mock_project: dict[str, Any]
     ) -> None:
         """_summary_
 
         Args:
             mocker: _description_
-            project_configuration: _description_
+            workspace: _description_
             mock_project: _description_
         """
 
         mocked_plugin_list = [MockProvider]
-        mocker.patch("cppython.builder.Builder.gather_plugins", return_value=mocked_plugin_list)
+        mocker.patch("cppython.builder.Builder.discover_providers", return_value=mocked_plugin_list)
 
         interface_mock = mocker.MagicMock()
-        Project(project_configuration, interface_mock, mock_project)
+        Project(workspace, interface_mock, mock_project)
 
 
 class TestBuilder(CPPythonProjectFixtures):
@@ -77,30 +77,30 @@ class TestBuilder(CPPythonProjectFixtures):
         CPPythonProjectFixtures: _description_
     """
 
-    def test_plugin_gather(self, project_configuration: ProjectConfiguration) -> None:
+    def test_plugin_gather(self, workspace: ProjectConfiguration) -> None:
         """_summary_
 
         Args:
-            project_configuration: _description_
+            workspace: _description_
         """
 
-        builder = Builder(project_configuration, getLogger())
+        builder = Builder(workspace, getLogger())
         plugins = builder.discover_providers()
 
         assert len(plugins) == 0
 
     def test_provider_data_construction(
-        self, mocker: MockerFixture, project_configuration: ProjectConfiguration, project: PyProject
+        self, mocker: MockerFixture, workspace: ProjectConfiguration, project: PyProject
     ) -> None:
         """_summary_
 
         Args:
             mocker: _description_
-            project_configuration: _description_
+            workspace: _description_
             project: _description_
         """
 
-        builder = Builder(project_configuration, getLogger())
+        builder = Builder(workspace, getLogger())
         model_type = builder.generate_model([])
 
         assert model_type.__base__ == PyProject
@@ -121,7 +121,7 @@ class TestBuilder(CPPythonProjectFixtures):
         assert result.tool.cppython is not None
 
     def test_provider_creation(
-        self, mocker: MockerFixture, project_configuration: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData
+        self, mocker: MockerFixture, workspace: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData
     ) -> None:
         """_summary_
 
@@ -132,9 +132,9 @@ class TestBuilder(CPPythonProjectFixtures):
             cppython: _description_
         """
 
-        builder = Builder(project_configuration, getLogger())
+        builder = Builder(workspace, getLogger())
 
-        provider_configuration = ProviderConfiguration(root_directory=project_configuration.pyproject_file.parent)
+        provider_configuration = ProviderConfiguration(root_directory=workspace.pyproject_file.parent)
 
         resolved = builder.generate_resolved_cppython_model([])
 
@@ -151,9 +151,9 @@ class TestBuilder(CPPythonProjectFixtures):
 
         providers = builder.create_providers(
             [provider_type],
-            project_configuration,
+            workspace,
             provider_configuration,
-            (pep621.resolve(project_configuration), extended_cppython.resolve(resolved, project_configuration)),
+            (pep621.resolve(workspace), extended_cppython.resolve(resolved, workspace)),
         )
 
         assert len(providers) == 1

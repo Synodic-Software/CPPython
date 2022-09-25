@@ -1,17 +1,10 @@
 """TODO
 """
 
-from pathlib import Path
 from typing import Any
 
 import pytest
-from cppython_core.schema import (
-    PEP621,
-    CPPythonData,
-    ProjectConfiguration,
-    PyProject,
-    ToolData,
-)
+from cppython_core.schema import PEP621, CPPythonData, PyProject, ToolData
 from pytest_cppython.fixtures import CPPythonFixtures
 from pytest_cppython.mock import MockProviderData
 
@@ -68,13 +61,3 @@ class CPPythonProjectFixtures(CPPythonFixtures):
         mocked_pyproject["tool"]["cppython"]["mock"] = MockProviderData()
 
         return mocked_pyproject
-
-    @pytest.fixture(name="project_configuration", scope="session")
-    def fixture_project_configuration(self) -> ProjectConfiguration:
-        """_summary_
-
-        Returns:
-            _description_
-        """
-
-        return ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version="1.0.0")
