@@ -8,7 +8,6 @@ import click
 import tomlkit
 from cppython_core.schema import (
     Interface,
-    InterfaceConfiguration,
     ProjectConfiguration,
     ProviderDataT,
     VersionControl,
@@ -47,8 +46,7 @@ class Configuration:
         file_path = path / "pyproject.toml"
         self.pyproject_data = tomlkit.loads(file_path.read_text(encoding="utf-8"))
 
-        configuration = InterfaceConfiguration()
-        self.interface = ConsoleInterface(configuration)
+        self.interface = ConsoleInterface()
 
         plugin_builder = PluginBuilder("version_control", getLogger())
 
