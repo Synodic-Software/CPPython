@@ -124,7 +124,7 @@ class TestBuilder(CPPythonProjectFixtures):
 
         provider_configuration = ProviderConfiguration(root_directory=workspace.pyproject_file.parent)
 
-        resolved = builder.generate_resolved_cppython_model([])
+        resolved = builder.generate_resolved_model([])
 
         provider_type = mocker.Mock()
         provider_type.name.return_value = "mock"
@@ -135,7 +135,7 @@ class TestBuilder(CPPythonProjectFixtures):
         extended_cppython_dict["mock"] = mock_data
         extended_cppython = MockExtendedCPPython(**extended_cppython_dict)
 
-        resolved = builder.generate_resolved_cppython_model([provider_type])
+        resolved = builder.generate_resolved_model([provider_type])
 
         providers = builder.create_providers(
             [provider_type],

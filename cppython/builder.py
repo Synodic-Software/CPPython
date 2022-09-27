@@ -70,6 +70,23 @@ class Builder:
         self.configuration = configuration
         self.logger = logger
 
+    def _generate_plugin_fields(
+        self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
+    ) -> dict[str, Any]:
+        """_summary_
+
+        Args:
+            plugins: _description_
+
+        Returns:
+            _description_
+        """
+        plugin_fields: dict[str, Any] = {}
+        for plugin_type in plugins:
+            plugin_fields[plugin_type.name()] = (plugin_type.data_type(), ...)
+
+        return plugin_fields
+
     def discover_providers(self) -> list[type[Provider[Any, Any]]]:
         """Discovers Provider plugin types
 
@@ -106,9 +123,7 @@ class Builder:
         Returns:
             An extended PyProject type containing dynamic plugin data requirements
         """
-        plugin_fields: dict[str, Any] = {}
-        for plugin_type in plugins:
-            plugin_fields[plugin_type.name()] = (plugin_type.data_type(), ...)
+        plugin_fields = self._generate_plugin_fields(plugins)
 
         extended_cppython_type = create_model(
             "ExtendedCPPythonData",
@@ -128,7 +143,7 @@ class Builder:
             __base__=PyProject,
         )
 
-    def generate_resolved_cppython_model(
+    def generate_resolved_model(
         self, plugins: Sequence[type[Provider[ProviderDataT, ProviderDataResolvedT]]]
     ) -> type[CPPythonDataResolved]:
         """Constructs a dynamic resolved type that contains plugin specific data requirements
@@ -140,11 +155,9 @@ class Builder:
             An extended CPPython resolved type containing dynamic plugin data requirements
         """
 
-        plugin_fields: dict[str, Any] = {}
-        for plugin_type in plugins:
-            # The unresolved type is still appended to the CPPythonDataResolved type
-            #   as sub-resolution still needs to happen at this stage of the builder
-            plugin_fields[plugin_type.name()] = (plugin_type.data_type(), ...)
+        # The unresolved type is still appended to the CPPythonDataResolved type
+        #   as sub-resolution still needs to happen at this stage of the builder
+        plugin_fields = self._generate_plugin_fields(plugins)
 
         return create_model(
             "ExtendedCPPythonDataResolved",

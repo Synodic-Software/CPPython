@@ -62,7 +62,7 @@ class Project(API):
 
         self._project = pyproject.project
 
-        resolved_cppython_model = builder.generate_resolved_cppython_model(plugins)
+        resolved_cppython_model = builder.generate_resolved_model(plugins)
         self._resolved_project_data = pyproject.project.resolve(configuration)
         self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, configuration)
 
