@@ -3,7 +3,7 @@
 
 from pathlib import Path
 
-from cppython_core.schema import VersionControl
+from cppython_core.plugin_schema.vcs import VersionControl
 from dulwich.errors import NotGitRepository
 from dulwich.repo import Repo
 

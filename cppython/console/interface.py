@@ -6,12 +6,9 @@ from pathlib import Path
 
 import click
 import tomlkit
-from cppython_core.schema import (
-    Interface,
-    ProjectConfiguration,
-    ProviderDataT,
-    VersionControl,
-)
+from cppython_core.plugin_schema.interface import Interface
+from cppython_core.plugin_schema.vcs import VersionControl
+from cppython_core.schema import ProjectConfiguration
 
 from cppython.builder import PluginBuilder
 from cppython.project import Project
@@ -157,17 +154,6 @@ class ConsoleInterface(Interface):
             The name
         """
         return "console"
-
-    def read_provider_data(self, provider_data_type: type[ProviderDataT]) -> ProviderDataT:
-        """Requests provider information
-
-        Args:
-            provider_data_type: The type to construct
-
-        Returns:
-            The constructed provider data type
-        """
-        return provider_data_type()
 
     def write_pyproject(self) -> None:
         """Write output"""

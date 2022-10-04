@@ -4,10 +4,10 @@
 import pytest
 from pytest_cppython.plugin import VersionControlUnitTests
 
-from cppython.plugins.git import Git
+from cppython.plugins.git import Git, GitData
 
 
-class TestGitInterface(VersionControlUnitTests[Git]):
+class TestGitInterface(VersionControlUnitTests[Git, GitData]):
     """Unit tests for the Git VCS plugin"""
 
     @pytest.fixture(name="version_control_type")

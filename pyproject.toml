@@ -37,7 +37,7 @@ lint = [
   "black>=22.6.0",
   "pylint>=2.14.5",
   "isort>=5.10.1",
-  "mypy>=0.971",
+  "mypy>=0.982",
 ]
 test = [
   "pytest>=7.1.2",
@@ -78,6 +78,7 @@ skip_gitignore = true
 [tool.mypy]
 exclude = "__pypackages__"
 plugins = ["pydantic.mypy"]
+show_error_codes = true
 strict = true
 
 [tool.pylint.MAIN]

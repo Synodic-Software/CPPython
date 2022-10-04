@@ -5,12 +5,13 @@ import asyncio
 import logging
 from typing import Any
 
+from cppython_core.plugin_schema.interface import Interface
+from cppython_core.plugin_schema.provider import ProviderConfiguration
 from cppython_core.schema import (
     CPPythonDataResolved,
-    Interface,
     PEP621Resolved,
     ProjectConfiguration,
-    ProviderConfiguration,
+    PyProject,
 )
 
 from cppython.builder import Builder
@@ -44,9 +45,7 @@ class Project(API):
         for plugin in plugins:
             self.logger.warning("Provider plugin found: %s", plugin.name())
 
-        extended_pyproject_type = builder.generate_model(plugins)
-
-        if (pyproject := extended_pyproject_type(**pyproject_data)) is None:
+        if (pyproject := PyProject(**pyproject_data)) is None:
             self.logger.error("Data is not defined")
             return
 
@@ -62,16 +61,13 @@ class Project(API):
 
         self._project = pyproject.project
 
-        resolved_cppython_model = builder.generate_resolved_model(plugins)
         self._resolved_project_data = pyproject.project.resolve(configuration)
-        self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, configuration)
+        self._resolved_cppython_data = pyproject.tool.cppython.resolve(configuration)
 
         self._interface = interface
 
-        provider_configuration = ProviderConfiguration(root_directory=configuration.pyproject_file.parent)
-        self._providers = builder.create_providers(
-            plugins, configuration, provider_configuration, (self.project, self.cppython)
-        )
+        provider_configuration = ProviderConfiguration.create(configuration)
+        self._providers = builder.create_data_plugins(plugins, provider_configuration, self.project, self.cppython)
 
         self.logger.info("Initialized project successfully")
 

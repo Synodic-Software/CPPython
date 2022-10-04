@@ -21,12 +21,6 @@ from cppython.project import Project
 from tests.data.fixtures import CPPythonProjectFixtures
 
 
-class MockExtendedCPPython(CPPythonData):
-    """Mocked extended data for comparison verification"""
-
-    mock: MockProviderData
-
-
 class TestProject(CPPythonProjectFixtures):
     """Grouping for Project class testing"""
 
@@ -77,37 +71,6 @@ class TestBuilder(CPPythonProjectFixtures):
 
         assert len(plugins) == 0
 
-    def test_provider_data_construction(
-        self, mocker: MockerFixture, workspace: ProjectConfiguration, project: PyProject
-    ) -> None:
-        """Tests that the input data for providers can be constructed
-
-        Args:
-            mocker: Mocking fixture for interface mocking
-            workspace: Temporary workspace for path resolution
-            project: PyProject data to construct with
-        """
-
-        builder = Builder(workspace, getLogger())
-        model_type = builder.generate_model([])
-
-        assert model_type.__base__ == PyProject
-
-        provider_type = mocker.Mock()
-        provider_type.name.return_value = "mock"
-        provider_type.data_type.return_value = MockProviderData
-
-        model_type = builder.generate_model([provider_type])
-
-        project_data = project.dict(by_alias=True)
-
-        mock_data = MockProviderData()
-        project_data["tool"]["cppython"]["mock"] = mock_data.dict(by_alias=True)
-        result = model_type(**project_data)
-
-        assert result.tool is not None
-        assert result.tool.cppython is not None
-
     def test_provider_creation(
         self, mocker: MockerFixture, workspace: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData
     ) -> None:
@@ -120,11 +83,12 @@ class TestBuilder(CPPythonProjectFixtures):
             cppython: One of many parameterized CPPython data tables
         """
 
+        class MockExtendedCPPython(CPPythonData):
+            """Mocked extended data for comparison verification"""
+
+            mock: MockProviderData
+
         builder = Builder(workspace, getLogger())
-
-        provider_configuration = ProviderConfiguration(root_directory=workspace.pyproject_file.parent)
-
-        resolved = builder.generate_resolved_model([])
 
         provider_type = mocker.Mock()
         provider_type.name.return_value = "mock"
@@ -135,13 +99,14 @@ class TestBuilder(CPPythonProjectFixtures):
         extended_cppython_dict["mock"] = mock_data
         extended_cppython = MockExtendedCPPython(**extended_cppython_dict)
 
-        resolved = builder.generate_resolved_model([provider_type])
+        extended_pep621_resolve = pep621.resolve(workspace)
+        extended_cppython_resolve = extended_cppython.resolve(workspace)
 
         providers = builder.create_providers(
             [provider_type],
             workspace,
-            provider_configuration,
-            (pep621.resolve(workspace), extended_cppython.resolve(resolved, workspace)),
+            ProviderConfiguration(root_directory=workspace.pyproject_file.parent),
+            (extended_pep621_resolve, extended_cppython_resolve),
         )
 
         assert len(providers) == 1
