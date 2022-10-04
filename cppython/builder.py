@@ -6,7 +6,7 @@ from importlib import metadata
 from logging import Logger
 
 from cppython_core.plugin_schema.provider import Provider
-from cppython_core.plugin_schema.vcs import VersionControl
+from cppython_core.plugin_schema.vcs import VersionControl, VersionControlConfiguration
 from cppython_core.schema import (
     CPPythonDataResolved,
     DataPluginT,
@@ -58,6 +58,64 @@ class PluginBuilder:
         return plugins
 
 
+class InterfaceBuilder:
+    """Helper class for building CPPython front-ends"""
+
+    def __init__(self, logger: Logger) -> None:
+        self.logger = logger
+
+    def discover_vcs(self) -> list[type[Provider]]:
+        """Discovers plugin types
+            TODO: With mypy 0.982+, disable abstract-type and make this generic for all plugins
+        Raises:
+            TypeError: Raised if the Plugin type is not subclass of 'VersionControl'
+
+        Returns:
+            List of VersionControl types
+        """
+        vcs_builder = PluginBuilder(VersionControl.group(), self.logger)
+
+        # Gather vcs entry points without any filtering
+        vcs_entry_points = vcs_builder.gather_entries()
+        vcs_types = vcs_builder.load(vcs_entry_points)
+
+        plugins = []
+
+        for vcs_type in vcs_types:
+            if not issubclass(vcs_type, VersionControl):
+                raise TypeError("The CPPython plugin must be an instance of Plugin")
+
+            plugins.append(vcs_type)
+
+        return plugins
+
+    def create_vcs(
+        self,
+        vcs_type: type[VersionControl],
+        configuration: VersionControlConfiguration,
+        project: PEP621Resolved,
+        cppython: CPPythonDataResolved,
+    ) -> VersionControl:
+        """_summary_
+
+        Args:
+            vcs_type: _description_
+            configuration: _description_
+            project: _description_
+            cppython: _description_
+
+        Returns:
+            _description_
+        """
+
+        name = vcs_type.name()
+        provider_data = getattr(cppython, name)
+        resolved_provider_data = provider_data.resolve(configuration)
+        resolved_cppython_data = cppython.resolve_plugin(vcs_type)
+
+        return vcs_type(configuration, project, resolved_cppython_data, resolved_provider_data)
+
+
 class Builder:
     """Helper class for building CPPython projects"""
 
@@ -87,31 +145,6 @@ class Builder:
                 raise TypeError("The CPPython plugin must be an instance of Plugin")
 
             plugins.append(provider_type)
-
-        return plugins
-
-    def discover_vcs(self) -> list[type[VersionControl]]:
-        """Discovers plugin types
-            TODO: With mypy 0.982+, disable abstract-type and make this generic for all plugins
-        Raises:
-            TypeError: Raised if the Plugin type is not subclass of 'VersionControl'
-
-        Returns:
-            List of VersionControl types
-        """
-        vcs_builder = PluginBuilder(VersionControl.group(), self.logger)
-
-        # Gather vcs entry points without any filtering
-        vcs_entry_points = vcs_builder.gather_entries()
-        vcs_types = vcs_builder.load(vcs_entry_points)
-
-        plugins = []
-
-        for vcs_type in vcs_types:
-            if not issubclass(vcs_type, VersionControl):
-                raise TypeError("The CPPython plugin must be an instance of Plugin")
-
-            plugins.append(vcs_type)
 
         return plugins
 

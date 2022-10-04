@@ -10,6 +10,7 @@ from cppython_core.plugin_schema.interface import Interface
 from cppython_core.plugin_schema.vcs import VersionControl
 from cppython_core.schema import ProjectConfiguration
 
+from cppython.builder import InterfaceBuilder
 from cppython.project import Project
 
 
@@ -44,11 +45,28 @@ class Configuration:
 
         self.interface = ConsoleInterface()
 
+        self.logger = getLogger("cppython.console")
+        builder = InterfaceBuilder(self.logger)
+
+        if not (vcs_types := builder.discover_vcs()):
+            raise TypeError("No VCS plugin found")
+
+        plugin = None
+        for vcs_type in vcs_types:
+            vcs = builder.create_vcs(
+                vcs_type,
+            )
+            if vcs.is_repository(path):
+                plugin = vcs
+                break
+
+        if not plugin:
+            raise TypeError("No applicable VCS plugin found for the given path")
+
+        version = plugin.extract_version(path)
+
         self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version)
         self.project = Project(self.configuration, self.interface, self.pyproject_data)
-
-        plugin = self.project.initialize_vcs()
-        version = plugin.extract_version(path)
 
     def query_vcs(self) -> str:
         """Queries the VCS system for its version
@@ -85,7 +103,9 @@ def info(config: Configuration) -> None:
     Args:
         config: The CLI configuration object
     """
+
     version = config.query_vcs()
+    config.logger.info("The VCS project version is: %s", version)
 
 
 @cli.command()

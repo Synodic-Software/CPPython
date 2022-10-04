@@ -36,9 +36,9 @@ class Project(API):
 
         self.logger.info("Initializing project")
 
-        self._builder = Builder(configuration, self.logger)
+        builder = Builder(configuration, self.logger)
 
-        if not (plugins := self._builder.discover_providers()):
+        if not (plugins := builder.discover_providers()):
             self.logger.error("No provider plugin was found")
             return
 
@@ -67,9 +67,7 @@ class Project(API):
         self._interface = interface
 
         provider_configuration = ProviderConfiguration.create(configuration)
-        self._providers = self._builder.create_data_plugins(
-            plugins, provider_configuration, self.project, self.cppython
-        )
+        self._providers = builder.create_data_plugins(plugins, provider_configuration, self.project, self.cppython)
 
         self.logger.info("Initialized project successfully")
 
@@ -99,20 +97,6 @@ class Project(API):
             Resolved 'cppython' table
         """
         return self._resolved_cppython_data
-
-    def initialize_vcs(self) -> None:
-        """_summary_"""
-        self._vcs = self._builder.discover_vcs()
-
-        # Extract the first plugin that identifies the repository
-        plugin = None
-        for plugin_type in plugins:
-            plugin = plugin_type()
-            plugin.is_repository(path)
-            break
-
-        if plugin is None:
-            raise TypeError("No VCS plugin found")
 
     async def download_provider_tools(self) -> None:
         """Download the provider tooling if required"""
