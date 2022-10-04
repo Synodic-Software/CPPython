@@ -9,7 +9,7 @@ from cppython_core.plugin_schema.provider import Provider
 from cppython_core.plugin_schema.vcs import VersionControl
 from cppython_core.schema import (
     CPPythonDataResolved,
-    DataPlugin,
+    DataPluginT,
     PEP621Resolved,
     Plugin,
     PluginDataConfigurationT,
@@ -117,11 +117,11 @@ class Builder:
 
     def create_data_plugins(
         self,
-        plugins: Sequence[type[DataPlugin[PluginDataConfigurationT]]],
+        plugins: Sequence[type[DataPluginT]],
         configuration: PluginDataConfigurationT,
         project: PEP621Resolved,
         cppython: CPPythonDataResolved,
-    ) -> list[DataPlugin[PluginDataConfigurationT]]:
+    ) -> list[DataPluginT]:
         """Creates Providers from input data
 
         Args:

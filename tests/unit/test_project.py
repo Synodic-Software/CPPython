@@ -6,14 +6,9 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Any
 
-from cppython_core.schema import (
-    PEP621,
-    CPPythonData,
-    ProjectConfiguration,
-    ProviderConfiguration,
-    PyProject,
-)
-from pytest_cppython.mock import MockProvider, MockProviderData
+from cppython_core.plugin_schema.provider import ProviderConfiguration
+from cppython_core.schema import PEP621, CPPythonData, ProjectConfiguration, PyProject
+from pytest_cppython.mock import MockProvider
 from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
@@ -71,42 +66,27 @@ class TestBuilder(CPPythonProjectFixtures):
 
         assert len(plugins) == 0
 
-    def test_provider_creation(
-        self, mocker: MockerFixture, workspace: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData
-    ) -> None:
+    def test_provider_creation(self, workspace: ProjectConfiguration, pep621: PEP621, cppython: CPPythonData) -> None:
         """Test that providers can be created with the mock data available
 
         Args:
-            mocker: Mocking fixture for interface mocking
             workspace: Temporary workspace for path resolution
             pep621: One of many parameterized Project data tables
             cppython: One of many parameterized CPPython data tables
         """
 
-        class MockExtendedCPPython(CPPythonData):
-            """Mocked extended data for comparison verification"""
-
-            mock: MockProviderData
-
         builder = Builder(workspace, getLogger())
 
-        provider_type = mocker.Mock()
-        provider_type.name.return_value = "mock"
-        provider_type.data_type.return_value = MockProviderData
-
-        mock_data = MockProviderData()
-        extended_cppython_dict = cppython.dict(by_alias=True)
-        extended_cppython_dict["mock"] = mock_data
-        extended_cppython = MockExtendedCPPython(**extended_cppython_dict)
-
         extended_pep621_resolve = pep621.resolve(workspace)
-        extended_cppython_resolve = extended_cppython.resolve(workspace)
+        extended_cppython_resolve = cppython.resolve(workspace)
 
-        providers = builder.create_providers(
-            [provider_type],
-            workspace,
-            ProviderConfiguration(root_directory=workspace.pyproject_file.parent),
-            (extended_pep621_resolve, extended_cppython_resolve),
+        config = ProviderConfiguration(root_directory=workspace.pyproject_file.parent)
+
+        providers = builder.create_data_plugins(
+            [MockProvider],
+            config,
+            extended_pep621_resolve,
+            extended_cppython_resolve,
         )
 
         assert len(providers) == 1

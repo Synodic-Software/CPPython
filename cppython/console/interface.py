@@ -10,7 +10,6 @@ from cppython_core.plugin_schema.interface import Interface
 from cppython_core.plugin_schema.vcs import VersionControl
 from cppython_core.schema import ProjectConfiguration
 
-from cppython.builder import PluginBuilder
 from cppython.project import Project
 
 
@@ -45,41 +44,11 @@ class Configuration:
 
         self.interface = ConsoleInterface()
 
-        plugin_builder = PluginBuilder("version_control", getLogger())
-
-        # Don't filter entries
-        entries = plugin_builder.gather_entries()
-        vcs_types = plugin_builder.load(entries)
-
-        plugins: list[type[VersionControl]] = []
-
-        # Verify the plugin type
-        for vcs_type in vcs_types:
-            if not issubclass(vcs_type, VersionControl):
-                raise TypeError("The VCS plugin must be an instance of VersionControl")
-
-            plugins.append(vcs_type)
-
-        # Extract the first plugin that identifies the repository
-        plugin = None
-        for plugin_type in plugins:
-            plugin = plugin_type()
-            plugin.is_repository(path)
-            break
-
-        if plugin is None:
-            raise TypeError("No VCS plugin found")
-
-        version = plugin.extract_version(path)
         self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version)
+        self.project = Project(self.configuration, self.interface, self.pyproject_data)
 
-    def create_project(self) -> Project:
-        """Creates the project type from input data
-
-        Returns:
-            The project
-        """
-        return Project(self.configuration, self.interface, self.pyproject_data)
+        plugin = self.project.initialize_vcs()
+        version = plugin.extract_version(path)
 
     def query_vcs(self) -> str:
         """Queries the VCS system for its version
@@ -116,7 +85,7 @@ def info(config: Configuration) -> None:
     Args:
         config: The CLI configuration object
     """
-    config.create_project()
+    version = config.query_vcs()
 
 
 @cli.command()
@@ -127,8 +96,7 @@ def install(config: Configuration) -> None:
     Args:
         config: The CLI configuration object
     """
-    project = config.create_project()
-    project.install()
+    config.project.install()
 
 
 @cli.command()
@@ -139,8 +107,7 @@ def update(config: Configuration) -> None:
     Args:
         config: The CLI configuration object
     """
-    project = config.create_project()
-    project.update()
+    config.project.update()
 
 
 class ConsoleInterface(Interface):
