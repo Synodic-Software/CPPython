@@ -6,10 +6,15 @@ import logging
 from typing import Any
 
 from cppython_core.plugin_schema.interface import Interface
-from cppython_core.plugin_schema.provider import ProviderConfiguration
+from cppython_core.resolution import (
+    resolve_cppython,
+    resolve_pep621,
+    resolve_project_configuration,
+)
 from cppython_core.schema import (
-    CPPythonDataResolved,
-    PEP621Resolved,
+    CPPythonData,
+    CPPythonGlobalConfiguration,
+    PEP621Data,
     ProjectConfiguration,
     PyProject,
 )
@@ -36,7 +41,7 @@ class Project(API):
 
         self.logger.info("Initializing project")
 
-        builder = Builder(configuration, self.logger)
+        builder = Builder(self.logger)
 
         if not (plugins := builder.discover_providers()):
             self.logger.error("No provider plugin was found")
@@ -59,15 +64,17 @@ class Project(API):
 
         self._enabled = True
 
-        self._project = pyproject.project
-
-        self._resolved_project_data = pyproject.project.resolve(configuration)
-        self._resolved_cppython_data = pyproject.tool.cppython.resolve(configuration)
+        project_data = resolve_project_configuration(configuration)
+        self._resolved_pep621_data = resolve_pep621(pyproject.project, configuration)
+        self._resolved_cppython_data = resolve_cppython(
+            pyproject.tool.cppython, CPPythonGlobalConfiguration(), project_data
+        )
 
         self._interface = interface
 
-        provider_configuration = ProviderConfiguration.create(configuration)
-        self._providers = builder.create_data_plugins(plugins, provider_configuration, self.project, self.cppython)
+        self._providers = builder.create_providers(
+            plugins, project_data, self.pep621_data, pyproject.tool.cppython, self.cppython_data
+        )
 
         self.logger.info("Initialized project successfully")
 
@@ -81,16 +88,16 @@ class Project(API):
         return self._enabled
 
     @property
-    def project(self) -> PEP621Resolved:
+    def pep621_data(self) -> PEP621Data:
         """Resolved project data
 
         Returns:
             The resolved 'project' table
         """
-        return self._resolved_project_data
+        return self._resolved_pep621_data
 
     @property
-    def cppython(self) -> CPPythonDataResolved:
+    def cppython_data(self) -> CPPythonData:
         """The resolved CPPython data
 
         Returns:
@@ -104,7 +111,7 @@ class Project(API):
             self.logger.info("Skipping 'download_provider_tools' because the project is not enabled")
             return
 
-        base_path = self.cppython.install_path
+        base_path = self.cppython_data.install_path
 
         for provider in self._providers:
             path = base_path / provider.name()

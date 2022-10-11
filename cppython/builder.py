@@ -4,16 +4,17 @@
 from collections.abc import Sequence
 from importlib import metadata
 from logging import Logger
+from pathlib import Path
 
-from cppython_core.plugin_schema.provider import Provider
-from cppython_core.plugin_schema.vcs import VersionControl, VersionControlConfiguration
+from cppython_core.plugin_schema.provider import Provider, ProviderT
+from cppython_core.plugin_schema.vcs import VersionControl
+from cppython_core.resolution import resolve_cppython_plugin, resolve_provider
 from cppython_core.schema import (
-    CPPythonDataResolved,
-    DataPluginT,
-    PEP621Resolved,
+    CPPythonData,
+    CPPythonLocalConfiguration,
+    PEP621Data,
     Plugin,
-    PluginDataConfigurationT,
-    ProjectConfiguration,
+    ProjectData,
 )
 
 
@@ -58,70 +59,40 @@ class PluginBuilder:
         return plugins
 
 
-class InterfaceBuilder:
-    """Helper class for building CPPython front-ends"""
+class Builder:
+    """Helper class for building CPPython projects"""
 
     def __init__(self, logger: Logger) -> None:
         self.logger = logger
 
-    def discover_vcs(self) -> list[type[Provider]]:
-        """Discovers plugin types
-            TODO: With mypy 0.982+, disable abstract-type and make this generic for all plugins
-        Raises:
-            TypeError: Raised if the Plugin type is not subclass of 'VersionControl'
-
-        Returns:
-            List of VersionControl types
-        """
-        vcs_builder = PluginBuilder(VersionControl.group(), self.logger)
-
-        # Gather vcs entry points without any filtering
-        vcs_entry_points = vcs_builder.gather_entries()
-        vcs_types = vcs_builder.load(vcs_entry_points)
-
-        plugins = []
-
-        for vcs_type in vcs_types:
-            if not issubclass(vcs_type, VersionControl):
-                raise TypeError("The CPPython plugin must be an instance of Plugin")
-
-            plugins.append(vcs_type)
-
-        return plugins
-
-    def create_vcs(
-        self,
-        vcs_type: type[VersionControl],
-        configuration: VersionControlConfiguration,
-        project: PEP621Resolved,
-        cppython: CPPythonDataResolved,
-    ) -> VersionControl:
+    def extract_vcs_version(self, path: Path) -> str:
         """_summary_
 
         Args:
-            vcs_type: _description_
-            configuration: _description_
-            project: _description_
-            cppython: _description_
+            path: _description_
+
+        Raises:
+            TypeError: _description_
+            TypeError: _description_
 
         Returns:
             _description_
         """
 
-        name = vcs_type.name()
-        provider_data = getattr(cppython, name)
-        resolved_provider_data = provider_data.resolve(configuration)
-        resolved_cppython_data = cppython.resolve_plugin(vcs_type)
+        if not (vcs_types := self.discover_vcs()):
+            raise TypeError("No VCS plugin found")
 
-        return vcs_type(configuration, project, resolved_cppython_data, resolved_provider_data)
+        plugin = None
+        for vcs_type in vcs_types:
+            vcs = vcs_type()
+            if vcs.is_repository(path):
+                plugin = vcs
+                break
 
+        if not plugin:
+            raise TypeError("No applicable VCS plugin found for the given path")
 
-class Builder:
-    """Helper class for building CPPython projects"""
-
-    def __init__(self, configuration: ProjectConfiguration, logger: Logger) -> None:
-        self.configuration = configuration
-        self.logger = logger
+        return plugin.extract_version(path)
 
     def discover_providers(self) -> list[type[Provider]]:
         """Discovers plugin types
@@ -148,19 +119,45 @@ class Builder:
 
         return plugins
 
-    def create_data_plugins(
+    def discover_vcs(self) -> list[type[VersionControl]]:
+        """Discovers plugin types
+        Raises:
+            TypeError: Raised if the Plugin type is not subclass of 'VersionControl'
+
+        Returns:
+            List of VersionControl types
+        """
+        vcs_builder = PluginBuilder(VersionControl.group(), self.logger)
+
+        # Gather vcs entry points without any filtering
+        vcs_entry_points = vcs_builder.gather_entries()
+        vcs_types = vcs_builder.load(vcs_entry_points)
+
+        plugins = []
+
+        for vcs_type in vcs_types:
+            if not issubclass(vcs_type, VersionControl):
+                raise TypeError("The CPPython plugin must be an instance of Plugin")
+
+            plugins.append(vcs_type)
+
+        return plugins
+
+    def create_providers(
         self,
-        plugins: Sequence[type[DataPluginT]],
-        configuration: PluginDataConfigurationT,
-        project: PEP621Resolved,
-        cppython: CPPythonDataResolved,
-    ) -> list[DataPluginT]:
+        plugins: Sequence[type[ProviderT]],
+        project_data: ProjectData,
+        project: PEP621Data,
+        cppython_local_configuration: CPPythonLocalConfiguration,
+        cppython: CPPythonData,
+    ) -> list[ProviderT]:
         """Creates Providers from input data
 
         Args:
             plugins: List of plugins to construct
-            configuration: Plugin configuration data
+            project_data: Plugin configuration data
             project: Resolved project data
+            cppython_local_configuration: yes
             cppython: Resolved cppython data
 
         Returns:
@@ -169,11 +166,12 @@ class Builder:
 
         _providers = []
         for plugin_type in plugins:
-            name = plugin_type.name()
-            provider_data = getattr(cppython, name)
-            resolved_provider_data = provider_data.resolve(configuration)
-            resolved_cppython_data = cppython.resolve_plugin(plugin_type)
+            name = plugin_type.group()
+            provider_table = getattr(cppython_local_configuration, name)
 
-            _providers.append(plugin_type(configuration, project, resolved_cppython_data, resolved_provider_data))
+            resolved_cppython_data = resolve_cppython_plugin(cppython, plugin_type)
+            provider_data = resolve_provider(project_data)
+
+            _providers.append(plugin_type(provider_data, project, resolved_cppython_data, provider_table))
 
         return _providers
