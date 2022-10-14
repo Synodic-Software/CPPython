@@ -16,15 +16,15 @@ from cppython_core.schema import (
     ProjectConfiguration,
     PyProject,
 )
+from pytest_cppython.fixtures import CPPythonFixtures
 from pytest_cppython.mock import MockGenerator, MockProvider
 from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
 from cppython.project import Project
-from tests.data.fixtures import CPPythonProjectFixtures
 
 
-class TestProject(CPPythonProjectFixtures):
+class TestProject(CPPythonFixtures):
     """Grouping for Project class testing"""
 
     def test_construction_without_plugins(
@@ -64,7 +64,7 @@ class TestProject(CPPythonProjectFixtures):
         Project(project_configuration, interface_mock, project_with_mocks)
 
 
-class TestBuilder(CPPythonProjectFixtures):
+class TestBuilder(CPPythonFixtures):
     """Tests of builder steps"""
 
     def test_plugin_gather(self) -> None:

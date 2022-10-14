@@ -6,10 +6,9 @@ from click.testing import CliRunner
 from pytest_cppython.plugin import InterfaceUnitTests
 
 from cppython.console.interface import Configuration, ConsoleInterface, cli
-from tests.data.fixtures import CPPythonProjectFixtures
 
 
-class TestCLIInterface(CPPythonProjectFixtures, InterfaceUnitTests[ConsoleInterface]):
+class TestCLIInterface(InterfaceUnitTests[ConsoleInterface]):
     """The tests for our CLI interface"""
 
     @pytest.fixture(name="plugin_type", scope="session")
