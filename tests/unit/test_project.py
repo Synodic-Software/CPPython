@@ -4,11 +4,18 @@
 from __future__ import annotations
 
 from logging import getLogger
+from pathlib import Path
 from typing import Any
 
 import pytest
 from cppython_core.exceptions import PluginError
-from cppython_core.schema import CoreData, ProjectConfiguration, PyProject
+from cppython_core.schema import (
+    CoreData,
+    CPPythonLocalConfiguration,
+    PEP621Configuration,
+    ProjectConfiguration,
+    PyProject,
+)
 from pytest_cppython.mock import MockGenerator, MockProvider
 from pytest_mock import MockerFixture
 
@@ -53,6 +60,7 @@ class TestProject(CPPythonProjectFixtures):
         mocker.patch("cppython.builder.Builder.discover_generators", return_value=mocked_generator_list)
 
         interface_mock = mocker.MagicMock()
+        project_configuration.version = None
         Project(project_configuration, interface_mock, project_with_mocks)
 
 
@@ -120,3 +128,16 @@ class TestBuilder(CPPythonProjectFixtures):
             core_data,
             generator_configurations,
         )
+
+    def test_core_data_version(self) -> None:
+        """Test the VCS config error override. Validated data is already tested."""
+
+        builder = Builder(getLogger())
+
+        project_configuration = ProjectConfiguration(pyproject_file=Path("pyproject.toml"), version=None)
+        pep621_configuration = PEP621Configuration(name="version-resolve-test", dynamic=["version"], version=None)
+        cppython_configuration = CPPythonLocalConfiguration()
+
+        core_data = builder.generate_core_data(project_configuration, pep621_configuration, cppython_configuration)
+
+        assert core_data.pep621_data.version

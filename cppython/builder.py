@@ -100,7 +100,14 @@ class Builder:
         global_configuration = CPPythonGlobalConfiguration()
 
         project_data = resolve_project_configuration(configuration)
-        pep621_data = resolve_pep621(pep621_configuration, configuration)
+
+        try:
+            pep621_data = resolve_pep621(pep621_configuration, configuration)
+
+        except ConfigError:
+            configuration.version = self.extract_vcs_version(configuration.pyproject_file.parent)
+            pep621_data = resolve_pep621(pep621_configuration, configuration)
+
         cppython_data = resolve_cppython(cppython_configuration, global_configuration, project_data)
 
         return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
