@@ -11,7 +11,7 @@ from cppython_core.schema import (
     ToolData,
 )
 from pytest_cppython.fixtures import CPPythonFixtures
-from pytest_cppython.mock import MockGenerator, MockProvider, MockVersionControl
+from pytest_cppython.mock import MockGenerator, MockProvider
 
 
 class CPPythonProjectFixtures(CPPythonFixtures):
@@ -49,5 +49,4 @@ class CPPythonProjectFixtures(CPPythonFixtures):
         mocked_pyproject = project.dict(by_alias=True)
         mocked_pyproject["tool"]["cppython"]["provider"][MockProvider.name()] = {}
         mocked_pyproject["tool"]["cppython"]["generator"][MockGenerator.name()] = {}
-        mocked_pyproject["tool"]["cppython"]["vcs"][MockVersionControl.name()] = {}
         return mocked_pyproject

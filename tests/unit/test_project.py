@@ -6,14 +6,7 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Any
 
-from cppython_core.schema import (
-    CPPythonData,
-    CPPythonLocalConfiguration,
-    PEP621Data,
-    ProjectConfiguration,
-    ProjectData,
-    PyProject,
-)
+from cppython_core.schema import CoreData, ProjectConfiguration, PyProject
 from pytest_cppython.mock import MockProvider
 from pytest_mock import MockerFixture
 
@@ -70,28 +63,24 @@ class TestBuilder(CPPythonProjectFixtures):
 
     def test_provider_creation(
         self,
-        project_data: ProjectData,
-        pep621_data: PEP621Data,
-        cppython_local_configuration: CPPythonLocalConfiguration,
-        cppython_data: CPPythonData,
+        core_data: CoreData,
+        project_with_mocks: dict[str, Any],
     ) -> None:
         """Test that providers can be created with the mock data available
 
         Args:
-            project_data: Temporary workspace for path resolution
-            pep621_data: One of many parameterized Project data tables
-            cppython_local_configuration: Local config
-            cppython_data: One of many parameterized CPPython data tables
+            core_data: TODO
+            project_with_mocks: Local config
         """
 
         builder = Builder(getLogger())
 
+        provider_configurations = project_with_mocks["tool"]["cppython"]["provider"]
+
         providers = builder.create_providers(
             [MockProvider],
-            project_data,
-            pep621_data,
-            cppython_local_configuration,
-            cppython_data,
+            core_data,
+            provider_configurations,
         )
 
         assert len(providers) == 1
