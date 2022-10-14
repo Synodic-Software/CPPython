@@ -10,14 +10,11 @@ from cppython.console.interface import ConsoleInterface
 class TestCLIInterface(InterfaceIntegrationTests[ConsoleInterface]):
     """The tests for our CLI interface"""
 
-    @pytest.fixture(name="interface")
-    def fixture_interface(self, interface_type: type[ConsoleInterface]) -> ConsoleInterface:
-        """Override of the plugin provided interface fixture.
-
-        Args:
-            interface_type: The input interface type
+    @pytest.fixture(name="plugin_type", scope="session")
+    def fixture_plugin_type(self) -> type[ConsoleInterface]:
+        """A required testing hook that allows type generation
 
         Returns:
-            ConsoleInterface -- The Interface object to use for the CPPython defined tests
+            An overridden interface type
         """
-        return ConsoleInterface()
+        return ConsoleInterface

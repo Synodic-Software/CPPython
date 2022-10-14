@@ -12,12 +12,12 @@ from tests.data.fixtures import CPPythonProjectFixtures
 class TestCLIInterface(CPPythonProjectFixtures, InterfaceUnitTests[ConsoleInterface]):
     """The tests for our CLI interface"""
 
-    @pytest.fixture(name="interface_type")
-    def fixture_interface_type(self) -> type[ConsoleInterface]:
+    @pytest.fixture(name="plugin_type", scope="session")
+    def fixture_plugin_type(self) -> type[ConsoleInterface]:
         """A required testing hook that allows type generation
 
         Returns:
-            The interface type
+            An overridden interface type
         """
         return ConsoleInterface
 

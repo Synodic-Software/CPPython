@@ -6,14 +6,9 @@ from pathlib import Path
 
 import click
 import tomlkit
-from cppython_core.schema import (
-    Interface,
-    ProjectConfiguration,
-    ProviderDataT,
-    VersionControl,
-)
+from cppython_core.plugin_schema.interface import Interface
+from cppython_core.schema import ProjectConfiguration
 
-from cppython.builder import PluginBuilder
 from cppython.project import Project
 
 
@@ -42,47 +37,14 @@ class Configuration:
     """Click configuration object"""
 
     def __init__(self) -> None:
-        path = _find_pyproject_file()
-        file_path = path / "pyproject.toml"
-        self.pyproject_data = tomlkit.loads(file_path.read_text(encoding="utf-8"))
-
         self.interface = ConsoleInterface()
 
-        plugin_builder = PluginBuilder("version_control", getLogger())
+        self.logger = getLogger("cppython.console")
 
-        # Don't filter entries
-        entries = plugin_builder.gather_entries()
-        vcs_types = plugin_builder.load(entries)
+        path = _find_pyproject_file()
+        file_path = path / "pyproject.toml"
 
-        plugins: list[type[VersionControl]] = []
-
-        # Verify the plugin type
-        for vcs_type in vcs_types:
-            if not issubclass(vcs_type, VersionControl):
-                raise TypeError("The VCS plugin must be an instance of VersionControl")
-
-            plugins.append(vcs_type)
-
-        # Extract the first plugin that identifies the repository
-        plugin = None
-        for plugin_type in plugins:
-            plugin = plugin_type()
-            plugin.is_repository(path)
-            break
-
-        if plugin is None:
-            raise TypeError("No VCS plugin found")
-
-        version = plugin.extract_version(path)
-        self.configuration = ProjectConfiguration(pyproject_file=file_path, version=version)
-
-    def create_project(self) -> Project:
-        """Creates the project type from input data
-
-        Returns:
-            The project
-        """
-        return Project(self.configuration, self.interface, self.pyproject_data)
+        self.configuration = ProjectConfiguration(pyproject_file=file_path, version=None)
 
     def query_vcs(self) -> str:
         """Queries the VCS system for its version
@@ -92,6 +54,17 @@ class Configuration:
         """
 
         return "TODO"
+
+    def generate_project(self) -> Project:
+        """_summary_
+
+        Returns:
+            _description_
+        """
+
+        pyproject_data = tomlkit.loads(self.configuration.pyproject_file.read_text(encoding="utf-8"))
+
+        return Project(self.configuration, self.interface, pyproject_data)
 
 
 # Attach our config object to click's hook
@@ -119,7 +92,9 @@ def info(config: Configuration) -> None:
     Args:
         config: The CLI configuration object
     """
-    config.create_project()
+
+    version = config.query_vcs()
+    config.logger.info("The VCS project version is: %s", version)
 
 
 @cli.command()
@@ -130,7 +105,7 @@ def install(config: Configuration) -> None:
     Args:
         config: The CLI configuration object
     """
-    project = config.create_project()
+    project = config.generate_project()
     project.install()
 
 
@@ -142,7 +117,7 @@ def update(config: Configuration) -> None:
     Args:
         config: The CLI configuration object
     """
-    project = config.create_project()
+    project = config.generate_project()
     project.update()
 
 
@@ -157,17 +132,6 @@ class ConsoleInterface(Interface):
             The name
         """
         return "console"
-
-    def read_provider_data(self, provider_data_type: type[ProviderDataT]) -> ProviderDataT:
-        """Requests provider information
-
-        Args:
-            provider_data_type: The type to construct
-
-        Returns:
-            The constructed provider data type
-        """
-        return provider_data_type()
 
     def write_pyproject(self) -> None:
         """Write output"""

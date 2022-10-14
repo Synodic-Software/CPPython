@@ -5,13 +5,9 @@ import asyncio
 import logging
 from typing import Any
 
-from cppython_core.schema import (
-    CPPythonDataResolved,
-    Interface,
-    PEP621Resolved,
-    ProjectConfiguration,
-    ProviderConfiguration,
-)
+from cppython_core.exceptions import ConfigError, PluginError
+from cppython_core.plugin_schema.interface import Interface
+from cppython_core.schema import CoreData, ProjectConfiguration, PyProject
 
 from cppython.builder import Builder
 from cppython.schema import API
@@ -24,6 +20,7 @@ class Project(API):
         self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
     ) -> None:
         self._enabled = False
+        self._interface = interface
 
         # Default logging levels
         levels = [logging.WARNING, logging.INFO, logging.DEBUG]
@@ -35,43 +32,35 @@ class Project(API):
 
         self.logger.info("Initializing project")
 
-        builder = Builder(configuration, self.logger)
+        if (pyproject := PyProject(**pyproject_data)) is None:
+            raise ConfigError("PyProject data is not defined")
 
-        if not (plugins := builder.discover_providers()):
-            self.logger.error("No provider plugin was found")
-            return
+        builder = Builder(self.logger)
 
-        for plugin in plugins:
-            self.logger.warning("Provider plugin found: %s", plugin.name())
+        if not (provider_plugins := builder.discover_providers()):
+            raise PluginError("No provider plugin was found")
 
-        extended_pyproject_type = builder.generate_model(plugins)
+        for provider_plugin in provider_plugins:
+            self.logger.warning("Provider plugin found: %s", provider_plugin.name())
 
-        if (pyproject := extended_pyproject_type(**pyproject_data)) is None:
-            self.logger.error("Data is not defined")
-            return
+        if not (generator_plugins := builder.discover_generators()):
+            raise PluginError("No generator plugin was found")
+
+        for generator_plugin in generator_plugins:
+            self.logger.warning("Generator plugin found: %s", generator_plugin.name())
 
         if pyproject.tool is None:
-            self.logger.error("Table [tool] is not defined")
-            return
+            raise ConfigError("Table [tool] is not defined")
 
         if pyproject.tool.cppython is None:
-            self.logger.error("Table [tool.cppython] is not defined")
-            return
+            raise ConfigError("Table [tool.cppython] is not defined")
+
+        self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
+
+        self._providers = builder.create_providers(provider_plugins, self.core_data, pyproject.tool.cppython.provider)
+        self._generator = builder.create_generator(generator_plugins, self.core_data, pyproject.tool.cppython.generator)
 
         self._enabled = True
-
-        self._project = pyproject.project
-
-        resolved_cppython_model = builder.generate_resolved_cppython_model(plugins)
-        self._resolved_project_data = pyproject.project.resolve(configuration)
-        self._resolved_cppython_data = pyproject.tool.cppython.resolve(resolved_cppython_model, configuration)
-
-        self._interface = interface
-
-        provider_configuration = ProviderConfiguration(root_directory=configuration.pyproject_file.parent)
-        self._providers = builder.create_providers(
-            plugins, configuration, provider_configuration, (self.project, self.cppython)
-        )
 
         self.logger.info("Initialized project successfully")
 
@@ -85,22 +74,13 @@ class Project(API):
         return self._enabled
 
     @property
-    def project(self) -> PEP621Resolved:
-        """Resolved project data
+    def core_data(self) -> CoreData:
+        """Queries if the project was is initialized for full functionality
 
         Returns:
-            The resolved 'project' table
+            The query result
         """
-        return self._resolved_project_data
-
-    @property
-    def cppython(self) -> CPPythonDataResolved:
-        """The resolved CPPython data
-
-        Returns:
-            Resolved 'cppython' table
-        """
-        return self._resolved_cppython_data
+        return self._core_data
 
     async def download_provider_tools(self) -> None:
         """Download the provider tooling if required"""
@@ -108,7 +88,7 @@ class Project(API):
             self.logger.info("Skipping 'download_provider_tools' because the project is not enabled")
             return
 
-        base_path = self.cppython.install_path
+        base_path = self.core_data.cppython_data.install_path
 
         for provider in self._providers:
             path = base_path / provider.name()

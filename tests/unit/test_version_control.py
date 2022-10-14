@@ -10,8 +10,8 @@ from cppython.plugins.git import Git
 class TestGitInterface(VersionControlUnitTests[Git]):
     """Unit tests for the Git VCS plugin"""
 
-    @pytest.fixture(name="version_control_type")
-    def fixture_version_control_type(self) -> type[Git]:
+    @pytest.fixture(name="plugin_type", scope="session")
+    def fixture_plugin_type(self) -> type[Git]:
         """A required testing hook that allows type generation
 
         Returns:
