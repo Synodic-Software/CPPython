@@ -81,7 +81,7 @@ class TestBuilder(CPPythonProjectFixtures):
 
         vcs = builder.discover_vcs()
 
-        assert len(vcs) == 0
+        assert len(vcs) == 1
 
     def test_provider_creation(
         self,
