@@ -5,7 +5,7 @@ import asyncio
 import logging
 from typing import Any
 
-from cppython_core.exceptions import ConfigError
+from cppython_core.exceptions import ConfigError, PluginError
 from cppython_core.plugin_schema.interface import Interface
 from cppython_core.schema import CoreData, ProjectConfiguration, PyProject
 
@@ -38,15 +38,13 @@ class Project(API):
         builder = Builder(self.logger)
 
         if not (provider_plugins := builder.discover_providers()):
-            self.logger.error("No provider plugin was found")
-            return
+            raise PluginError("No provider plugin was found")
 
         for provider_plugin in provider_plugins:
             self.logger.warning("Provider plugin found: %s", provider_plugin.name())
 
         if not (generator_plugins := builder.discover_generators()):
-            self.logger.error("No generator plugin was found")
-            return
+            raise PluginError("No generator plugin was found")
 
         for generator_plugin in generator_plugins:
             self.logger.warning("Generator plugin found: %s", generator_plugin.name())

@@ -6,8 +6,10 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Any
 
+import pytest
+from cppython_core.exceptions import PluginError
 from cppython_core.schema import CoreData, ProjectConfiguration, PyProject
-from pytest_cppython.mock import MockProvider
+from pytest_cppython.mock import MockGenerator, MockProvider
 from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
@@ -30,7 +32,8 @@ class TestProject(CPPythonProjectFixtures):
         """
 
         interface_mock = mocker.MagicMock()
-        Project(project_configuration, interface_mock, project.dict(by_alias=True))
+        with pytest.raises(PluginError):
+            Project(project_configuration, interface_mock, project.dict(by_alias=True))
 
     def test_construction_with_plugins(
         self, mocker: MockerFixture, project_configuration: ProjectConfiguration, project_with_mocks: dict[str, Any]
@@ -43,8 +46,11 @@ class TestProject(CPPythonProjectFixtures):
             project_with_mocks: PyProject data to construct with
         """
 
-        mocked_plugin_list = [MockProvider]
-        mocker.patch("cppython.builder.Builder.discover_providers", return_value=mocked_plugin_list)
+        mocked_provider_list = [MockProvider]
+        mocker.patch("cppython.builder.Builder.discover_providers", return_value=mocked_provider_list)
+
+        mocked_generator_list = [MockGenerator]
+        mocker.patch("cppython.builder.Builder.discover_generators", return_value=mocked_generator_list)
 
         interface_mock = mocker.MagicMock()
         Project(project_configuration, interface_mock, project_with_mocks)
@@ -54,12 +60,20 @@ class TestBuilder(CPPythonProjectFixtures):
     """Tests of builder steps"""
 
     def test_plugin_gather(self) -> None:
-        """Verifies that provider discovery works with no results"""
+        """Verifies that discovery works with no results"""
 
         builder = Builder(getLogger())
-        plugins = builder.discover_providers()
+        providers = builder.discover_providers()
 
-        assert len(plugins) == 0
+        assert len(providers) == 0
+
+        generators = builder.discover_generators()
+
+        assert len(generators) == 0
+
+        vcs = builder.discover_vcs()
+
+        assert len(vcs) == 0
 
     def test_provider_creation(
         self,
@@ -84,3 +98,25 @@ class TestBuilder(CPPythonProjectFixtures):
         )
 
         assert len(providers) == 1
+
+    def test_generator_creation(
+        self,
+        core_data: CoreData,
+        project_with_mocks: dict[str, Any],
+    ) -> None:
+        """Test that providers can be created with the mock data available
+
+        Args:
+            core_data: TODO
+            project_with_mocks: Local config
+        """
+
+        builder = Builder(getLogger())
+
+        generator_configurations = project_with_mocks["tool"]["cppython"]["generator"]
+
+        assert builder.create_generator(
+            [MockGenerator],
+            core_data,
+            generator_configurations,
+        )
