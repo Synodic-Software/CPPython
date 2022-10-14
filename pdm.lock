@@ -215,7 +215,7 @@ dependencies = [
 
 [[package]]
 name = "pytest-cppython"
-version = "0.3.1.dev7"
+version = "0.3.1.dev8"
 requires_python = ">=3.10"
 summary = "A pytest plugin that imports CPPython testing types"
 dependencies = [
@@ -554,9 +554,9 @@ content_hash = "sha256:6cdeec0ddb05c3a2a228351a7dd6b2d1b3dd3ab4659779fe8e57c4986
     {url = "https://files.pythonhosted.org/packages/ea/70/da97fd5f6270c7d2ce07559a19e5bf36a76f0af21500256f005a69d9beba/pytest-cov-4.0.0.tar.gz", hash = "sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470"},
     {url = "https://files.pythonhosted.org/packages/fe/1f/9ec0ddd33bd2b37d6ec50bb39155bca4fe7085fa78b3b434c05459a860e3/pytest_cov-4.0.0-py3-none-any.whl", hash = "sha256:2feb1b751d66a8bd934e5edfa2e961d11309dc37b73b0eabe73b5945fee20f6b"},
 ]
-"pytest-cppython 0.3.1.dev7" = [
-    {url = "https://files.pythonhosted.org/packages/81/f0/95197d6e89d23cf7e89b7cc558aa4f84a2b7090808b04db096c8a5d47148/pytest_cppython-0.3.1.dev7-py3-none-any.whl", hash = "sha256:77128c52ea9af6adec3bcdf8403e7f0d8aa73e2ea896bf8b333273b5f747d044"},
-    {url = "https://files.pythonhosted.org/packages/9a/e6/3cbabd6a0f2a5ed6eaa9998c210e04c28fc7c76a42d022db9e56ee4cfeb6/pytest-cppython-0.3.1.dev7.tar.gz", hash = "sha256:92b1f09e61a7e0c20769aed0ac582398fcff47c6853be9b12b5a880d5317e4f0"},
+"pytest-cppython 0.3.1.dev8" = [
+    {url = "https://files.pythonhosted.org/packages/50/17/cd61eaac6d0346f14f9180283d107b121a87408603154fe7ce9ec7771a41/pytest-cppython-0.3.1.dev8.tar.gz", hash = "sha256:db1bec48d50c4562e0cc6a70e64da39220a9e7d479228d61842a3c5a091fbb9e"},
+    {url = "https://files.pythonhosted.org/packages/91/f2/91332e5031a05b3b57790eb185199fc9295269a29b3bc85df7496a4ee275/pytest_cppython-0.3.1.dev8-py3-none-any.whl", hash = "sha256:ae994e16f0cc151610fb519269429263d6b54b3b33cd174818f751b18253bd3e"},
 ]
 "pytest-mock 3.10.0" = [
     {url = "https://files.pythonhosted.org/packages/91/84/c951790e199cd54ddbf1021965b62a5415b81193ebdb4f4af2659fd06a73/pytest_mock-3.10.0-py3-none-any.whl", hash = "sha256:f4c973eeae0282963eb293eb173ce91b091a79c1334455acfac9ddee8a1c784b"},
