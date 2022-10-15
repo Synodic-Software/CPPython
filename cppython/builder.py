@@ -257,7 +257,11 @@ class Builder:
             cppython_data=cppython_plugin_data,
         )
 
-        return plugin_type(generator_data, core_plugin_data, table)
+        plugin = plugin_type(generator_data, core_plugin_data)
+
+        plugin.activate(table)
+
+        return plugin
 
     def create_providers(
         self, plugin_types: list[type[ProviderT]], core_data: CoreData, provider_configuration: dict[str, Any]
@@ -289,6 +293,10 @@ class Builder:
                 cppython_data=cppython_plugin_data,
             )
 
-            plugins.append(plugin_type(provider_data, core_plugin_data, table))
+            plugin = plugin_type(provider_data, core_plugin_data)
+
+            plugin.activate(table)
+
+            plugins.append(plugin)
 
         return plugins
