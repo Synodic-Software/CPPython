@@ -60,6 +60,9 @@ class Project(API):
         self._providers = builder.create_providers(provider_plugins, self.core_data, pyproject.tool.cppython.provider)
         self._generator = builder.create_generator(generator_plugins, self.core_data, pyproject.tool.cppython.generator)
 
+        for provider in self._providers:
+            assert provider.supports_generator(self._generator.name())
+
         self._enabled = True
 
         self.logger.info("Initialized project successfully")
@@ -103,6 +106,20 @@ class Project(API):
             else:
                 self.logger.info("The %s provider is already downloaded", provider.name())
 
+    def sync(self) -> None:
+        """_summary_
+
+        Raises:
+            exception: _description_
+            exception: _description_
+        """
+
+        inputs = []
+        for provider in self._providers:
+            inputs.append(provider.gather_input(self._generator.name()))
+
+        self._generator.sync(inputs)
+
     # API Contract
     def install(self) -> None:
         """Installs project dependencies
@@ -128,6 +145,8 @@ class Project(API):
                 self.logger.error("Provider %s failed to install", provider.name())
                 raise exception
 
+        self.sync()
+
     def update(self) -> None:
         """Updates project dependencies
 
@@ -151,3 +170,5 @@ class Project(API):
             except Exception as exception:
                 self.logger.error("Provider %s failed to update", provider.name())
                 raise exception
+
+        self.sync()
