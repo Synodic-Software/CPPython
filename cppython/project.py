@@ -116,7 +116,7 @@ class Project(API):
 
         inputs = []
         for provider in self._providers:
-            inputs.append(provider.gather_input(self._generator.name()))
+            inputs.append(provider.sync_data(self._generator.name()))
 
         self._generator.sync(inputs)
 
