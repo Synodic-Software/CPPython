@@ -107,12 +107,7 @@ class Project(API):
                 self.logger.info("The %s provider is already downloaded", provider.name())
 
     def sync(self) -> None:
-        """_summary_
-
-        Raises:
-            exception: _description_
-            exception: _description_
-        """
+        """Gathers sync information from providers and passes it to the generator"""
 
         inputs = []
         for provider in self._providers:

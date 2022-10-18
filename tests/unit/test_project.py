@@ -91,8 +91,8 @@ class TestBuilder(CPPythonFixtures):
         """Test that providers can be created with the mock data available
 
         Args:
-            core_data: TODO
-            project_with_mocks: Local config
+            core_data: The resolved configuration data
+            project_with_mocks: Data with mocks attached
         """
 
         builder = Builder(getLogger())
@@ -115,7 +115,7 @@ class TestBuilder(CPPythonFixtures):
         """Test that providers can be created with the mock data available
 
         Args:
-            core_data: TODO
+            core_data: The resolved configuration data
             project_with_mocks: Local config
         """
 

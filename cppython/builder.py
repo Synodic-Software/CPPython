@@ -82,19 +82,18 @@ class Builder:
         pep621_configuration: PEP621Configuration,
         cppython_configuration: CPPythonLocalConfiguration,
     ) -> CoreData:
-        """_summary_
+        """Parses and returns resolved data from all configuration sources
 
         Args:
-            self: _description_
-            configuration: TODO
-            pep621_configuration: TODO
-            cppython_configuration: TODO
+            configuration: Input configuration
+            pep621_configuration: Project table configuration
+            cppython_configuration: Tool configuration
 
         Raises:
             ConfigError: Raised if data cannot be parsed
 
         Returns:
-            _description_
+            The resolved core object
         """
 
         global_configuration = CPPythonGlobalConfiguration()
@@ -113,21 +112,20 @@ class Builder:
         return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
 
     def extract_vcs_version(self, path: Path) -> str:
-        """_summary_
+        """Locates an available VCS plugin that can report version information about the given path
 
         Args:
-            path: _description_
+            path: The directory to query
 
         Raises:
-            TypeError: _description_
-            TypeError: _description_
+            PluginError: If no VCS plugin can be found
 
         Returns:
-            _description_
+            A version token
         """
 
         if not (vcs_types := self.discover_vcs()):
-            raise TypeError("No VCS plugin found")
+            raise PluginError("No VCS plugin found")
 
         plugin = None
         for vcs_type in vcs_types:
@@ -137,7 +135,7 @@ class Builder:
                 break
 
         if not plugin:
-            raise TypeError("No applicable VCS plugin found for the given path")
+            raise PluginError("No applicable VCS plugin found for the given path")
 
         return plugin.extract_version(path)
 
@@ -216,18 +214,18 @@ class Builder:
     def create_generator(
         self, plugin_types: list[type[GeneratorT]], core_data: CoreData, generator_configuration: dict[str, Any]
     ) -> GeneratorT:
-        """_summary_
+        """Creates a generator from input configuration
 
         Args:
-            plugin_types: _description_
-            core_data: _description_
-            generator_configuration: TODO
+            plugin_types: The list of generator types to query
+            core_data: The resolved configuration data
+            generator_configuration: The generator table of the CPPython configuration data
 
         Raises:
-            PluginError: TODO
+            PluginError: Raised if no viable generator plugin was found
 
         Returns:
-            _description_
+            The constructed generator
         """
 
         directory = core_data.project_data.pyproject_file.parent
@@ -275,12 +273,12 @@ class Builder:
         """Creates Providers from input data
 
         Args:
-            plugin_types: TODO
-            core_data: TODO
-            provider_configuration: TODO
+            plugin_types: The discovered provider plugin types
+            core_data: The resolved configuration data
+            provider_configuration: The provider data table
 
         Returns:
-            TODO
+            A list of constructed provider plugins
         """
 
         plugins = []
