@@ -56,10 +56,10 @@ class Configuration:
         return "TODO"
 
     def generate_project(self) -> Project:
-        """_summary_
+        """Aids in project generation. Allows deferred configuration from within the "config" object
 
         Returns:
-            _description_
+            The constructed Project
         """
 
         pyproject_data = tomlkit.loads(self.configuration.pyproject_file.read_text(encoding="utf-8"))
