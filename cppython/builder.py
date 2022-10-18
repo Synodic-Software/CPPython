@@ -6,7 +6,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Any
 
-from cppython_core.exceptions import ConfigError
+from cppython_core.exceptions import ConfigError, PluginError
 from cppython_core.plugin_schema.generator import Generator, GeneratorT
 from cppython_core.plugin_schema.provider import Provider, ProviderT
 from cppython_core.plugin_schema.vcs import VersionControl
@@ -224,32 +224,38 @@ class Builder:
             generator_configuration: TODO
 
         Raises:
-            ConfigError: TODO
+            PluginError: TODO
 
         Returns:
             _description_
         """
 
-        plugin_type, table = None, None
-        # Extract the first type that's readable
+        directory = core_data.project_data.pyproject_file.parent
+
+        supported_plugin_type = None
         for plugin_type in plugin_types:
-            name = plugin_type.name()
-
-            try:
-                table = generator_configuration[name]
+            if plugin_type.is_supported(directory):
+                supported_plugin_type = plugin_type
                 break
-            except KeyError:
-                continue
 
-        if plugin_type is None:
-            raise ConfigError("plugin_types was empty")
+        if supported_plugin_type is None:
+            raise PluginError(f"None of the discovered generator plugins support the project directory ({directory})")
 
-        if table is None:
-            raise ConfigError("No generator name found within the 'tool.cppython.generator' table")
+        name = supported_plugin_type.name()
+
+        self.logger.warning("Using generator plugin '%s'", name)
+
+        table = generator_configuration.get(name, {})
+
+        if name not in generator_configuration.values():
+            self.logger.error(
+                "The pyproject.toml table 'tool.cppython.generator.%s' does not exist. Sending generator empty data",
+                name,
+            )
 
         generator_data = resolve_generator(core_data.project_data)
 
-        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, plugin_type)
+        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, supported_plugin_type)
 
         core_plugin_data = CorePluginData(
             project_data=core_data.project_data,
@@ -257,7 +263,7 @@ class Builder:
             cppython_data=cppython_plugin_data,
         )
 
-        plugin = plugin_type(generator_data, core_plugin_data)
+        plugin = supported_plugin_type(generator_data, core_plugin_data)
 
         plugin.activate(table)
 
