@@ -17,7 +17,8 @@ from cppython_core.schema import (
     PyProject,
 )
 from pytest_cppython.fixtures import CPPythonFixtures
-from pytest_cppython.mock import MockGenerator, MockProvider
+from pytest_cppython.mock.generator import MockGenerator
+from pytest_cppython.mock.provider import MockProvider
 from pytest_mock import MockerFixture
 
 from cppython.builder import Builder
