@@ -245,11 +245,13 @@ class Builder:
 
         table = generator_configuration.get(name, {})
 
-        if name not in generator_configuration.values():
+        if name not in generator_configuration.keys():
             self.logger.error(
                 "The pyproject.toml table 'tool.cppython.generator.%s' does not exist. Sending generator empty data",
                 name,
             )
+
+            self.logger.debug("The key '%s' does not found in these keys '%s'", name, generator_configuration.keys())
 
         generator_data = resolve_generator(core_data.project_data)
 
