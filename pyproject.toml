@@ -2,7 +2,7 @@
 description = "A Python management solution for C++ dependencies"
 name = "cppython"
 
-license-expression = "MIT"
+license = "MIT"
 
 authors = [
   {name = "Synodic Software", email = "contact@synodic.software"},
