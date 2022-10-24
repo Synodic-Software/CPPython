@@ -5,7 +5,6 @@ requires_python = ">=3.7.2"
 summary = "An abstract syntax tree for Python with inference support."
 dependencies = [
     "lazy-object-proxy>=1.4.0",
-    "wrapt<2,>=1.11; python_version < \"3.11\"",
     "wrapt<2,>=1.14; python_version >= \"3.11\"",
 ]
 
@@ -25,7 +24,6 @@ dependencies = [
     "mypy-extensions>=0.4.3",
     "pathspec>=0.9.0",
     "platformdirs>=2",
-    "tomli>=1.1.0; python_full_version < \"3.11.0a7\"",
 ]
 
 [[package]]
@@ -57,7 +55,6 @@ requires_python = ">=3.7"
 summary = "Code coverage measurement for Python"
 dependencies = [
     "coverage==6.5.0",
-    "tomli; python_full_version <= \"3.11.0a6\"",
 ]
 
 [[package]]
@@ -72,8 +69,8 @@ dependencies = [
 
 [[package]]
 name = "dill"
-version = "0.3.5.1"
-requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*, !=3.6.*"
+version = "0.3.6"
+requires_python = ">=3.7"
 summary = "serialize all of python"
 
 [[package]]
@@ -115,7 +112,6 @@ requires_python = ">=3.7"
 summary = "Optional static typing for Python"
 dependencies = [
     "mypy-extensions>=0.4.3",
-    "tomli>=1.1.0; python_version < \"3.11\"",
     "typing-extensions>=3.10",
 ]
 
@@ -178,7 +174,6 @@ dependencies = [
     "isort<6,>=4.2.5",
     "mccabe<0.8,>=0.6",
     "platformdirs>=2.2.0",
-    "tomli>=1.1.0; python_version < \"3.11\"",
     "tomlkit>=0.10.1",
 ]
 
@@ -264,7 +259,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "4.0"
-content_hash = "sha256:6cdeec0ddb05c3a2a228351a7dd6b2d1b3dd3ab4659779fe8e57c4986a91c47d"
+content_hash = "sha256:6c4208d24350a6d735fc4f9ef0ddec2c92294b8f164526f2f2727573ee2bb61f"
 
 [metadata.files]
 "astroid 2.12.12" = [
@@ -362,9 +357,9 @@ content_hash = "sha256:6cdeec0ddb05c3a2a228351a7dd6b2d1b3dd3ab4659779fe8e57c4986
     {url = "https://files.pythonhosted.org/packages/76/32/583c4ea26988a826b487e3e09ab2c4c1f2351d2b204dde737e0249fd75aa/cppython_core-0.6.1.dev21-py3-none-any.whl", hash = "sha256:65697e84f3d07338067a3954e1e3cd699265452edb7a781bdf2d46822e332770"},
     {url = "https://files.pythonhosted.org/packages/ac/07/15e4ff083c51b8ee6e37f84dce8fcf3a8b03dfaeeac931d61ed233605c7b/cppython-core-0.6.1.dev21.tar.gz", hash = "sha256:87e6e27f05a3cf8ef5273e4460d5fdc6d90e14afad07f4d25e74774d5d990ce2"},
 ]
-"dill 0.3.5.1" = [
-    {url = "https://files.pythonhosted.org/packages/12/ff/3b1a8f5d59600393506c64fa14d13afdfe6fe79ed65a18d64026fe9f8356/dill-0.3.5.1-py2.py3-none-any.whl", hash = "sha256:33501d03270bbe410c72639b350e941882a8b0fd55357580fbc873fba0c59302"},
-    {url = "https://files.pythonhosted.org/packages/59/46/634d5316ee8984e7dac658fb2e297a19f50a1f4007b09acb9c7c4e15bd67/dill-0.3.5.1.tar.gz", hash = "sha256:d75e41f3eff1eee599d738e76ba8f4ad98ea229db8b085318aa2b3333a208c86"},
+"dill 0.3.6" = [
+    {url = "https://files.pythonhosted.org/packages/7c/e7/364a09134e1062d4d5ff69b853a56cf61c223e0afcc6906b6832bcd51ea8/dill-0.3.6.tar.gz", hash = "sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373"},
+    {url = "https://files.pythonhosted.org/packages/be/e3/a84bf2e561beed15813080d693b4b27573262433fced9c1d1fea59e60553/dill-0.3.6-py3-none-any.whl", hash = "sha256:a07ffd2351b8c678dfc4a856a3005f8067aea51d6ba6c700796a4d9e280f39f0"},
 ]
 "dulwich 0.20.46" = [
     {url = "https://files.pythonhosted.org/packages/09/1d/82891bf79500e2c083142fee19f07620f7a274a1a407c0082ded0aca8d65/dulwich-0.20.46-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:6676196e9cf377cde62aa2f5d741e93207437343e0c62368bd0d784c322a3c49"},
