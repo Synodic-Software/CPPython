@@ -6,20 +6,12 @@
         "tests"
     ],
     "python.formatting.provider": "black",
-    "python.formatting.blackPath": "${workspaceRoot}/__pypackages__/3.10/Scripts/black",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.autoComplete.extraPaths": [
-        "__pypackages__/3.10/lib"
-    ],
-    "python.analysis.extraPaths": [
-        "__pypackages__/3.10/lib"
-    ],
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     },
     "python.linting.mypyEnabled": true,
-    "mypy.dmypyExecutable": "${workspaceRoot}/__pypackages__/3.10/Scripts/dmypy",
     "mypy.runUsingActiveInterpreter": true
 }

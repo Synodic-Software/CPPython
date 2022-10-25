@@ -2,7 +2,7 @@
 description = "A Python management solution for C++ dependencies"
 name = "cppython"
 
-license-expression = "MIT"
+license = "MIT"
 
 authors = [
   {name = "Synodic Software", email = "contact@synodic.software"},
@@ -11,7 +11,7 @@ readme = "README.md"
 
 dynamic = ["version"]
 
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 dependencies = [
   "click>=8.1.3",
