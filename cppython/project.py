@@ -60,9 +60,6 @@ class Project(API):
         self._providers = builder.create_providers(provider_plugins, self.core_data, pyproject.tool.cppython.provider)
         self._generator = builder.create_generator(generator_plugins, self.core_data, pyproject.tool.cppython.generator)
 
-        for provider in self._providers:
-            assert provider.supports_generator(self._generator.name())
-
         self._enabled = True
 
         self.logger.info("Initialized project successfully")
