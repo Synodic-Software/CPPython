@@ -98,13 +98,8 @@ class Project(API):
 
             path.mkdir(parents=True, exist_ok=True)
 
-            if not provider.tooling_downloaded(path):
-                self.logger.warning("Downloading the %s requirements to %s", provider.name(), path)
-
-                await provider.download_tooling(path)
-                self.logger.warning("Download complete")
-            else:
-                self.logger.info("The %s provider is already downloaded", provider.name())
+            self.logger.warning("Downloading the %s requirements to %s", provider.name(), path)
+            await provider.download_tooling(path)
 
     def sync(self) -> None:
         """Gathers sync information from providers and passes it to the generator"""
