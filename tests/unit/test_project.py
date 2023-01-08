@@ -80,9 +80,9 @@ class TestBuilder(CPPythonFixtures):
 
         assert len(generators) == 0
 
-        vcs = builder.discover_vcs()
+        scm = builder.discover_scm()
 
-        assert len(vcs) == 1
+        assert len(scm) == 1
 
     def test_provider_creation(
         self,
@@ -131,7 +131,7 @@ class TestBuilder(CPPythonFixtures):
         )
 
     def test_core_data_version(self) -> None:
-        """Test the VCS config error override. Validated data is already tested."""
+        """Test the SCM config error override. Validated data is already tested."""
 
         builder = Builder(getLogger())
 

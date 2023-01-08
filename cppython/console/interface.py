@@ -46,8 +46,8 @@ class Configuration:
 
         self.configuration = ProjectConfiguration(pyproject_file=file_path, version=None)
 
-    def query_vcs(self) -> str:
-        """Queries the VCS system for its version
+    def query_scm(self) -> str:
+        """Queries the SCM system for its version
 
         Returns:
             The version
@@ -93,8 +93,8 @@ def info(config: Configuration) -> None:
         config: The CLI configuration object
     """
 
-    version = config.query_vcs()
-    config.logger.info("The VCS project version is: %s", version)
+    version = config.query_scm()
+    config.logger.info("The SCM project version is: %s", version)
 
 
 @cli.command()

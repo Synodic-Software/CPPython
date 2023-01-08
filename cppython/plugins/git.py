@@ -1,19 +1,19 @@
-"""Git VCS plugin
+"""Git SCM plugin
 """
 
 from pathlib import Path
 
-from cppython_core.plugin_schema.vcs import VersionControl
+from cppython_core.plugin_schema.scm import SCM
 from dulwich.errors import NotGitRepository
 from dulwich.repo import Repo
 
 
-class Git(VersionControl):
+class Git(SCM):
     """Git implementation hooks"""
 
     @staticmethod
     def name() -> str:
-        """The VCS name
+        """The SCM name
 
         Returns:
             The name

@@ -9,7 +9,7 @@ from typing import Any
 from cppython_core.exceptions import ConfigError, PluginError
 from cppython_core.plugin_schema.generator import Generator, GeneratorT
 from cppython_core.plugin_schema.provider import Provider, ProviderT
-from cppython_core.plugin_schema.vcs import VersionControl
+from cppython_core.plugin_schema.scm import SCM
 from cppython_core.resolution import (
     resolve_cppython,
     resolve_cppython_plugin,
@@ -26,6 +26,7 @@ from cppython_core.schema import (
     PEP621Configuration,
     Plugin,
     ProjectConfiguration,
+    SyncDataT,
 )
 
 
@@ -104,38 +105,38 @@ class Builder:
             pep621_data = resolve_pep621(pep621_configuration, configuration)
 
         except ConfigError:
-            configuration.version = self.extract_vcs_version(configuration.pyproject_file.parent)
+            configuration.version = self.extract_scm_version(configuration.pyproject_file.parent)
             pep621_data = resolve_pep621(pep621_configuration, configuration)
 
         cppython_data = resolve_cppython(cppython_configuration, global_configuration, project_data)
 
         return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
 
-    def extract_vcs_version(self, path: Path) -> str:
-        """Locates an available VCS plugin that can report version information about the given path
+    def extract_scm_version(self, path: Path) -> str:
+        """Locates an available SCM plugin that can report version information about the given path
 
         Args:
             path: The directory to query
 
         Raises:
-            PluginError: If no VCS plugin can be found
+            PluginError: If no SCM plugin can be found
 
         Returns:
             A version token
         """
 
-        if not (vcs_types := self.discover_vcs()):
-            raise PluginError("No VCS plugin found")
+        if not (scm_types := self.discover_scm()):
+            raise PluginError("No SCM plugin found")
 
         plugin = None
-        for vcs_type in vcs_types:
-            vcs = vcs_type()
-            if vcs.is_repository(path):
-                plugin = vcs
+        for scm_type in scm_types:
+            scm = scm_type()
+            if scm.is_repository(path):
+                plugin = scm
                 break
 
         if not plugin:
-            raise PluginError("No applicable VCS plugin found for the given path")
+            raise PluginError("No applicable SCM plugin found for the given path")
 
         return plugin.extract_version(path)
 
@@ -163,7 +164,7 @@ class Builder:
 
         return plugins
 
-    def discover_generators(self) -> list[type[Generator]]:
+    def discover_generators(self) -> list[type[Generator[SyncDataT]]]:
         """Discovers plugin types
         Raises:
             TypeError: Raised if the Plugin type is not subclass of 'Generator'
@@ -187,27 +188,27 @@ class Builder:
 
         return plugins
 
-    def discover_vcs(self) -> list[type[VersionControl]]:
+    def discover_scm(self) -> list[type[SCM]]:
         """Discovers plugin types
         Raises:
-            TypeError: Raised if the Plugin type is not subclass of 'VersionControl'
+            TypeError: Raised if the Plugin type is not subclass of 'SCM'
 
         Returns:
-            List of VersionControl types
+            List of SCM types
         """
-        vcs_builder = PluginBuilder(VersionControl.group(), self.logger)
+        scm_builder = PluginBuilder(SCM.group(), self.logger)
 
-        # Gather vcs entry points without any filtering
-        vcs_entry_points = vcs_builder.gather_entries()
-        vcs_types = vcs_builder.load(vcs_entry_points)
+        # Gather scm entry points without any filtering
+        scm_entry_points = scm_builder.gather_entries()
+        scm_types = scm_builder.load(scm_entry_points)
 
         plugins = []
 
-        for vcs_type in vcs_types:
-            if not issubclass(vcs_type, VersionControl):
+        for scm_type in scm_types:
+            if not issubclass(scm_type, SCM):
                 raise TypeError("The CPPython plugin must be an instance of Plugin")
 
-            plugins.append(vcs_type)
+            plugins.append(scm_type)
 
         return plugins
 
