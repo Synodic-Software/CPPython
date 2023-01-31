@@ -124,14 +124,5 @@ def update(config: Configuration) -> None:
 class ConsoleInterface(Interface):
     """Interface implementation to pass to the project"""
 
-    @staticmethod
-    def name() -> str:
-        """Returns the name of the interface
-
-        Returns:
-            The name
-        """
-        return "console"
-
     def write_pyproject(self) -> None:
         """Write output"""

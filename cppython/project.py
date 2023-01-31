@@ -35,30 +35,18 @@ class Project(API):
         if (pyproject := PyProject(**pyproject_data)) is None:
             raise ConfigError("PyProject data is not defined")
 
-        builder = Builder(self.logger)
-
-        if not (provider_plugins := builder.discover_providers()):
-            raise PluginError("No provider plugin was found")
-
-        for provider_plugin in provider_plugins:
-            self.logger.warning("Provider plugin found: %s", provider_plugin.name())
-
-        if not (generator_plugins := builder.discover_generators()):
-            raise PluginError("No generator plugin was found")
-
-        for generator_plugin in generator_plugins:
-            self.logger.warning("Generator plugin found: %s", generator_plugin.name())
-
         if pyproject.tool is None:
             raise ConfigError("Table [tool] is not defined")
 
         if pyproject.tool.cppython is None:
             raise ConfigError("Table [tool.cppython] is not defined")
 
+        builder = Builder(self.logger)
+
         self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
 
-        self._providers = builder.create_providers(provider_plugins, self.core_data, pyproject.tool.cppython.provider)
-        self._generator = builder.create_generator(generator_plugins, self.core_data, pyproject.tool.cppython.generator)
+        self._generator = builder.create_generator(self.core_data, pyproject.tool.cppython.generator)
+        self._provider = builder.create_provider(self.core_data, pyproject.tool.cppython.provider)
 
         self._enabled = True
 
@@ -90,22 +78,24 @@ class Project(API):
 
         base_path = self.core_data.cppython_data.install_path
 
-        for provider in self._providers:
-            path = base_path / provider.name()
+        path = base_path / self._provider.name()
 
-            path.mkdir(parents=True, exist_ok=True)
+        path.mkdir(parents=True, exist_ok=True)
 
-            self.logger.warning("Downloading the %s requirements to %s", provider.name(), path)
-            await provider.download_tooling(path)
+        self.logger.warning("Downloading the %s requirements to %s", self._provider.name(), path)
+        await self._provider.download_tooling(path)
 
     def sync(self) -> None:
-        """Gathers sync information from providers and passes it to the generator"""
+        """Gathers sync information from providers and passes it to the generator
 
-        inputs = []
-        for provider in self._providers:
-            inputs.append(provider.sync_data(self._generator.name()))
+        Raises:
+            PluginError: Plugin error
+        """
 
-        self._generator.sync(inputs)
+        if (sync_data := self._provider.sync_data(self._generator.name())) is None:
+            raise PluginError("The provider doesn't support the generator")
+
+        self._generator.sync(sync_data)
 
     # API Contract
     def install(self) -> None:
@@ -123,14 +113,13 @@ class Project(API):
 
         self.logger.info("Installing project")
 
-        for provider in self._providers:
-            self.logger.info("Installing %s provider", provider.name())
+        self.logger.info("Installing %s provider", self._provider.name())
 
-            try:
-                provider.install()
-            except Exception as exception:
-                self.logger.error("Provider %s failed to install", provider.name())
-                raise exception
+        try:
+            self._provider.install()
+        except Exception as exception:
+            self.logger.error("Provider %s failed to install", self._provider.name())
+            raise exception
 
         self.sync()
 
@@ -149,13 +138,12 @@ class Project(API):
 
         self.logger.info("Updating project")
 
-        for provider in self._providers:
-            self.logger.info("Updating %s provider", provider.name())
+        self.logger.info("Updating %s provider", self._provider.name())
 
-            try:
-                provider.update()
-            except Exception as exception:
-                self.logger.error("Provider %s failed to update", provider.name())
-                raise exception
+        try:
+            self._provider.update()
+        except Exception as exception:
+            self.logger.error("Provider %s failed to update", self._provider.name())
+            raise exception
 
         self.sync()

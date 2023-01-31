@@ -8,17 +8,8 @@ from dulwich.errors import NotGitRepository
 from dulwich.repo import Repo
 
 
-class Git(SCM):
+class GitSCM(SCM):
     """Git implementation hooks"""
-
-    @staticmethod
-    def name() -> str:
-        """The SCM name
-
-        Returns:
-            The name
-        """
-        return "git"
 
     def is_repository(self, path: Path) -> bool:
         """Queries repository status of a path
