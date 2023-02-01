@@ -80,7 +80,7 @@ class PluginBuilder(Generic[PluginT]):
 class PluginInformation(CPPythonModel):
     """Data that the builder outputs about plugins"""
 
-    type: type[DataPlugin]
+    plugin_type: type[DataPlugin[Any]]
     entry: metadata.EntryPoint
 
 
