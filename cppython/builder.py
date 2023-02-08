@@ -1,6 +1,7 @@
 """Everything needed to build a CPPython project
 """
 
+from dataclasses import dataclass
 from importlib import metadata
 from logging import Logger
 from pathlib import Path
@@ -23,7 +24,6 @@ from cppython_core.schema import (
     CorePluginData,
     CPPythonGlobalConfiguration,
     CPPythonLocalConfiguration,
-    CPPythonModel,
     DataPlugin,
     PEP621Configuration,
     Plugin,
@@ -77,7 +77,8 @@ class PluginBuilder(Generic[PluginT]):
         return plugins
 
 
-class PluginInformation(CPPythonModel):
+@dataclass
+class PluginInformation:
     """Data that the builder outputs about plugins"""
 
     plugin_type: type[DataPlugin[Any]]
@@ -193,7 +194,7 @@ class Builder:
 
         self.logger.warning("Using generator plugin: '%s'", supported_plugin_type.name())
 
-        return PluginInformation(type=supported_plugin_type, entry=supported_plugin_entry)
+        return PluginInformation(plugin_type=supported_plugin_type, entry=supported_plugin_entry)
 
     def create_generator(
         self, core_data: CoreData, generator_configuration: dict[str, Any], plugin_info: PluginInformation
@@ -213,7 +214,7 @@ class Builder:
 
         generator_data = resolve_generator(core_data.project_data)
 
-        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, plugin_info.type)
+        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, plugin_info.plugin_type)
 
         core_plugin_data = CorePluginData(
             project_data=core_data.project_data,
@@ -221,7 +222,7 @@ class Builder:
             cppython_data=cppython_plugin_data,
         )
 
-        plugin = plugin_info.type(plugin_info.entry, generator_data, core_plugin_data)
+        plugin = plugin_info.plugin_type(plugin_info.entry, generator_data, core_plugin_data)
 
         if not generator_configuration:
             self.logger.error(
