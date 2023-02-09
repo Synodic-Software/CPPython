@@ -159,7 +159,7 @@ class Builder:
         return plugin.extract_version(path)
 
     def find_generator(self, core_data: CoreData) -> PluginInformation:
-        generator_builder = PluginBuilder(Generator, self.logger)
+        generator_builder = PluginBuilder(GeneratorPlugin, self.logger)
         entries = generator_builder.gather_entries()
 
         if not (generator_types := generator_builder.load(entries)):
@@ -247,7 +247,7 @@ class Builder:
             A constructed provider plugins
         """
 
-        provider_builder = PluginBuilder(Provider, self.logger)
+        provider_builder = PluginBuilder(ProviderPlugin, self.logger)
         entries = provider_builder.gather_entries()
 
         if not (provider_types := provider_builder.load(entries)):
