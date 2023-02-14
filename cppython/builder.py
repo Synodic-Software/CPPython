@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from importlib import metadata
 from logging import Logger
 from pathlib import Path
-from typing import Any, Generic
+from typing import Any
 
 from cppython_core.exceptions import ConfigError, PluginError
 from cppython_core.plugin_schema.generator import Generator
@@ -27,54 +27,8 @@ from cppython_core.schema import (
     DataPlugin,
     PEP621Configuration,
     Plugin,
-    PluginT,
     ProjectConfiguration,
 )
-
-
-class PluginBuilder(Generic[PluginT]):
-    """Collection of utilities to collect and build plugins"""
-
-    def __init__(self, plugin_type: type[PluginT], logger: Logger) -> None:
-        self._plugin_type = plugin_type
-        self._group = plugin_type.group()
-        self._logger = logger
-
-    def gather_entries(self) -> list[metadata.EntryPoint]:
-        """Gather all the available entry points for the grouping
-
-        Returns:
-            List of entries
-        """
-        return list(metadata.entry_points(group=f"cppython.{self._group}"))
-
-    def load(self, entry_points: list[metadata.EntryPoint]) -> list[type[PluginT]]:
-        """Loads a set of entry points
-
-        Args:
-            entry_points: The entry points to load
-
-        Raises:
-            TypeError: If an entry point is not a subclass of the 'Plugin' type
-
-        Returns:
-            List of plugin types
-        """
-
-        plugins = []
-
-        for entry_point in entry_points:
-            plugin = entry_point.load()
-
-            if not issubclass(plugin, Plugin):
-                raise TypeError(f"The '{type(plugin).__name__}' plugin must be an instance of 'Plugin'")
-
-            if not issubclass(plugin, self._plugin_type):
-                raise TypeError(f"The '{type(plugin).__name__}' plugin must be an instance of '{self._group}'")
-
-            plugins.append(plugin)
-
-        return plugins
 
 
 @dataclass
@@ -139,13 +93,31 @@ class Builder:
             A version token
         """
 
-        scm_builder = PluginBuilder(SCM, self.logger)
-        entries = scm_builder.gather_entries()
-        scm_types = scm_builder.load(entries)
+        group = SCM.group()
+
+        entries = list(metadata.entry_points(group=f"cppython.{group}"))
+        scm_types: list[type[SCM]] = []
+
+        # Filter entries
+        for entry_point in entries:
+            plugin_type = entry_point.load()
+            if not issubclass(plugin_type, Plugin):
+                self.logger.warning(
+                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
+                    " 'Plugin'"
+                )
+            elif not issubclass(plugin_type, SCM):
+                self.logger.warning(
+                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
+                    f" '{group}'"
+                )
+            else:
+                scm_types.append(plugin_type)
 
         if not entries:
             raise PluginError("No SCM plugin found")
 
+        # Deduce the SCM repository
         plugin = None
         for scm_type, entry in zip(scm_types, entries):
             scm = scm_type(entry)
