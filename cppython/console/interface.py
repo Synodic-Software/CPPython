@@ -1,6 +1,7 @@
 """A click CLI for CPPython interfacing
 """
 
+from importlib import metadata
 from logging import getLogger
 from pathlib import Path
 
@@ -37,6 +38,9 @@ class Configuration:
     """Click configuration object"""
 
     def __init__(self) -> None:
+        group = Interface.group()
+        entries = list(metadata.entry_points(group=f"cppython.{group}"))
+
         self.interface = ConsoleInterface()
 
         self.logger = getLogger("cppython.console")

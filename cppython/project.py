@@ -43,9 +43,11 @@ class Project(API):
 
         builder = Builder(self.logger)
 
-        self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
 
-        self._generator = builder.create_generator(self.core_data, pyproject.tool.cppython.generator)
+        self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
+        res = builder.find_generator(self.core_data)
+
+        self._generator = builder.create_generator(self.core_data, pyproject.tool.cppython.generator, res)
         self._provider = builder.create_provider(self.core_data, pyproject.tool.cppython.provider)
 
         self._enabled = True
