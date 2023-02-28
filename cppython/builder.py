@@ -92,7 +92,7 @@ class Builder:
             A version token
         """
 
-        group = SCM.group()
+        group = "SCM"
 
         entries = list(metadata.entry_points(group=f"cppython.{group}"))
         scm_types: list[type[SCM]] = []
@@ -100,12 +100,7 @@ class Builder:
         # Filter entries
         for entry_point in entries:
             plugin_type = entry_point.load()
-            if not issubclass(plugin_type, Plugin):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
-                    " 'Plugin'"
-                )
-            elif not issubclass(plugin_type, SCM):
+            if not issubclass(plugin_type, SCM):
                 self.logger.warning(
                     f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
                     f" '{group}'"
@@ -119,15 +114,18 @@ class Builder:
         # Deduce the SCM repository
         plugin = None
         for scm_type, entry in zip(scm_types, entries):
-            scm = scm_type(entry)
-            if scm.is_repository(path):
+            scm = scm_type()
+            if scm.supported(path):
                 plugin = scm
                 break
 
         if not plugin:
             raise PluginError("No applicable SCM plugin found for the given path")
 
-        return plugin.extract_version(path)
+        if (version := plugin.version(path)) is None:
+            raise PluginError("Project has no version information")
+
+        return version
 
     def find_generator(self, core_data: CoreData) -> GeneratorInformation:
         """_summary_
