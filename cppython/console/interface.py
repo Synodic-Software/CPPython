@@ -1,14 +1,12 @@
 """A click CLI for CPPython interfacing
 """
 
-from importlib import metadata
 from logging import getLogger
 from pathlib import Path
 
 import click
 import tomlkit
-from cppython_core.plugin_schema.interface import Interface
-from cppython_core.schema import ProjectConfiguration
+from cppython_core.schema import Interface, ProjectConfiguration
 
 from cppython.project import Project
 
@@ -38,9 +36,6 @@ class Configuration:
     """Click configuration object"""
 
     def __init__(self) -> None:
-        group = Interface.group()
-        entries = list(metadata.entry_points(group=f"cppython.{group}"))
-
         self.interface = ConsoleInterface()
 
         self.logger = getLogger("cppython.console")
@@ -129,4 +124,7 @@ class ConsoleInterface(Interface):
     """Interface implementation to pass to the project"""
 
     def write_pyproject(self) -> None:
+        """Write output"""
+
+    def write_configuration(self) -> None:
         """Write output"""
