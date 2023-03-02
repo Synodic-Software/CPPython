@@ -15,6 +15,7 @@ from cppython_core.resolution import (
     resolve_cppython,
     resolve_cppython_plugin,
     resolve_generator,
+    resolve_name,
     resolve_pep621,
     resolve_project_configuration,
     resolve_provider,
@@ -94,26 +95,25 @@ class Builder:
 
         group = "SCM"
 
-        entries = list(metadata.entry_points(group=f"cppython.{group}"))
         scm_types: list[type[SCM]] = []
+
+        if not (entries := list(metadata.entry_points(group=f"cppython.{group}"))):
+            raise PluginError("No SCM plugin found")
 
         # Filter entries
         for entry_point in entries:
             plugin_type = entry_point.load()
             if not issubclass(plugin_type, SCM):
                 self.logger.warning(
-                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
+                    f"Found incompatible plugin. The '{resolve_name(plugin_type)}' plugin must be an instance of"
                     f" '{group}'"
                 )
             else:
                 scm_types.append(plugin_type)
 
-        if not entries:
-            raise PluginError("No SCM plugin found")
-
         # Deduce the SCM repository
         plugin = None
-        for scm_type, entry in zip(scm_types, entries):
+        for scm_type in scm_types:
             scm = scm_type()
             if scm.supported(path):
                 plugin = scm
@@ -140,24 +140,19 @@ class Builder:
             _description_
         """
 
-        group = Generator.group()
+        group = "Generator"
         generator_info: list[tuple[type[Generator], metadata.EntryPoint]] = []
 
         # Filter entries
         for entry_point in list(metadata.entry_points(group=f"cppython.{group}")):
             plugin_type = entry_point.load()
-            if not issubclass(plugin_type, Plugin):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
-                    " 'Plugin'"
-                )
-            elif not issubclass(plugin_type, Generator):
+            if not issubclass(plugin_type, Generator):
                 self.logger.warning(
                     f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
                     f" '{group}'"
                 )
             else:
-                self.logger.warning("Generator plugin found: %s", plugin_type.name())
+                self.logger.warning("Generator plugin found: %s", resolve_name(plugin_type))
                 generator_info.append((plugin_type, entry_point))
 
         if not generator_info:
@@ -167,7 +162,7 @@ class Builder:
         supported_plugin_info = None
         if core_data.cppython_data.generator_name is not None:
             for plugin_type, entry in generator_info:
-                if plugin_type.name() == core_data.cppython_data.generator_name:
+                if resolve_name(plugin_type) == core_data.cppython_data.generator_name:
                     supported_plugin_info = plugin_type, entry
                     break
 
@@ -185,7 +180,7 @@ class Builder:
             )
 
         supported_plugin_type, supported_plugin_entry = supported_plugin_info
-        self.logger.warning("Using generator plugin: '%s'", supported_plugin_type.name())
+        self.logger.warning("Using generator plugin: '%s'", resolve_name(supported_plugin_type))
 
         return GeneratorInformation(plugin_type=supported_plugin_type, entry=supported_plugin_entry)
 
@@ -216,8 +211,8 @@ class Builder:
             cppython_data=cppython_plugin_data,
         )
 
-        plugin = plugin_info.plugin_type(plugin_info.entry, generator_data, core_plugin_data)
-
+        plugin = plugin_info.plugin_type()
+        generator_data, core_plugin_data
         if not generator_configuration:
             self.logger.error(
                 "The pyproject.toml table 'tool.cppython.generator' does not exist. Sending generator empty data",
