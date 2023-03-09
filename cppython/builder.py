@@ -26,7 +26,6 @@ from cppython_core.schema import (
     CPPythonGlobalConfiguration,
     CPPythonLocalConfiguration,
     PEP621Configuration,
-    Plugin,
     ProjectConfiguration,
 )
 
@@ -212,7 +211,8 @@ class Builder:
         )
 
         plugin = plugin_info.plugin_type()
-        generator_data, core_plugin_data
+        plugin.configure(generator_data, core_plugin_data)
+
         if not generator_configuration:
             self.logger.error(
                 "The pyproject.toml table 'tool.cppython.generator' does not exist. Sending generator empty data",
@@ -236,52 +236,46 @@ class Builder:
             A constructed provider plugins
         """
 
-        group = Provider.group()
+        group = "Provider"
 
         entries = list(metadata.entry_points(group=f"cppython.{group}"))
-        provider_info: list[tuple[type[Provider], metadata.EntryPoint]] = []
+        provider_info: list[type[Provider]] = []
 
         # Filter entries
         for entry_point in entries:
             plugin_type = entry_point.load()
-            if not issubclass(plugin_type, Plugin):
+            if not issubclass(plugin_type, Provider):
                 self.logger.warning(
-                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
-                    " 'Plugin'"
-                )
-            elif not issubclass(plugin_type, Provider):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
+                    f"Found incompatible plugin. The '{resolve_name(plugin_type)}' plugin must be an instance of"
                     f" '{group}'"
                 )
             else:
-                self.logger.warning("Provider plugin found: %s", plugin_type.name())
-                provider_info.append((plugin_type, entry_point))
+                self.logger.warning("Provider plugin found: %s", resolve_name(plugin_type))
+                provider_info.append(plugin_type)
 
         if not provider_info:
             raise PluginError("No provider_types plugin was found")
 
         # Lookup the requested provider if given
-        supported_plugin_info = None
+        supported_plugin_type: type[Provider] | None = None
         if core_data.cppython_data.provider_name is not None:
-            for plugin_type, entry in provider_info:
-                if plugin_type.name() == core_data.cppython_data.provider_name:
-                    supported_plugin_info = plugin_type, entry
+            for plugin_type in provider_info:
+                if resolve_name(plugin_type) == core_data.cppython_data.provider_name:
+                    supported_plugin_type = plugin_type
                     break
 
         # Try and deduce provider
-        if supported_plugin_info is None:
-            for plugin_type, entry in provider_info:
+        if supported_plugin_type is None:
+            for plugin_type in provider_info:
                 if plugin_type.supported(core_data.project_data.pyproject_file.parent):
-                    supported_plugin_info = plugin_type, entry
+                    supported_plugin_type = plugin_type
                     break
 
         # Fail
-        if supported_plugin_info is None:
+        if supported_plugin_type is None:
             raise PluginError("The 'provider_name' was empty and no provider could be deduced from the root directory.")
 
-        supported_plugin_type, supported_plugin_entry = supported_plugin_info
-        self.logger.warning("Using provider plugin: '%s'", supported_plugin_type.name())
+        self.logger.warning("Using provider plugin: '%s'", resolve_name(supported_plugin_type))
 
         provider_data = resolve_provider(core_data.project_data, core_data.cppython_data)
 
@@ -293,7 +287,14 @@ class Builder:
             cppython_data=cppython_plugin_data,
         )
 
-        plugin = supported_plugin_type(supported_plugin_entry, provider_data, core_plugin_data)
+        plugin = supported_plugin_type()
+
+        plugin.configure(provider_data, core_plugin_data)
+
+        if not provider_configuration:
+            self.logger.error(
+                "The pyproject.toml table 'tool.cppython.provider' does not exist. Sending provider empty data",
+            )
 
         plugin.activate(provider_configuration)
 
