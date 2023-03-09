@@ -6,8 +6,8 @@ import logging
 from typing import Any
 
 from cppython_core.exceptions import ConfigError, PluginError
-from cppython_core.plugin_schema.interface import Interface
-from cppython_core.schema import CoreData, ProjectConfiguration, PyProject
+from cppython_core.resolution import resolve_name
+from cppython_core.schema import CoreData, Interface, ProjectConfiguration, PyProject
 
 from cppython.builder import Builder
 from cppython.schema import API
@@ -43,7 +43,6 @@ class Project(API):
 
         builder = Builder(self.logger)
 
-
         self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
         res = builder.find_generator(self.core_data)
 
@@ -78,13 +77,14 @@ class Project(API):
             self.logger.info("Skipping 'download_provider_tools' because the project is not enabled")
             return
 
+        name = resolve_name(type(self._provider))
         base_path = self.core_data.cppython_data.install_path
 
-        path = base_path / self._provider.name()
+        path = base_path / name
 
         path.mkdir(parents=True, exist_ok=True)
 
-        self.logger.warning("Downloading the %s requirements to %s", self._provider.name(), path)
+        self.logger.warning("Downloading the %s requirements to %s", name, path)
         await self._provider.download_tooling(path)
 
     def sync(self) -> None:
@@ -93,8 +93,8 @@ class Project(API):
         Raises:
             PluginError: Plugin error
         """
-
-        if (sync_data := self._provider.sync_data(self._generator.name())) is None:
+        name = resolve_name(type(self._generator))
+        if (sync_data := self._provider.sync_data(name)) is None:
             raise PluginError("The provider doesn't support the generator")
 
         self._generator.sync(sync_data)
@@ -114,13 +114,13 @@ class Project(API):
         asyncio.run(self.download_provider_tools())
 
         self.logger.info("Installing project")
-
-        self.logger.info("Installing %s provider", self._provider.name())
+        name = resolve_name(type(self._provider))
+        self.logger.info("Installing %s provider", name)
 
         try:
             self._provider.install()
         except Exception as exception:
-            self.logger.error("Provider %s failed to install", self._provider.name())
+            self.logger.error("Provider %s failed to install", name)
             raise exception
 
         self.sync()
@@ -139,13 +139,13 @@ class Project(API):
         asyncio.run(self.download_provider_tools())
 
         self.logger.info("Updating project")
-
-        self.logger.info("Updating %s provider", self._provider.name())
+        name = resolve_name(type(self._provider))
+        self.logger.info("Updating %s provider", name)
 
         try:
             self._provider.update()
         except Exception as exception:
-            self.logger.error("Provider %s failed to update", self._provider.name())
+            self.logger.error("Provider %s failed to update", name)
             raise exception
 
         self.sync()
