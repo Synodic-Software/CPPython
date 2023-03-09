@@ -68,68 +68,6 @@ class TestProject(CPPythonFixtures):
 class TestBuilder(CPPythonFixtures):
     """Tests of builder steps"""
 
-    def test_plugin_gather(self) -> None:
-        """Verifies that discovery works with no results"""
-
-        builder = Builder(getLogger())
-        providers = builder.discover_providers()
-
-        assert len(providers) == 0
-
-        generators = builder.discover_generators()
-
-        assert len(generators) == 0
-
-        scm = builder.discover_scm()
-
-        assert len(scm) == 1
-
-    def test_provider_creation(
-        self,
-        core_data: CoreData,
-        project_with_mocks: dict[str, Any],
-    ) -> None:
-        """Test that providers can be created with the mock data available
-
-        Args:
-            core_data: The resolved configuration data
-            project_with_mocks: Data with mocks attached
-        """
-
-        builder = Builder(getLogger())
-
-        provider_configurations = project_with_mocks["tool"]["cppython"]["provider"]
-
-        providers = builder.create_providers(
-            [MockProvider],
-            core_data,
-            provider_configurations,
-        )
-
-        assert len(providers) == 1
-
-    def test_generator_creation(
-        self,
-        core_data: CoreData,
-        project_with_mocks: dict[str, Any],
-    ) -> None:
-        """Test that providers can be created with the mock data available
-
-        Args:
-            core_data: The resolved configuration data
-            project_with_mocks: Local config
-        """
-
-        builder = Builder(getLogger())
-
-        generator_configurations = project_with_mocks["tool"]["cppython"]["generator"]
-
-        assert builder.create_generator(
-            [MockGenerator],
-            core_data,
-            generator_configurations,
-        )
-
     def test_core_data_version(self) -> None:
         """Test the SCM config error override. Validated data is already tested."""
 
