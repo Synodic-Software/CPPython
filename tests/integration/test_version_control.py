@@ -1,20 +1,20 @@
-"""Tests the cppython built-in VCS plugin
+"""Tests the cppython built-in SCM plugin
 """
 
 import pytest
-from pytest_cppython.plugin import VersionControlIntegrationTests
+from pytest_cppython.plugin import SCMIntegrationTests
 
-from cppython.plugins.git import Git
+from cppython.plugins.git import GitSCM
 
 
-class TestGitInterface(VersionControlIntegrationTests[Git]):
-    """Integration tests for the Git VCS plugin"""
+class TestGitInterface(SCMIntegrationTests[GitSCM]):
+    """Integration tests for the Git SCM plugin"""
 
     @pytest.fixture(name="plugin_type", scope="session")
-    def fixture_plugin_type(self) -> type[Git]:
+    def fixture_plugin_type(self) -> type[GitSCM]:
         """A required testing hook that allows type generation
 
         Returns:
-            The VCS type
+            The SCM type
         """
-        return Git
+        return GitSCM

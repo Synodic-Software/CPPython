@@ -1,49 +1,51 @@
-"""Git VCS plugin
-"""
+"""Git SCM plugin"""
 
 from pathlib import Path
 
-from cppython_core.plugin_schema.vcs import VersionControl
+from cppython_core.plugin_schema.scm import SCM
+from cppython_core.schema import Information
 from dulwich.errors import NotGitRepository
 from dulwich.repo import Repo
 
 
-class Git(VersionControl):
+class GitSCM(SCM):
     """Git implementation hooks"""
 
     @staticmethod
-    def name() -> str:
-        """The VCS name
-
-        Returns:
-            The name
-        """
-        return "git"
-
-    def is_repository(self, path: Path) -> bool:
+    def supported(directory: Path) -> bool:
         """Queries repository status of a path
 
         Args:
-            path: The input path to query
+            directory: The input path to query
 
         Returns:
             Whether the given path is a repository root
         """
 
         try:
-            Repo(str(path))
+            Repo(str(directory))
             return True
 
         except NotGitRepository:
             return False
 
-    def extract_version(self, path: Path) -> str:
+    @staticmethod
+    def information() -> Information:
         """Extracts the system's version metadata
-
-        Args:
-            path: The repository path
 
         Returns:
             A version
         """
-        return "0.1.0"
+        return Information()
+
+    def version(self, path: Path) -> str | None:
+        """Extracts the system's version metadata
+
+        Args:
+            path: The repository path
+        """
+        return None
+
+    def description(self) -> str | None:
+        """Requests extraction of the project description"""
+        return None

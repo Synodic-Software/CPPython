@@ -47,7 +47,7 @@ test = [
 ]
 
 # Plugin registration
-[project.entry-points."cppython.vcs"]
+[project.entry-points."cppython.scm"]
 cmake = "cppython.plugins.git:Git"
 
 [project.scripts]
