@@ -210,17 +210,12 @@ class Builder:
             cppython_data=cppython_plugin_data,
         )
 
-        plugin = plugin_info.plugin_type()
-        plugin.configure(generator_data, core_plugin_data)
-
         if not generator_configuration:
             self.logger.error(
                 "The pyproject.toml table 'tool.cppython.generator' does not exist. Sending generator empty data",
             )
 
-        plugin.activate(generator_configuration)
-
-        return plugin
+        return plugin_info.plugin_type(generator_data, core_plugin_data, generator_configuration)
 
     def create_provider(self, core_data: CoreData, provider_configuration: dict[str, Any]) -> Provider:
         """Creates Providers from input data
@@ -287,15 +282,9 @@ class Builder:
             cppython_data=cppython_plugin_data,
         )
 
-        plugin = supported_plugin_type()
-
-        plugin.configure(provider_data, core_plugin_data)
-
         if not provider_configuration:
             self.logger.error(
                 "The pyproject.toml table 'tool.cppython.provider' does not exist. Sending provider empty data",
             )
 
-        plugin.activate(provider_configuration)
-
-        return plugin
+        return supported_plugin_type(provider_data, core_plugin_data, provider_configuration)

@@ -38,13 +38,16 @@ class GitSCM(SCM):
         """
         return Information()
 
-    def version(self, path: Path) -> str | None:
+    def version(self, path: Path) -> str:
         """Extracts the system's version metadata
 
         Args:
             path: The repository path
+
+        Returns:
+            The git version
         """
-        return None
+        return ""
 
     def description(self) -> str | None:
         """Requests extraction of the project description"""
