@@ -44,10 +44,27 @@ class Project(API):
         builder = Builder(self.logger)
 
         self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
-        res = builder.find_generator(self.core_data)
 
-        self._generator = builder.create_generator(self.core_data, pyproject.tool.cppython.generator, res)
-        self._provider = builder.create_provider(self.core_data, pyproject.tool.cppython.provider)
+        raw_generator_plugins = builder.find_generators()
+        generator_plugins = builder.filter_plugins(
+            raw_generator_plugins,
+            self.core_data.project_data.pyproject_file.parent,
+            self.core_data.cppython_data.generator_name,
+            "Generator",
+        )
+
+        raw_provider_plugins = builder.find_providers()
+        provider_plugins = builder.filter_plugins(
+            raw_provider_plugins,
+            self.core_data.project_data.pyproject_file.parent,
+            self.core_data.cppython_data.provider_name,
+            "Provider",
+        )
+
+        generator_type, provider_type = builder.solve(generator_plugins, provider_plugins)
+
+        self._generator = builder.create_generator(self.core_data, pyproject.tool.cppython.generator, generator_type)
+        self._provider = builder.create_provider(self.core_data, pyproject.tool.cppython.provider, provider_type)
 
         self._enabled = True
 
@@ -93,8 +110,8 @@ class Project(API):
         Raises:
             PluginError: Plugin error
         """
-        name = resolve_name(type(self._generator))
-        if (sync_data := self._provider.sync_data(name)) is None:
+
+        if (sync_data := self._provider.sync_data(self._generator)) is None:
             raise PluginError("The provider doesn't support the generator")
 
         self._generator.sync(sync_data)
