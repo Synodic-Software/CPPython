@@ -86,10 +86,11 @@ class Builder:
         """
 
         group = "SCM"
+        group_lower = group.lower()
 
         scm_types: list[type[SCM]] = []
 
-        if not (entries := list(metadata.entry_points(group=f"cppython.{group}"))):
+        if not (entries := list(metadata.entry_points(group=f"cppython.{group_lower}"))):
             raise PluginError("No SCM plugin found")
 
         # Filter entries
@@ -98,7 +99,7 @@ class Builder:
             if not issubclass(plugin_type, SCM):
                 self.logger.warning(
                     f"Found incompatible plugin. The '{resolve_name(plugin_type)}' plugin must be an instance of"
-                    f" '{group}'"
+                    f" '{group_lower}'"
                 )
             else:
                 scm_types.append(plugin_type)
