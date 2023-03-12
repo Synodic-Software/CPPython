@@ -1,8 +1,8 @@
 """Everything needed to build a CPPython project
 """
 
-from dataclasses import dataclass
 from importlib import metadata
+from inspect import getmodule
 from logging import Logger
 from pathlib import Path
 from typing import Any
@@ -25,17 +25,10 @@ from cppython_core.schema import (
     CorePluginData,
     CPPythonGlobalConfiguration,
     CPPythonLocalConfiguration,
+    DataPluginT,
     PEP621Configuration,
     ProjectConfiguration,
 )
-
-
-@dataclass
-class GeneratorInformation:
-    """Data that the builder outputs about plugins"""
-
-    plugin_type: type[Generator]
-    entry: metadata.EntryPoint
 
 
 class Builder:
@@ -126,11 +119,8 @@ class Builder:
 
         return version
 
-    def find_generator(self, core_data: CoreData) -> GeneratorInformation:
+    def find_generators(self) -> list[type[Generator]]:
         """_summary_
-
-        Args:
-            core_data: _description_
 
         Raises:
             PluginError: _description_
@@ -139,59 +129,145 @@ class Builder:
             _description_
         """
 
-        group = "Generator"
-        generator_info: list[tuple[type[Generator], metadata.EntryPoint]] = []
+        group_name = "generator"
+        plugin_types: list[type[Generator]] = []
 
-        # Filter entries
-        for entry_point in list(metadata.entry_points(group=f"cppython.{group}")):
-            plugin_type = entry_point.load()
-            if not issubclass(plugin_type, Generator):
+        # Filter entries by type
+        for entry_point in list(metadata.entry_points(group=f"cppython.{group_name}")):
+            loaded_type = entry_point.load()
+            if not issubclass(loaded_type, Generator):
                 self.logger.warning(
-                    f"Found incompatible plugin. The '{type(plugin_type).__name__}' plugin must be an instance of"
-                    f" '{group}'"
+                    f"Found incompatible plugin. The '{resolve_name(loaded_type)}' plugin must be an instance of"
+                    f" '{group_name}'"
                 )
             else:
-                self.logger.warning("Generator plugin found: %s", resolve_name(plugin_type))
-                generator_info.append((plugin_type, entry_point))
+                self.logger.warning(
+                    f"{group_name} plugin found: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
+                )
+                plugin_types.append(loaded_type)
 
-        if not generator_info:
-            raise PluginError("No generator plugin was found")
+        if not plugin_types:
+            raise PluginError(f"No {group_name} plugin was found")
 
-        # Lookup the requested generator if given
-        supported_plugin_info = None
-        if core_data.cppython_data.generator_name is not None:
-            for plugin_type, entry in generator_info:
-                if resolve_name(plugin_type) == core_data.cppython_data.generator_name:
-                    supported_plugin_info = plugin_type, entry
-                    break
+        return plugin_types
 
-        # Try and deduce generator
-        if supported_plugin_info is None:
-            for plugin_type, entry in generator_info:
-                if plugin_type.supported(core_data.project_data.pyproject_file.parent):
-                    supported_plugin_info = plugin_type, entry
-                    break
+    def find_providers(self) -> list[type[Provider]]:
+        """_summary_
+
+        Raises:
+            PluginError: _description_
+
+        Returns:
+            _description_
+        """
+
+        group_name = "provider"
+        plugin_types: list[type[Provider]] = []
+
+        # Filter entries by type
+        for entry_point in list(metadata.entry_points(group=f"cppython.{group_name}")):
+            loaded_type = entry_point.load()
+            if not issubclass(loaded_type, Provider):
+                self.logger.warning(
+                    f"Found incompatible plugin. The '{resolve_name(loaded_type)}' plugin must be an instance of"
+                    f" '{group_name}'"
+                )
+            else:
+                self.logger.warning(
+                    f"{group_name} plugin found: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
+                )
+                plugin_types.append(loaded_type)
+
+        if not plugin_types:
+            raise PluginError(f"No {group_name} plugin was found")
+
+        return plugin_types
+
+    def filter_plugins(
+        self, plugin_types: list[type[DataPluginT]], directory: Path, pinned_name: str | None, group_name: str
+    ) -> list[type[DataPluginT]]:
+        """Finds and filters data plugins
+
+        Args:
+            plugin_types: The plugin type to lookup
+            directory: The data to query support for the filtered plugins
+            pinned_name: The configuration name
+            group_name: The group name
+
+        Raises:
+            PluginError: Raised if no plugins can be found
+
+        Returns:
+            The list of applicable plugins
+        """
+
+        # Lookup the requested plugin if given
+        if pinned_name is not None:
+            for loaded_type in plugin_types:
+                if resolve_name(loaded_type) == pinned_name:
+                    self.logger.warning(
+                        f"Using {group_name} plugin: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
+                    )
+                    return [loaded_type]
+
+        self.logger.warning(f"'{group_name}_name' was empty. Trying to deduce {group_name}s")
+
+        supported_types: list[type[DataPluginT]] = []
+
+        # Deduce types
+        for loaded_type in plugin_types:
+            if loaded_type.supported(directory):
+                self.logger.warning(
+                    f"A {group_name} plugin is supported: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
+                )
+                supported_types.append(loaded_type)
 
         # Fail
-        if supported_plugin_info is None:
-            raise PluginError(
-                "The 'generator_name' was empty and no generator could be deduced from the root directory."
-            )
+        if supported_types is None:
+            raise PluginError(f"No {group_name} could be deduced from the root directory.")
 
-        supported_plugin_type, supported_plugin_entry = supported_plugin_info
-        self.logger.warning("Using generator plugin: '%s'", resolve_name(supported_plugin_type))
+        return supported_types
 
-        return GeneratorInformation(plugin_type=supported_plugin_type, entry=supported_plugin_entry)
+    def solve(
+        self, generator_types: list[type[Generator]], provider_types: list[type[Provider]]
+    ) -> tuple[type[Generator], type[Provider]]:
+        """_summary_
+
+        Args:
+            generator_types: _description_
+            provider_types: _description_
+
+        Raises:
+            PluginError: _description_
+
+        Returns:
+            _description_
+        """
+
+        combos: list[tuple[type[Generator], type[Provider]]] = []
+
+        for generator_type in generator_types:
+            sync_types = generator_type.sync_types()
+            for provider_type in provider_types:
+                for sync_type in sync_types:
+                    if provider_type.supported_sync_type(sync_type):
+                        combos.append((generator_type, provider_type))
+                        break
+
+        if not combos:
+            raise PluginError("No provider that supports a given generator could be deduced")
+
+        return combos[0]
 
     def create_generator(
-        self, core_data: CoreData, generator_configuration: dict[str, Any], plugin_info: GeneratorInformation
+        self, core_data: CoreData, generator_configuration: dict[str, Any], generator_type: type[Generator]
     ) -> Generator:
         """Creates a generator from input configuration
 
         Args:
             core_data: The resolved configuration data
             generator_configuration: The generator table of the CPPython configuration data
-            plugin_info: The plugin information
+            generator_type: The plugin type
 
         Raises:
             PluginError: Raised if no viable generator plugin was found
@@ -201,8 +277,7 @@ class Builder:
         """
 
         generator_data = resolve_generator(core_data.project_data)
-
-        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, plugin_info.plugin_type)
+        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, generator_type)
 
         core_plugin_data = CorePluginData(
             project_data=core_data.project_data,
@@ -215,66 +290,27 @@ class Builder:
                 "The pyproject.toml table 'tool.cppython.generator' does not exist. Sending generator empty data",
             )
 
-        return plugin_info.plugin_type(generator_data, core_plugin_data, generator_configuration)
+        return generator_type(generator_data, core_plugin_data, generator_configuration)
 
-    def create_provider(self, core_data: CoreData, provider_configuration: dict[str, Any]) -> Provider:
+    def create_provider(
+        self, core_data: CoreData, provider_configuration: dict[str, Any], provider_type: type[Provider]
+    ) -> Provider:
         """Creates Providers from input data
 
         Args:
             core_data: The resolved configuration data
             provider_configuration: The provider data table
+            provider_type: The type to instantiate
 
         Raises:
-            PluginError: Raised if no viable generator plugin was found
+            PluginError: Raised if no viable provider plugin was found
 
         Returns:
             A constructed provider plugins
         """
 
-        group = "Provider"
-
-        entries = list(metadata.entry_points(group=f"cppython.{group}"))
-        provider_info: list[type[Provider]] = []
-
-        # Filter entries
-        for entry_point in entries:
-            plugin_type = entry_point.load()
-            if not issubclass(plugin_type, Provider):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{resolve_name(plugin_type)}' plugin must be an instance of"
-                    f" '{group}'"
-                )
-            else:
-                self.logger.warning("Provider plugin found: %s", resolve_name(plugin_type))
-                provider_info.append(plugin_type)
-
-        if not provider_info:
-            raise PluginError("No provider_types plugin was found")
-
-        # Lookup the requested provider if given
-        supported_plugin_type: type[Provider] | None = None
-        if core_data.cppython_data.provider_name is not None:
-            for plugin_type in provider_info:
-                if resolve_name(plugin_type) == core_data.cppython_data.provider_name:
-                    supported_plugin_type = plugin_type
-                    break
-
-        # Try and deduce provider
-        if supported_plugin_type is None:
-            for plugin_type in provider_info:
-                if plugin_type.supported(core_data.project_data.pyproject_file.parent):
-                    supported_plugin_type = plugin_type
-                    break
-
-        # Fail
-        if supported_plugin_type is None:
-            raise PluginError("The 'provider_name' was empty and no provider could be deduced from the root directory.")
-
-        self.logger.warning("Using provider plugin: '%s'", resolve_name(supported_plugin_type))
-
-        provider_data = resolve_provider(core_data.project_data, core_data.cppython_data)
-
-        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, supported_plugin_type)
+        provider_data = resolve_provider(core_data.project_data)
+        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, provider_type)
 
         core_plugin_data = CorePluginData(
             project_data=core_data.project_data,
@@ -287,4 +323,4 @@ class Builder:
                 "The pyproject.toml table 'tool.cppython.provider' does not exist. Sending provider empty data",
             )
 
-        return supported_plugin_type(provider_data, core_plugin_data, provider_configuration)
+        return provider_type(provider_data, core_plugin_data, provider_configuration)
