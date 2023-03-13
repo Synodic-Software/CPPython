@@ -48,7 +48,7 @@ test = [
 
 # Plugin registration
 [project.entry-points."cppython.scm"]
-cmake = "cppython.plugins.git:Git"
+cmake = "cppython.plugins.git:GitSCM"
 
 [project.scripts]
 cppython = "cppython.console.interface:cli"
