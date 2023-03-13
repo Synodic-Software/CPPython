@@ -2,7 +2,7 @@
 """
 
 import pytest
-from pytest_cppython.plugin import SCMIntegrationTests
+from pytest_cppython.tests import SCMIntegrationTests
 
 from cppython.plugins.git import GitSCM
 
