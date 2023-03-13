@@ -15,7 +15,7 @@ class TestInterface:
             cli_runner: The click runner
         """
 
-        result = cli_runner.invoke(cli, ["info"])
+        result = cli_runner.invoke(cli, ["info"], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_list(self, cli_runner: CliRunner) -> None:
@@ -25,7 +25,7 @@ class TestInterface:
             cli_runner: The click runner
         """
 
-        result = cli_runner.invoke(cli, ["list"])
+        result = cli_runner.invoke(cli, ["list"], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_update(self, cli_runner: CliRunner) -> None:
@@ -35,7 +35,7 @@ class TestInterface:
             cli_runner: The click runner
         """
 
-        result = cli_runner.invoke(cli, ["update"])
+        result = cli_runner.invoke(cli, ["update"], catch_exceptions=False)
         assert result.exit_code == 0
 
     def test_install(self, cli_runner: CliRunner) -> None:
@@ -45,5 +45,5 @@ class TestInterface:
             cli_runner: The click runner
         """
 
-        result = cli_runner.invoke(cli, ["install"])
+        result = cli_runner.invoke(cli, ["install"], catch_exceptions=False)
         assert result.exit_code == 0
