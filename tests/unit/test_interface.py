@@ -27,3 +27,23 @@ class TestInterface:
 
         result = cli_runner.invoke(cli, ["list"])
         assert result.exit_code == 0
+
+    def test_update(self, cli_runner: CliRunner) -> None:
+        """Verifies that the update command functions with CPPython hooks
+
+        Args:
+            cli_runner: The click runner
+        """
+
+        result = cli_runner.invoke(cli, ["update"])
+        assert result.exit_code == 0
+
+    def test_install(self, cli_runner: CliRunner) -> None:
+        """Verifies that the install command functions with CPPython hooks
+
+        Args:
+            cli_runner: The click runner
+        """
+
+        result = cli_runner.invoke(cli, ["install"])
+        assert result.exit_code == 0
