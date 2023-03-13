@@ -187,6 +187,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "pytest-click"
+version = "1.1.0"
+summary = "Pytest plugin for Click"
+dependencies = [
+    "click>=6.0",
+    "pytest>=5.0",
+]
+
+[[package]]
 name = "pytest-cov"
 version = "4.0.0"
 requires_python = ">=3.6"
@@ -241,7 +250,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:6c4208d24350a6d735fc4f9ef0ddec2c92294b8f164526f2f2727573ee2bb61f"
+content_hash = "sha256:5a4fbce743e784ef715a342da7048d20117766aa05d1e4e8761f6954d664e260"
 
 [metadata.files]
 "astroid 2.15.0" = [
@@ -549,6 +558,10 @@ content_hash = "sha256:6c4208d24350a6d735fc4f9ef0ddec2c92294b8f164526f2f2727573e
 "pytest 7.2.2" = [
     {url = "https://files.pythonhosted.org/packages/b2/68/5321b5793bd506961bd40bdbdd0674e7de4fb873ee7cab33dd27283ad513/pytest-7.2.2-py3-none-any.whl", hash = "sha256:130328f552dcfac0b1cec75c12e3f005619dc5f874f0a06e8ff7263f0ee6225e"},
     {url = "https://files.pythonhosted.org/packages/b9/29/311895d9cd3f003dd58e8fdea36dd895ba2da5c0c90601836f7de79f76fe/pytest-7.2.2.tar.gz", hash = "sha256:c99ab0c73aceb050f68929bc93af19ab6db0558791c6a0715723abe9d0ade9d4"},
+]
+"pytest-click 1.1.0" = [
+    {url = "https://files.pythonhosted.org/packages/72/1a/eb53371999b94b3c995c00117f3a232dbf6f56c7152a52cf3e3777e7d49d/pytest_click-1.1.0-py3-none-any.whl", hash = "sha256:eade4742c2f02c345e78a32534a43e8db04acf98d415090539dacc880b7cd0e9"},
+    {url = "https://files.pythonhosted.org/packages/ec/ec/bca3cd29ba2b025ae41666b851f6ff05fb77cb4c13719baaeda6a757772a/pytest_click-1.1.0.tar.gz", hash = "sha256:fdd9f6721f877dda021e7c5dc73e70aecd37e5ed23ec6820f8a7b3fd7b4f8d30"},
 ]
 "pytest-cov 4.0.0" = [
     {url = "https://files.pythonhosted.org/packages/ea/70/da97fd5f6270c7d2ce07559a19e5bf36a76f0af21500256f005a69d9beba/pytest-cov-4.0.0.tar.gz", hash = "sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470"},

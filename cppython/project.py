@@ -33,7 +33,7 @@ class Project(API):
         self.logger.info("Initializing project")
 
         if (pyproject := PyProject(**pyproject_data)) is None:
-            raise ConfigError("PyProject data is not defined")
+            raise ConfigError("Table [project] is not defined")
 
         if pyproject.tool is None:
             raise ConfigError("Table [tool] is not defined")

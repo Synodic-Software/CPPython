@@ -29,6 +29,7 @@ paths = ["LICENSE.md"]
 homepage = "https://github.com/Synodic-Software/CPPython"
 repository = "https://github.com/Synodic-Software/CPPython"
 
+[project.optional-dependencies]
 [tool.pdm]
 version = {use_scm = true}
 
@@ -42,6 +43,7 @@ lint = [
 test = [
   "pytest>=7.1.2",
   "pytest-cov>=3.0.0",
+  "pytest-click>=1.1",
   "pytest-mock>=3.8.2",
   "pytest-cppython>=0.2.0.dev0",
 ]
