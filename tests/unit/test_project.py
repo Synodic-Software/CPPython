@@ -39,8 +39,12 @@ class TestProject:
             tmp_path: Temporary directory for dummy data
         """
 
-        file = tmp_path / "pyproject.toml"
-        project_configuration = ProjectConfiguration(pyproject_file=file, version=None)
+        file_path = tmp_path / "pyproject.toml"
+
+        with open(file_path, "a", encoding="utf8") as file:
+            file.write("")
+
+        project_configuration = ProjectConfiguration(pyproject_file=file_path, version=None)
         interface = MockInterface()
 
         project = Project(project_configuration, interface, {})
