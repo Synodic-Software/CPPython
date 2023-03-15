@@ -8,6 +8,7 @@ from typing import Any
 from cppython_core.exceptions import ConfigError, PluginError
 from cppython_core.resolution import resolve_name
 from cppython_core.schema import CoreData, Interface, ProjectConfiguration, PyProject
+from pydantic import ValidationError
 
 from cppython.builder import Builder
 from cppython.schema import API
@@ -32,39 +33,49 @@ class Project(API):
 
         self.logger.info("Initializing project")
 
-        if (pyproject := PyProject(**pyproject_data)) is None:
-            raise ConfigError("PyProject data is not defined")
+        try:
+            if (pyproject := PyProject(**pyproject_data)) is None:
+                raise ConfigError("Table [project] is not defined")
 
-        if pyproject.tool is None:
-            raise ConfigError("Table [tool] is not defined")
+            if pyproject.tool is None:
+                raise ConfigError("Table [tool] is not defined")
 
-        if pyproject.tool.cppython is None:
-            raise ConfigError("Table [tool.cppython] is not defined")
+            if pyproject.tool.cppython is None:
+                raise ConfigError("Table [tool.cppython] is not defined")
 
-        builder = Builder(self.logger)
+            builder = Builder(self.logger)
 
-        self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
+            self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
 
-        raw_generator_plugins = builder.find_generators()
-        generator_plugins = builder.filter_plugins(
-            raw_generator_plugins,
-            self.core_data.project_data.pyproject_file.parent,
-            self.core_data.cppython_data.generator_name,
-            "Generator",
-        )
+            raw_generator_plugins = builder.find_generators()
+            generator_plugins = builder.filter_plugins(
+                raw_generator_plugins,
+                self.core_data.project_data.pyproject_file.parent,
+                self.core_data.cppython_data.generator_name,
+                "Generator",
+            )
 
-        raw_provider_plugins = builder.find_providers()
-        provider_plugins = builder.filter_plugins(
-            raw_provider_plugins,
-            self.core_data.project_data.pyproject_file.parent,
-            self.core_data.cppython_data.provider_name,
-            "Provider",
-        )
+            raw_provider_plugins = builder.find_providers()
+            provider_plugins = builder.filter_plugins(
+                raw_provider_plugins,
+                self.core_data.project_data.pyproject_file.parent,
+                self.core_data.cppython_data.provider_name,
+                "Provider",
+            )
 
-        generator_type, provider_type = builder.solve(generator_plugins, provider_plugins)
+            generator_type, provider_type = builder.solve(generator_plugins, provider_plugins)
 
-        self._generator = builder.create_generator(self.core_data, pyproject.tool.cppython.generator, generator_type)
-        self._provider = builder.create_provider(self.core_data, pyproject.tool.cppython.provider, provider_type)
+            self._generator = builder.create_generator(
+                self.core_data, pyproject.tool.cppython.generator, generator_type
+            )
+            self._provider = builder.create_provider(self.core_data, pyproject.tool.cppython.provider, provider_type)
+
+        except ConfigError:
+            logging.exception("Unhandled configuration. CPPython will process no further")
+            return
+        except ValidationError as error:
+            logging.error(error)
+            return
 
         self._enabled = True
 

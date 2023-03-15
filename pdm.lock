@@ -63,7 +63,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.6.1.dev54"
+version = "0.6.1.dev55"
 requires_python = ">=3.11"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -187,6 +187,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "pytest-click"
+version = "1.1.0"
+summary = "Pytest plugin for Click"
+dependencies = [
+    "click>=6.0",
+    "pytest>=5.0",
+]
+
+[[package]]
 name = "pytest-cov"
 version = "4.0.0"
 requires_python = ">=3.6"
@@ -241,7 +250,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 
 [metadata]
 lock_version = "4.1"
-content_hash = "sha256:6c4208d24350a6d735fc4f9ef0ddec2c92294b8f164526f2f2727573ee2bb61f"
+content_hash = "sha256:5a4fbce743e784ef715a342da7048d20117766aa05d1e4e8761f6954d664e260"
 
 [metadata.files]
 "astroid 2.15.0" = [
@@ -340,9 +349,9 @@ content_hash = "sha256:6c4208d24350a6d735fc4f9ef0ddec2c92294b8f164526f2f2727573e
     {url = "https://files.pythonhosted.org/packages/f9/06/5f6555205d13f8811558b73fa37596519272fb077ad7f9faa4e4162a23a4/coverage-7.2.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:d2ef6cae70168815ed91388948b5f4fcc69681480a0061114db737f957719f03"},
     {url = "https://files.pythonhosted.org/packages/fe/0c/9c463e24ac89408c13084ddaefdb7c2d55ed2da7c556214159b261df4737/coverage-7.2.1-cp39-cp39-win_amd64.whl", hash = "sha256:bd5a12239c0006252244f94863f1c518ac256160cd316ea5c47fb1a11b25889a"},
 ]
-"cppython-core 0.6.1.dev54" = [
-    {url = "https://files.pythonhosted.org/packages/8c/63/1bc02ac40ff4943e483394f2b61d56aa57eb923dc8f192ec65d0ab92799a/cppython-core-0.6.1.dev54.tar.gz", hash = "sha256:65980526a5b800e7685832c4e0e9b735d807ae21187a6dbe5d4fba8af136c378"},
-    {url = "https://files.pythonhosted.org/packages/c8/9d/5b0f9b2f8b3baf08a69f34546b5c7f7910941f115a67aee67e7201cb0718/cppython_core-0.6.1.dev54-py3-none-any.whl", hash = "sha256:fb373745a4eb41856a088b316fcbac0abf2eaab42662309177a78b7335ede71d"},
+"cppython-core 0.6.1.dev55" = [
+    {url = "https://files.pythonhosted.org/packages/39/57/f1f6c1fe5788418688f548a060ee85dbc759a80021b8cff2dc570b375f5c/cppython-core-0.6.1.dev55.tar.gz", hash = "sha256:dacadaba350ecd0664e26e9839ba77f203e183a07d4cec5d0a8cf9315885eba0"},
+    {url = "https://files.pythonhosted.org/packages/6c/32/8a84b3e5e52896825b17c08f1af51df1d7eec7d71c9da33a79b01d7663ac/cppython_core-0.6.1.dev55-py3-none-any.whl", hash = "sha256:0057b6adfb8500e05f79e43106f6b7876782254cece8efbc255c8401206c4f5e"},
 ]
 "dill 0.3.6" = [
     {url = "https://files.pythonhosted.org/packages/7c/e7/364a09134e1062d4d5ff69b853a56cf61c223e0afcc6906b6832bcd51ea8/dill-0.3.6.tar.gz", hash = "sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373"},
@@ -549,6 +558,10 @@ content_hash = "sha256:6c4208d24350a6d735fc4f9ef0ddec2c92294b8f164526f2f2727573e
 "pytest 7.2.2" = [
     {url = "https://files.pythonhosted.org/packages/b2/68/5321b5793bd506961bd40bdbdd0674e7de4fb873ee7cab33dd27283ad513/pytest-7.2.2-py3-none-any.whl", hash = "sha256:130328f552dcfac0b1cec75c12e3f005619dc5f874f0a06e8ff7263f0ee6225e"},
     {url = "https://files.pythonhosted.org/packages/b9/29/311895d9cd3f003dd58e8fdea36dd895ba2da5c0c90601836f7de79f76fe/pytest-7.2.2.tar.gz", hash = "sha256:c99ab0c73aceb050f68929bc93af19ab6db0558791c6a0715723abe9d0ade9d4"},
+]
+"pytest-click 1.1.0" = [
+    {url = "https://files.pythonhosted.org/packages/72/1a/eb53371999b94b3c995c00117f3a232dbf6f56c7152a52cf3e3777e7d49d/pytest_click-1.1.0-py3-none-any.whl", hash = "sha256:eade4742c2f02c345e78a32534a43e8db04acf98d415090539dacc880b7cd0e9"},
+    {url = "https://files.pythonhosted.org/packages/ec/ec/bca3cd29ba2b025ae41666b851f6ff05fb77cb4c13719baaeda6a757772a/pytest_click-1.1.0.tar.gz", hash = "sha256:fdd9f6721f877dda021e7c5dc73e70aecd37e5ed23ec6820f8a7b3fd7b4f8d30"},
 ]
 "pytest-cov 4.0.0" = [
     {url = "https://files.pythonhosted.org/packages/ea/70/da97fd5f6270c7d2ce07559a19e5bf36a76f0af21500256f005a69d9beba/pytest-cov-4.0.0.tar.gz", hash = "sha256:996b79efde6433cdbd0088872dbc5fb3ed7fe1578b68cdbba634f14bb8dd0470"},
