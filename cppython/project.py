@@ -45,26 +45,29 @@ class Project(API):
 
             builder = Builder(self.logger)
 
-            self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
-
             raw_generator_plugins = builder.find_generators()
             generator_plugins = builder.filter_plugins(
                 raw_generator_plugins,
-                self.core_data.project_data.pyproject_file.parent,
-                self.core_data.cppython_data.generator_name,
+                configuration.pyproject_file.parent,
+                pyproject.tool.cppython.generator_name,
                 "Generator",
             )
 
             raw_provider_plugins = builder.find_providers()
             provider_plugins = builder.filter_plugins(
                 raw_provider_plugins,
-                self.core_data.project_data.pyproject_file.parent,
-                self.core_data.cppython_data.provider_name,
+                configuration.pyproject_file.parent,
+                pyproject.tool.cppython.provider_name,
                 "Provider",
             )
 
+            # Solve the messy interactions between plugins
             generator_type, provider_type = builder.solve(generator_plugins, provider_plugins)
 
+            # Once the plugins are resolved, the core data is complete and can be generated
+            self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
+
+            # Create the chosen plugins
             self._generator = builder.create_generator(
                 self.core_data, pyproject.tool.cppython.generator, generator_type
             )
@@ -92,10 +95,10 @@ class Project(API):
 
     @property
     def core_data(self) -> CoreData:
-        """Queries if the project was is initialized for full functionality
+        """Core data
 
         Returns:
-            The query result
+            Core data
         """
         return self._core_data
 
