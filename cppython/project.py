@@ -6,7 +6,7 @@ import logging
 from typing import Any
 
 from cppython_core.exceptions import ConfigError, PluginError
-from cppython_core.resolution import resolve_name
+from cppython_core.resolution import PluginBuildData, resolve_name
 from cppython_core.schema import CoreData, Interface, ProjectConfiguration, PyProject
 from pydantic import ValidationError
 
@@ -34,14 +34,7 @@ class Project(API):
         self.logger.info("Initializing project")
 
         try:
-            if (pyproject := PyProject(**pyproject_data)) is None:
-                raise ConfigError("Table [project] is not defined")
-
-            if pyproject.tool is None:
-                raise ConfigError("Table [tool] is not defined")
-
-            if pyproject.tool.cppython is None:
-                raise ConfigError("Table [tool.cppython] is not defined")
+            pyproject = PyProject(**pyproject_data)
 
             builder = Builder(self.logger)
 
@@ -64,8 +57,12 @@ class Project(API):
             # Solve the messy interactions between plugins
             generator_type, provider_type = builder.solve(generator_plugins, provider_plugins)
 
+            pyproject_build_data = PluginBuildData(generator_type=generator_type, provider_type=provider_type)
+
             # Once the plugins are resolved, the core data is complete and can be generated
-            self._core_data = builder.generate_core_data(configuration, pyproject.project, pyproject.tool.cppython)
+            self._core_data = builder.generate_core_data(
+                configuration, pyproject.project, pyproject.tool.cppython, pyproject_build_data
+            )
 
             # Create the chosen plugins
             self._generator = builder.create_generator(
