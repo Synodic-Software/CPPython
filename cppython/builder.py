@@ -1,7 +1,6 @@
 """Everything needed to build a CPPython project
 """
 
-from dataclasses import dataclass
 from importlib import metadata
 from inspect import getmodule
 from logging import Logger
