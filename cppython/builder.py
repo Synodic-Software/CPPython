@@ -1,6 +1,7 @@
 """Everything needed to build a CPPython project
 """
 
+from dataclasses import dataclass
 from importlib import metadata
 from inspect import getmodule
 from logging import Logger
@@ -12,6 +13,7 @@ from cppython_core.plugin_schema.generator import Generator
 from cppython_core.plugin_schema.provider import Provider
 from cppython_core.plugin_schema.scm import SCM
 from cppython_core.resolution import (
+    PluginBuildData,
     resolve_cppython,
     resolve_cppython_plugin,
     resolve_generator,
@@ -42,6 +44,7 @@ class Builder:
         configuration: ProjectConfiguration,
         pep621_configuration: PEP621Configuration,
         cppython_configuration: CPPythonLocalConfiguration,
+        plugin_build_date: PluginBuildData,
     ) -> CoreData:
         """Parses and returns resolved data from all configuration sources
 
@@ -49,6 +52,7 @@ class Builder:
             configuration: Input configuration
             pep621_configuration: Project table configuration
             cppython_configuration: Tool configuration
+            plugin_build_date: Build data
 
         Raises:
             ConfigError: Raised if data cannot be parsed
@@ -68,7 +72,7 @@ class Builder:
             configuration.version = self.extract_scm_version(configuration.pyproject_file.parent)
             pep621_data = resolve_pep621(pep621_configuration, configuration)
 
-        cppython_data = resolve_cppython(cppython_configuration, global_configuration, project_data)
+        cppython_data = resolve_cppython(cppython_configuration, global_configuration, project_data, plugin_build_date)
 
         return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
 
