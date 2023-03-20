@@ -7,7 +7,7 @@ from typing import Any
 
 from cppython_core.exceptions import ConfigError, PluginError
 from cppython_core.plugin_schema.scm import SCM
-from cppython_core.resolution import PluginBuildData, resolve_name
+from cppython_core.resolution import resolve_name
 from cppython_core.schema import CoreData, Interface, ProjectConfiguration, PyProject
 from pydantic import ValidationError
 
