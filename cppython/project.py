@@ -6,6 +6,7 @@ import logging
 from typing import Any
 
 from cppython_core.exceptions import ConfigError, PluginError
+from cppython_core.plugin_schema.scm import SCM
 from cppython_core.resolution import PluginBuildData, resolve_name
 from cppython_core.schema import CoreData, Interface, ProjectConfiguration, PyProject
 from pydantic import ValidationError
@@ -18,30 +19,26 @@ class Project(API):
     """The object constructed at each entry_point"""
 
     def __init__(
-        self, configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
+        self, project_configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
     ) -> None:
         self._enabled = False
         self._interface = interface
-
-        # Default logging levels
-        levels = [logging.WARNING, logging.INFO, logging.DEBUG]
-
-        # Add default output stream
         self.logger = logging.getLogger("cppython")
-        self.logger.addHandler(logging.StreamHandler())
-        self.logger.setLevel(levels[configuration.verbosity])
-
-        self.logger.info("Initializing project")
 
         try:
-            pyproject = PyProject(**pyproject_data)
-
             builder = Builder(self.logger)
+            builder.setup_logger(project_configuration)
+
+            self.logger.info("Initializing project")
+
+            project_data = builder.generate_project_data(project_configuration)
+            self._scm = builder.create_scm(project_data)
+
+            pyproject = PyProject(**pyproject_data)
 
             raw_generator_plugins = builder.find_generators()
             generator_plugins = builder.filter_plugins(
                 raw_generator_plugins,
-                configuration.pyproject_file.parent,
                 pyproject.tool.cppython.generator_name,
                 "Generator",
             )
@@ -49,7 +46,6 @@ class Project(API):
             raw_provider_plugins = builder.find_providers()
             provider_plugins = builder.filter_plugins(
                 raw_provider_plugins,
-                configuration.pyproject_file.parent,
                 pyproject.tool.cppython.provider_name,
                 "Provider",
             )
@@ -61,14 +57,19 @@ class Project(API):
 
             # Once the plugins are resolved, the core data is complete and can be generated
             self._core_data = builder.generate_core_data(
-                configuration, pyproject.project, pyproject.tool.cppython, pyproject_build_data
+                project_configuration,
+                project_data,
+                pyproject.project,
+                pyproject.tool.cppython,
+                pyproject_build_data,
+                self._scm,
             )
 
             # Create the chosen plugins
             self._generator = builder.create_generator(
-                self.core_data, pyproject.tool.cppython.generator, generator_type
+                self._core_data, pyproject.tool.cppython.generator, generator_type
             )
-            self._provider = builder.create_provider(self.core_data, pyproject.tool.cppython.provider, provider_type)
+            self._provider = builder.create_provider(self._core_data, pyproject.tool.cppython.provider, provider_type)
 
         except ConfigError:
             logging.exception("Unhandled configuration. CPPython will process no further")
@@ -91,13 +92,22 @@ class Project(API):
         return self._enabled
 
     @property
-    def core_data(self) -> CoreData:
+    def core_data(self) -> CoreData | None:
         """Core data
 
         Returns:
-            Core data
+            Core data, if enabled
         """
-        return self._core_data
+        return self._core_data if self._enabled else None
+
+    @property
+    def scm(self) -> SCM | None:
+        """SCM
+
+        Returns:
+            SCM, if enabled
+        """
+        return self._scm if self._enabled else None
 
     async def download_provider_tools(self) -> None:
         """Download the provider tooling if required"""

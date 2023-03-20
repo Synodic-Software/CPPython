@@ -1,13 +1,13 @@
 """Everything needed to build a CPPython project
 """
 
+import logging
 from importlib import metadata
 from inspect import getmodule
 from logging import Logger
-from pathlib import Path
 from typing import Any
 
-from cppython_core.exceptions import ConfigError, PluginError
+from cppython_core.exceptions import PluginError
 from cppython_core.plugin_schema.generator import Generator
 from cppython_core.plugin_schema.provider import Provider
 from cppython_core.plugin_schema.scm import SCM
@@ -20,6 +20,7 @@ from cppython_core.resolution import (
     resolve_pep621,
     resolve_project_configuration,
     resolve_provider,
+    resolve_scm,
 )
 from cppython_core.schema import (
     CoreData,
@@ -29,6 +30,7 @@ from cppython_core.schema import (
     DataPluginT,
     PEP621Configuration,
     ProjectConfiguration,
+    ProjectData,
 )
 
 
@@ -38,20 +40,51 @@ class Builder:
     def __init__(self, logger: Logger) -> None:
         self.logger = logger
 
+    def setup_logger(self, project_configuration: ProjectConfiguration) -> None:
+        """_summary_
+
+        Args:
+            project_configuration: _description_
+        """
+        # Default logging levels
+        levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+
+        # Add default output stream
+        self.logger.addHandler(logging.StreamHandler())
+        self.logger.setLevel(levels[project_configuration.verbosity])
+
+        self.logger.info("Logging setup complete")
+
+    def generate_project_data(self, project_configuration: ProjectConfiguration) -> ProjectData:
+        """_summary_
+
+        Args:
+            project_configuration: _description_
+
+        Returns:
+            _description_
+        """
+
+        return resolve_project_configuration(project_configuration)
+
     def generate_core_data(
         self,
-        configuration: ProjectConfiguration,
+        project_configuration: ProjectConfiguration,
+        project_data: ProjectData,
         pep621_configuration: PEP621Configuration,
         cppython_configuration: CPPythonLocalConfiguration,
         plugin_build_date: PluginBuildData,
+        scm: SCM,
     ) -> CoreData:
         """Parses and returns resolved data from all configuration sources
 
         Args:
-            configuration: Input configuration
+            project_configuration: Project configuration
+            project_data: Project data
             pep621_configuration: Project table configuration
             cppython_configuration: Tool configuration
             plugin_build_date: Build data
+            scm: scm
 
         Raises:
             ConfigError: Raised if data cannot be parsed
@@ -62,66 +95,11 @@ class Builder:
 
         global_configuration = CPPythonGlobalConfiguration()
 
-        project_data = resolve_project_configuration(configuration)
-
-        try:
-            pep621_data = resolve_pep621(pep621_configuration, configuration)
-
-        except ConfigError:
-            configuration.version = self.extract_scm_version(configuration.pyproject_file.parent)
-            pep621_data = resolve_pep621(pep621_configuration, configuration)
+        pep621_data = resolve_pep621(pep621_configuration, project_configuration, scm)
 
         cppython_data = resolve_cppython(cppython_configuration, global_configuration, project_data, plugin_build_date)
 
         return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
-
-    def extract_scm_version(self, path: Path) -> str:
-        """Locates an available SCM plugin that can report version information about the given path
-
-        Args:
-            path: The directory to query
-
-        Raises:
-            PluginError: If no SCM plugin can be found
-
-        Returns:
-            A version token
-        """
-
-        group = "SCM"
-        group_lower = group.lower()
-
-        scm_types: list[type[SCM]] = []
-
-        if not (entries := list(metadata.entry_points(group=f"cppython.{group_lower}"))):
-            raise PluginError("No SCM plugin found")
-
-        # Filter entries
-        for entry_point in entries:
-            plugin_type = entry_point.load()
-            if not issubclass(plugin_type, SCM):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{resolve_name(plugin_type)}' plugin must be an instance of"
-                    f" '{group_lower}'"
-                )
-            else:
-                scm_types.append(plugin_type)
-
-        # Deduce the SCM repository
-        plugin = None
-        for scm_type in scm_types:
-            scm = scm_type()
-            if scm.supported(path):
-                plugin = scm
-                break
-
-        if not plugin:
-            raise PluginError("No applicable SCM plugin found for the given path")
-
-        if (version := plugin.version(path)) is None:
-            raise PluginError("Project has no version information")
-
-        return version
 
     def find_generators(self) -> list[type[Generator]]:
         """_summary_
@@ -188,13 +166,12 @@ class Builder:
         return plugin_types
 
     def filter_plugins(
-        self, plugin_types: list[type[DataPluginT]], directory: Path, pinned_name: str | None, group_name: str
+        self, plugin_types: list[type[DataPluginT]], pinned_name: str | None, group_name: str
     ) -> list[type[DataPluginT]]:
         """Finds and filters data plugins
 
         Args:
             plugin_types: The plugin type to lookup
-            directory: The data to query support for the filtered plugins
             pinned_name: The configuration name
             group_name: The group name
 
@@ -220,11 +197,10 @@ class Builder:
 
         # Deduce types
         for loaded_type in plugin_types:
-            if loaded_type.supported(directory):
-                self.logger.warning(
-                    f"A {group_name} plugin is supported: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
-                )
-                supported_types.append(loaded_type)
+            self.logger.warning(
+                f"A {group_name} plugin is supported: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
+            )
+            supported_types.append(loaded_type)
 
         # Fail
         if supported_types is None:
@@ -262,6 +238,53 @@ class Builder:
             raise PluginError("No provider that supports a given generator could be deduced")
 
         return combos[0]
+
+    def create_scm(
+        self,
+        project_data: ProjectData,
+    ) -> SCM | None:
+        """_summary_
+
+        Args:
+            project_data: _description_
+
+        Raises:
+            PluginError: Ya
+
+        Returns:
+            _description_
+        """
+        group = "scm"
+        path = project_data.pyproject_file.parent
+
+        scm_types: list[type[SCM]] = []
+
+        if not (entries := list(metadata.entry_points(group=f"cppython.{group}"))):
+            raise PluginError("No SCM plugin found")
+
+        # Filter entries
+        for entry_point in entries:
+            plugin_type = entry_point.load()
+            if not issubclass(plugin_type, SCM):
+                self.logger.warning(
+                    f"Found incompatible plugin. The '{resolve_name(plugin_type)}' plugin must be an instance of"
+                    f" '{group}'"
+                )
+            else:
+                scm_types.append(plugin_type)
+
+        # Deduce the SCM repository
+        plugin = None
+        for scm_type in scm_types:
+            if scm_type.features(path).repository:
+                scm_data = resolve_scm(project_data)
+                plugin = scm_type(scm_data)
+                break
+
+        if not plugin:
+            self.logger.error("No applicable SCM plugin found for the given path")
+
+        return plugin
 
     def create_generator(
         self, core_data: CoreData, generator_configuration: dict[str, Any], generator_type: type[Generator]

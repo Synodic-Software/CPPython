@@ -2,32 +2,31 @@
 
 from pathlib import Path
 
-from cppython_core.plugin_schema.scm import SCM
+from cppython_core.plugin_schema.scm import (
+    SCM,
+    SCMPluginGroupData,
+    SupportedSCMFeatures,
+)
 from cppython_core.schema import Information
-from dulwich.errors import NotGitRepository
-from dulwich.repo import Repo
 
 
 class GitSCM(SCM):
     """Git implementation hooks"""
 
+    def __init__(self, group_data: SCMPluginGroupData) -> None:
+        self.group_data = group_data
+
     @staticmethod
-    def supported(directory: Path) -> bool:
-        """Queries repository status of a path
+    def features(directory: Path) -> SupportedSCMFeatures:
+        """Broadcasts the shared features of the SCM plugin to CPPython
 
         Args:
-            directory: The input path to query
+            directory: The root directory where features are evaluated
 
         Returns:
-            Whether the given path is a repository root
+            The supported features
         """
-
-        try:
-            Repo(str(directory))
-            return True
-
-        except NotGitRepository:
-            return False
+        return SupportedSCMFeatures()
 
     @staticmethod
     def information() -> Information:
@@ -38,11 +37,11 @@ class GitSCM(SCM):
         """
         return Information()
 
-    def version(self, path: Path) -> str:
+    def version(self, directory: Path) -> str:
         """Extracts the system's version metadata
 
         Args:
-            path: The repository path
+            directory: The repository path
 
         Returns:
             The git version
