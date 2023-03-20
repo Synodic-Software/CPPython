@@ -8,6 +8,8 @@ from cppython_core.plugin_schema.scm import (
     SupportedSCMFeatures,
 )
 from cppython_core.schema import Information
+from dulwich.errors import NotGitRepository
+from dulwich.repo import Repo
 
 
 class GitSCM(SCM):
@@ -26,7 +28,14 @@ class GitSCM(SCM):
         Returns:
             The supported features
         """
-        return SupportedSCMFeatures()
+
+        is_repository = True
+        try:
+            Repo(str(directory))
+        except NotGitRepository:
+            is_repository = False
+
+        return SupportedSCMFeatures(repository=is_repository)
 
     @staticmethod
     def information() -> Information:

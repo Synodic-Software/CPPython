@@ -36,40 +36,25 @@ class Project(API):
 
             pyproject = PyProject(**pyproject_data)
 
-            raw_generator_plugins = builder.find_generators()
-            generator_plugins = builder.filter_plugins(
-                raw_generator_plugins,
-                pyproject.tool.cppython.generator_name,
-                "Generator",
-            )
-
-            raw_provider_plugins = builder.find_providers()
-            provider_plugins = builder.filter_plugins(
-                raw_provider_plugins,
-                pyproject.tool.cppython.provider_name,
-                "Provider",
-            )
-
-            # Solve the messy interactions between plugins
-            generator_type, provider_type = builder.solve(generator_plugins, provider_plugins)
-
-            pyproject_build_data = PluginBuildData(generator_type=generator_type, provider_type=provider_type)
+            plugin_build_data = builder.generate_data_plugins(pyproject)
 
             # Once the plugins are resolved, the core data is complete and can be generated
+
+            pep621_data = builder.generate_pep621_data(pyproject, project_configuration, self._scm)
             self._core_data = builder.generate_core_data(
-                project_configuration,
                 project_data,
-                pyproject.project,
-                pyproject.tool.cppython,
-                pyproject_build_data,
-                self._scm,
+                pyproject,
+                pep621_data,
+                plugin_build_data,
             )
 
             # Create the chosen plugins
             self._generator = builder.create_generator(
-                self._core_data, pyproject.tool.cppython.generator, generator_type
+                self._core_data, pyproject.tool.cppython.generator, plugin_build_data.generator_type
             )
-            self._provider = builder.create_provider(self._core_data, pyproject.tool.cppython.provider, provider_type)
+            self._provider = builder.create_provider(
+                self._core_data, pyproject.tool.cppython.provider, plugin_build_data.provider_type
+            )
 
         except ConfigError:
             logging.exception("Unhandled configuration. CPPython will process no further")
@@ -116,7 +101,7 @@ class Project(API):
             return
 
         name = resolve_name(type(self._provider))
-        base_path = self.core_data.cppython_data.install_path
+        base_path = self._core_data.cppython_data.install_path
 
         path = base_path / name
 

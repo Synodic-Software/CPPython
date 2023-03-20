@@ -26,11 +26,11 @@ from cppython_core.schema import (
     CoreData,
     CorePluginData,
     CPPythonGlobalConfiguration,
-    CPPythonLocalConfiguration,
     DataPluginT,
-    PEP621Configuration,
+    PEP621Data,
     ProjectConfiguration,
     ProjectData,
+    PyProject,
 )
 
 
@@ -67,24 +67,64 @@ class Builder:
 
         return resolve_project_configuration(project_configuration)
 
+    def generate_data_plugins(self, pyproject: PyProject) -> PluginBuildData:
+        """_summary_
+
+        Args:
+            pyproject: _description_
+
+        Returns:
+            _description_
+        """
+
+        raw_generator_plugins = self.find_generators()
+        generator_plugins = self.filter_plugins(
+            raw_generator_plugins,
+            pyproject.tool.cppython.generator_name,
+            "Generator",
+        )
+
+        raw_provider_plugins = self.find_providers()
+        provider_plugins = self.filter_plugins(
+            raw_provider_plugins,
+            pyproject.tool.cppython.provider_name,
+            "Provider",
+        )
+
+        # Solve the messy interactions between plugins
+        generator_type, provider_type = self.solve(generator_plugins, provider_plugins)
+
+        return PluginBuildData(generator_type=generator_type, provider_type=provider_type)
+
+    def generate_pep621_data(
+        self, pyproject: PyProject, project_configuration: ProjectConfiguration, scm: SCM | None
+    ) -> PEP621Data:
+        """_summary_
+
+        Args:
+            pyproject: _description_
+            project_configuration: _description_
+            scm: _description_
+
+        Returns:
+            _description_
+        """
+        return resolve_pep621(pyproject.project, project_configuration, scm)
+
     def generate_core_data(
         self,
-        project_configuration: ProjectConfiguration,
         project_data: ProjectData,
-        pep621_configuration: PEP621Configuration,
-        cppython_configuration: CPPythonLocalConfiguration,
+        pyproject: PyProject,
+        pep621_data: PEP621Data,
         plugin_build_date: PluginBuildData,
-        scm: SCM,
     ) -> CoreData:
         """Parses and returns resolved data from all configuration sources
 
         Args:
-            project_configuration: Project configuration
             project_data: Project data
-            pep621_configuration: Project table configuration
-            cppython_configuration: Tool configuration
-            plugin_build_date: Build data
-            scm: scm
+            pyproject: TODO
+            pep621_data: TODO
+            plugin_build_date: TODO
 
         Raises:
             ConfigError: Raised if data cannot be parsed
@@ -95,9 +135,7 @@ class Builder:
 
         global_configuration = CPPythonGlobalConfiguration()
 
-        pep621_data = resolve_pep621(pep621_configuration, project_configuration, scm)
-
-        cppython_data = resolve_cppython(cppython_configuration, global_configuration, project_data, plugin_build_date)
+        cppython_data = resolve_cppython(pyproject.tool.cppython, global_configuration, project_data, plugin_build_date)
 
         return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
 
