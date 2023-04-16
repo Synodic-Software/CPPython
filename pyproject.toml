@@ -38,7 +38,7 @@ lint = [
   "black>=22.6.0",
   "pylint>=2.14.5",
   "isort>=5.10.1",
-  "mypy>=0.982",
+  "mypy>=1.2",
 ]
 test = [
   "pytest>=7.1.2",
