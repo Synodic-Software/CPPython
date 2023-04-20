@@ -12,7 +12,7 @@ dist/
 .vs/
 
 #PDM
-.pdm.toml
+.pdm-python
 __pypackages__/
 
 #Coverage
