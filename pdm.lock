@@ -63,7 +63,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.6.1.dev66"
+version = "0.6.1.dev67"
 requires_python = ">=3.11"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -358,9 +358,9 @@ content_hash = "sha256:a56e052e6b942ac93c9deed4207ad75e22fc9d6a4c4c34ba62777c9ba
     {url = "https://files.pythonhosted.org/packages/e8/31/9f2ef68dd8020f5ef935999693fe200403adfbf52a5f848065bb79e74971/coverage-7.2.6-cp310-cp310-win_amd64.whl", hash = "sha256:fde5c7a9d9864d3e07992f66767a9817f24324f354caa3d8129735a3dc74f126"},
     {url = "https://files.pythonhosted.org/packages/fc/6d/e8658433ce675a34ac82167ce8b890b1c020dcb6bacc7a0e4505af82bfaa/coverage-7.2.6.tar.gz", hash = "sha256:2025f913f2edb0272ef15d00b1f335ff8908c921c8eb2013536fcaf61f5a683d"},
 ]
-"cppython-core 0.6.1.dev66" = [
-    {url = "https://files.pythonhosted.org/packages/5c/46/60f924dae9b43c473e499cfb4da98196931f3e156d5bd6a0244326539ecf/cppython_core-0.6.1.dev66-py3-none-any.whl", hash = "sha256:124ec64deb204fad0600c7b23bc921ba4d35a994db4e6f79ac6d23760662c823"},
-    {url = "https://files.pythonhosted.org/packages/7f/ed/0f1d42bab74b0df5aa9d4ca1e6b1599e73bb14cbb2833aee6b5001d2f5d2/cppython-core-0.6.1.dev66.tar.gz", hash = "sha256:17b6c282e227dc2d0b587f9930334af21de1734b56a03212acd97261faec9506"},
+"cppython-core 0.6.1.dev67" = [
+    {url = "https://files.pythonhosted.org/packages/45/43/6888edfed4ec69d659b017273dbe78efe627d206bd33bde62c64377e7fb5/cppython-core-0.6.1.dev67.tar.gz", hash = "sha256:cb3903b52b4e5af8a6c8e4cc0e31e7605c574194dab7d487ff87f9d5e0899132"},
+    {url = "https://files.pythonhosted.org/packages/b7/27/fb67c8b07ce82146d229fbea92e8ac0929a43596e12139e718dd29377f49/cppython_core-0.6.1.dev67-py3-none-any.whl", hash = "sha256:fd42be5f611f9167051b994e556c3318ebde345bff46cc80a51cdf659afcd8b5"},
 ]
 "dill 0.3.6" = [
     {url = "https://files.pythonhosted.org/packages/7c/e7/364a09134e1062d4d5ff69b853a56cf61c223e0afcc6906b6832bcd51ea8/dill-0.3.6.tar.gz", hash = "sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373"},
