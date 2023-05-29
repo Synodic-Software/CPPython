@@ -168,11 +168,11 @@ summary = ""
 
 [[package]]
 name = "pylint"
-version = "2.17.4"
+version = "3.0.0a6"
 requires_python = ">=3.7.2"
 summary = "python code static checker"
 dependencies = [
-    "astroid<=2.17.0-dev0,>=2.15.4",
+    "astroid<=2.17.0-dev0,>=2.15.1",
     "colorama>=0.4.5; sys_platform == \"win32\"",
     "dill>=0.3.6; python_version >= \"3.11\"",
     "isort<6,>=4.2.5",
@@ -259,7 +259,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "lint", "test"]
-content_hash = "sha256:a56e052e6b942ac93c9deed4207ad75e22fc9d6a4c4c34ba62777c9badc4a4a6"
+content_hash = "sha256:3fcc5f0adac8dc81eb53d7f9219b7220fb30584f11973d23450c73a5cc9db8c0"
 
 [metadata.files]
 "annotated-types 0.4.0" = [
@@ -609,9 +609,9 @@ content_hash = "sha256:a56e052e6b942ac93c9deed4207ad75e22fc9d6a4c4c34ba62777c9ba
     {url = "https://files.pythonhosted.org/packages/fa/ef/79c9c3957b1d1addad19407254b1a1fa6597237ed219b527f2a48856a37c/pydantic_core-0.30.0-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:705d8439bf845e11f477462eb092b1e0dcd9219fa3a07d03893745a6e8f894a2"},
     {url = "https://files.pythonhosted.org/packages/fe/ec/8d6b57259fa59cbf6b42420a0c8effd561d1ccb6739f896e74e8ff7f05e4/pydantic_core-0.30.0-cp37-none-win_amd64.whl", hash = "sha256:60403f87cf1ad7cc2b3231b15160c3fb751240ebf8df67299ab80569a15da040"},
 ]
-"pylint 2.17.4" = [
-    {url = "https://files.pythonhosted.org/packages/04/4c/3f7d42a1378c40813772bc5f25184144da09f00ffbe3f60ae985ffa7e10f/pylint-2.17.4-py3-none-any.whl", hash = "sha256:7a1145fb08c251bdb5cca11739722ce64a63db479283d10ce718b2460e54123c"},
-    {url = "https://files.pythonhosted.org/packages/7e/d4/aba77d10841710fea016422f419dfe501dee05fa0fc3898dc048f7bf3f60/pylint-2.17.4.tar.gz", hash = "sha256:5dcf1d9e19f41f38e4e85d10f511e5b9c35e1aa74251bf95cdd8cb23584e2db1"},
+"pylint 3.0.0a6" = [
+    {url = "https://files.pythonhosted.org/packages/20/31/ffc0f63a97279204f37f1723d34fc81e32e28ea38e0c37f59e3ee9575e14/pylint-3.0.0a6.tar.gz", hash = "sha256:eb035800b371862e783f27067b3fc00c6b726880cacfed101b619f366bb813f6"},
+    {url = "https://files.pythonhosted.org/packages/85/8a/248e0205c37a65faaf8300148b29db762b0578043f054372dcc6c17dae56/pylint-3.0.0a6-py3-none-any.whl", hash = "sha256:f0b0857f6fba90527a30f39937a9f66858b59c5dcbb8c062821ad665637bb742"},
 ]
 "pytest 7.3.1" = [
     {url = "https://files.pythonhosted.org/packages/1b/d1/72df649a705af1e3a09ffe14b0c7d3be1fd730da6b98beb4a2ed26b8a023/pytest-7.3.1-py3-none-any.whl", hash = "sha256:3799fa815351fea3a5e96ac7e503a96fa51cc9942c3753cda7651b93c1cfa362"},
