@@ -77,15 +77,6 @@ requires_python = ">=3.7"
 summary = "serialize all of python"
 
 [[package]]
-name = "dulwich"
-version = "0.21.5"
-requires_python = ">=3.7"
-summary = "Python Git Library"
-dependencies = [
-    "urllib3>=1.25",
-]
-
-[[package]]
 name = "iniconfig"
 version = "2.0.0"
 requires_python = ">=3.7"
@@ -244,12 +235,6 @@ requires_python = ">=3.7"
 summary = "Backported and Experimental Type Hints for Python 3.7+"
 
 [[package]]
-name = "urllib3"
-version = "2.0.2"
-requires_python = ">=3.7"
-summary = "HTTP library with thread-safe connection pooling, file post, and more."
-
-[[package]]
 name = "wrapt"
 version = "1.15.0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
@@ -259,7 +244,7 @@ summary = "Module for decorators, wrappers and monkey patching."
 lock_version = "4.2"
 cross_platform = true
 groups = ["default", "lint", "test"]
-content_hash = "sha256:a56e052e6b942ac93c9deed4207ad75e22fc9d6a4c4c34ba62777c9badc4a4a6"
+content_hash = "sha256:773ab8aa79c3209ee9a05956dc5808f351d35914c4c996301b024b71ce69f2a9"
 
 [metadata.files]
 "annotated-types 0.4.0" = [
@@ -365,64 +350,6 @@ content_hash = "sha256:a56e052e6b942ac93c9deed4207ad75e22fc9d6a4c4c34ba62777c9ba
 "dill 0.3.6" = [
     {url = "https://files.pythonhosted.org/packages/7c/e7/364a09134e1062d4d5ff69b853a56cf61c223e0afcc6906b6832bcd51ea8/dill-0.3.6.tar.gz", hash = "sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373"},
     {url = "https://files.pythonhosted.org/packages/be/e3/a84bf2e561beed15813080d693b4b27573262433fced9c1d1fea59e60553/dill-0.3.6-py3-none-any.whl", hash = "sha256:a07ffd2351b8c678dfc4a856a3005f8067aea51d6ba6c700796a4d9e280f39f0"},
-]
-"dulwich 0.21.5" = [
-    {url = "https://files.pythonhosted.org/packages/00/52/2de273c100ae775ba80f7e06b5432b2b66ed808df511106b5822b36dccd6/dulwich-0.21.5-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:85d3401d08b1ec78c7d58ae987c4bb7b768a438f3daa74aeb8372bebc7fb16fa"},
-    {url = "https://files.pythonhosted.org/packages/00/6f/1cd61011d64eb1c96949fabbea0ab5845f1546d545a5bb22c903c712bee1/dulwich-0.21.5-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:a605e10d72f90a39ea2e634fbfd80f866fc4df29a02ea6db52ae92e5fd4a2003"},
-    {url = "https://files.pythonhosted.org/packages/01/64/6631a51e764fe98bce5227e18e4ace85868739a63f4ac890c365d32a707b/dulwich-0.21.5-pp37-pypy37_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5e8a79c1ed7166f32ad21974fa98d11bf6fd74e94a47e754c777c320e01257c6"},
-    {url = "https://files.pythonhosted.org/packages/02/45/6c15537d2f987594e027258c680598ba56a7e9dd38a022f5ee8a26502b08/dulwich-0.21.5-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:c2a565d4e704d7f784cdf9637097141f6d47129c8fffc2fac699d57cb075a169"},
-    {url = "https://files.pythonhosted.org/packages/06/84/329088c53591463ad9aa7fca18f2f085046b37aff4eafdc21eb779a9d8a9/dulwich-0.21.5-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0aa44b812d978fc22a04531f5090c3c369d5facd03fa6e0501d460a661800c7f"},
-    {url = "https://files.pythonhosted.org/packages/06/f8/17f6c65dd969735f3e8eb29ca212da7d0f5d244c32790d25979255454b72/dulwich-0.21.5-cp311-cp311-win32.whl", hash = "sha256:daa607370722c3dce99a0022397c141caefb5ed32032a4f72506f4817ea6405b"},
-    {url = "https://files.pythonhosted.org/packages/11/62/58f5861a33d0ac195419b381910dca99da8e483020a5d9a330cfb1dd35f5/dulwich-0.21.5-cp310-cp310-musllinux_1_1_aarch64.whl", hash = "sha256:1cc0c9ba19ac1b2372598802bc9201a9c45e5d6f1f7a80ec40deeb10acc4e9ae"},
-    {url = "https://files.pythonhosted.org/packages/15/69/3bc34f6f5953b2d7105825885a85430c88e9ee0b720d9e2010909fd60874/dulwich-0.21.5-cp38-cp38-win_amd64.whl", hash = "sha256:2aba0fdad2a19bd5bb3aad6882580cb33359c67b48412ccd4cfccd932012b35e"},
-    {url = "https://files.pythonhosted.org/packages/22/56/9c8bb2ff419d155fef6a94c9daf854086411739141a9266e6f0c229256a2/dulwich-0.21.5-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:8864719bc176cdd27847332a2059127e2f7bab7db2ff99a999873cb7fff54116"},
-    {url = "https://files.pythonhosted.org/packages/23/f5/f08db2cebb5de011195cef6f8fc41ec92f3b3cf1ecea7c9b0caed1fd7a1d/dulwich-0.21.5-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:e2f676bfed8146966fe934ee734969d7d81548fbd250a8308582973670a9dab1"},
-    {url = "https://files.pythonhosted.org/packages/2d/14/8437eb9aa465f32a1d8b551102ff99ab7bee3c670d0902164e8e779da3e2/dulwich-0.21.5-cp38-cp38-win32.whl", hash = "sha256:c8ded43dc0bd2e65420eb01e778034be5ca7f72e397a839167eda7dcb87c4248"},
-    {url = "https://files.pythonhosted.org/packages/33/72/c44b72a8b666396b225241cc4fdcd638ba508e7e2529ffdacd894df5d006/dulwich-0.21.5-cp310-cp310-win32.whl", hash = "sha256:7f357639b56146a396f48e5e0bc9bbaca3d6d51c8340bd825299272b588fff5f"},
-    {url = "https://files.pythonhosted.org/packages/39/e9/680744d5984b778827d42804ca2a5b9ac6b4beffb7495dd9b787697052f3/dulwich-0.21.5-cp37-cp37m-win_amd64.whl", hash = "sha256:1b20a3656b48c941d49c536824e1e5278a695560e8de1a83b53a630143c4552e"},
-    {url = "https://files.pythonhosted.org/packages/3c/eb/5442bba74288793cf4f407f18049846418e790d1fade76631c903266819b/dulwich-0.21.5-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:b943517e30bd651fbc275a892bb96774f3893d95fe5a4dedd84496a98eaaa8ab"},
-    {url = "https://files.pythonhosted.org/packages/40/48/4308b462565ed6b52a25535fa4b6ed99de052314c35d2f1214991de8aec4/dulwich-0.21.5-cp39-cp39-macosx_10_9_universal2.whl", hash = "sha256:fd4ad079758514375f11469e081723ba8831ce4eaa1a64b41f06a3a866d5ac34"},
-    {url = "https://files.pythonhosted.org/packages/45/3e/db4b6bba31af97e4602e753dd6a473207c71525f3743b6e68e4f53b34f67/dulwich-0.21.5-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:82cdf482f8f51fcc965ffad66180b54a9abaea9b1e985a32e1acbfedf6e0e363"},
-    {url = "https://files.pythonhosted.org/packages/4b/20/4f1840c2749e813e37d0c389dbc66ad77de85d3672c17393dda00d50e374/dulwich-0.21.5-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:be12a46f73023970125808a4a78f610c055373096c1ecea3280edee41613eba8"},
-    {url = "https://files.pythonhosted.org/packages/52/36/45115bf1620356063e075a32e1ec4a1abfc7b3659a36a62debd5fa36ebe6/dulwich-0.21.5-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:90479608e49db93d8c9e4323bc0ec5496678b535446e29d8fd67dc5bbb5d51bf"},
-    {url = "https://files.pythonhosted.org/packages/54/6b/b16a7025ea2dc44da8e4a6285412453d001fea4c8f48ffaab3ef9968ec93/dulwich-0.21.5-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b2c9931b657f2206abec0964ec2355ee2c1e04d05f8864e823ffa23c548c4548"},
-    {url = "https://files.pythonhosted.org/packages/5a/98/124f5ec42dfbb09d3474842ee945b9c706d07cb8255a8c5fc8c81dfd14ea/dulwich-0.21.5-cp310-cp310-win_amd64.whl", hash = "sha256:891d5c73e2b66d05dbb502e44f027dc0dbbd8f6198bc90dae348152e69d0befc"},
-    {url = "https://files.pythonhosted.org/packages/5b/b9/5a6571cd328fc1873072abc844142f8828e5a7a3ae581f970cce532fc608/dulwich-0.21.5-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:0ab86d6d42e385bf3438e70f3c9b16de68018bd88929379e3484c0ef7990bd3c"},
-    {url = "https://files.pythonhosted.org/packages/5b/f0/1ac567158a5f36a198a52712dc820c209f01ca495153e1c86650c3c660df/dulwich-0.21.5-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:281310644e02e3aa6d76bcaffe2063b9031213c4916b5f1a6e68c25bdecfaba4"},
-    {url = "https://files.pythonhosted.org/packages/64/12/10da19f8b569b1297ef7ba4fd8b6719a5f0ede24cf03041c15e063f33fef/dulwich-0.21.5-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:e52b20c4368171b7d32bd3ab0f1d2402e76ad4f2ea915ff9aa73bc9fa2b54d6d"},
-    {url = "https://files.pythonhosted.org/packages/64/d6/b05d7cc66696fc2f5b6e5498a52f0a048629e3d4711b88ba351ffd4affef/dulwich-0.21.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3e8f6d4f4f4d01dd1d3c968e486d4cd77f96f772da7265941bc506de0944ddb9"},
-    {url = "https://files.pythonhosted.org/packages/67/de/2e68b0b1aa669393ed90a7301c59b2e8bbb376be01b21b5791e1a6edad9e/dulwich-0.21.5-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:32493a456358a3a6c15bbda07106fc3d4cc50834ee18bc7717968d18be59b223"},
-    {url = "https://files.pythonhosted.org/packages/79/3f/b8ecf225c1af145e2fac6c483dd182e7e2d9f94d0b8e47d72fe9164db1f6/dulwich-0.21.5-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:eaf6c7fb6b13495c19c9aace88821c2ade3c8c55b4e216cd7cc55d3e3807d7fa"},
-    {url = "https://files.pythonhosted.org/packages/7b/2c/d4603e822b8951d6359aa88171ebdd1c5f02c89f7ab51cf6711de0e1506d/dulwich-0.21.5-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:3800cdc17d144c1f7e114972293bd6c46688f5bcc2c9228ed0537ded72394082"},
-    {url = "https://files.pythonhosted.org/packages/7d/f7/116a4144118b444d7419667edfe6741809a667a1f8fa9c9e79d7c1bc1c57/dulwich-0.21.5-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:a917fd3b4493db3716da2260f16f6b18f68d46fbe491d851d154fc0c2d984ae4"},
-    {url = "https://files.pythonhosted.org/packages/7f/98/6f92463a6e853e4b4fc6712a5d627c72d4c8d3c216d83ecc1ba280845aac/dulwich-0.21.5-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:9019189d7a8f7394df6a22cd5b484238c5776e42282ad5d6d6c626b4c5f43597"},
-    {url = "https://files.pythonhosted.org/packages/82/25/75ecb06b383ad25b3086b4c87b7bd7b701a4e37194547cb25e3b256d0ae4/dulwich-0.21.5-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:b24cb1fad0525dba4872e9381bc576ea2a6dcdf06b0ed98f8e953e3b1d719b89"},
-    {url = "https://files.pythonhosted.org/packages/86/8d/9e59dbbc39365713dca195ecb22bb5329809aac3ce2ed20144a308230eb5/dulwich-0.21.5-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:494024f74c2eef9988adb4352b3651ac1b6c0466176ec62b69d3d3672167ba68"},
-    {url = "https://files.pythonhosted.org/packages/8c/6c/57adedfc2e1debb62581e9b413d2be78ea62e1da47d21fdd9d0d10317ebc/dulwich-0.21.5.tar.gz", hash = "sha256:70955e4e249ddda6e34a4636b90f74e931e558f993b17c52570fa6144b993103"},
-    {url = "https://files.pythonhosted.org/packages/90/16/a4a617550c1d890113a21d5c1734429a989946adde6bfd8dcc044902d8b7/dulwich-0.21.5-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:684c52cff867d10c75a7238151ca307582b3d251bbcd6db9e9cffbc998ef804e"},
-    {url = "https://files.pythonhosted.org/packages/93/99/41e51b07c1407af3c964e5e8ee15107cc3b015080017b3f0818284ae28f7/dulwich-0.21.5-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:7fe62685bf356bfb4d0738f84a3fcf0d1fc9e11fee152e488a20b8c66a52429e"},
-    {url = "https://files.pythonhosted.org/packages/96/2a/abc2eb65856b9dbfbb28a823c6b147066c6d3dd8f8c48dd2ff4c1a06d3a8/dulwich-0.21.5-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6f46bcb6777e5f9f4af24a2bd029e88b77316269d24ce66be590e546a0d8f7b7"},
-    {url = "https://files.pythonhosted.org/packages/99/9f/fe4a657c18f10961223d9b2e8d5e7fb072f7dbb33c6c9dbb3dca2a319db7/dulwich-0.21.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f9a6bf99f57bcac4c77fc60a58f1b322c91cc4d8c65dc341f76bf402622f89cb"},
-    {url = "https://files.pythonhosted.org/packages/9d/dc/175701ca8fdf9a7371938514c29fd807263023943ad322e43cf7bbc34c5e/dulwich-0.21.5-cp38-cp38-musllinux_1_1_aarch64.whl", hash = "sha256:82f632afb9c7c341a875d46aaa3e6c5e586c7a64ce36c9544fa400f7e4f29754"},
-    {url = "https://files.pythonhosted.org/packages/a1/f2/f06681755793ec57676529c26e2480634da23387b0e1cdccf0bf94136c5e/dulwich-0.21.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7dc358c2ee727322a09b7c6da43d47a1026049dbd3ad8d612eddca1f9074b298"},
-    {url = "https://files.pythonhosted.org/packages/a6/52/eb7a2da63a7ed9ab78689305446d8f9b9ac9b2e6576c18eeec0a4840f6c9/dulwich-0.21.5-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1e39b7c2c9bda6acae83b25054650a8bb7e373e886e2334721d384e1479bf04b"},
-    {url = "https://files.pythonhosted.org/packages/a9/de/9a68917bebeba10900fd9bbf91eccfdb58e5621b5656b028b2a953fdf609/dulwich-0.21.5-cp39-cp39-musllinux_1_1_aarch64.whl", hash = "sha256:26456dba39d1209fca17187db06967130e27eeecad2b3c2bbbe63467b0bf09d6"},
-    {url = "https://files.pythonhosted.org/packages/b2/ec/6f3dca19260673b36f352c02e28a3050c5f149d92ac7b02680b4815a07db/dulwich-0.21.5-cp311-cp311-win_amd64.whl", hash = "sha256:5e56b2c1911c344527edb2bf1a4356e2fb7e086b1ba309666e1e5c2224cdca8a"},
-    {url = "https://files.pythonhosted.org/packages/b4/82/4565ef458c8cce50740d226fe533cc65b6f53bb067e1bad567a56075b561/dulwich-0.21.5-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:823091d6b6a1ea07dc4839c9752198fb39193213d103ac189c7669736be2eaff"},
-    {url = "https://files.pythonhosted.org/packages/b4/8a/60c4acce5b203c3c06bb3dca381fa66d267b2839364f00390f4e49a63657/dulwich-0.21.5-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:45d6198e804b539708b73a003419e48fb42ff2c3c6dd93f63f3b134dff6dd259"},
-    {url = "https://files.pythonhosted.org/packages/b6/60/90626707347e35ed7471a2e894b0a2d19db4d6a9ab379e47f747908a0369/dulwich-0.21.5-cp37-cp37m-win32.whl", hash = "sha256:f2eeca6d61366cf5ee8aef45bed4245a67d4c0f0d731dc2383eabb80fa695683"},
-    {url = "https://files.pythonhosted.org/packages/b7/57/37fd47365baad8da470bbf7569494a2707f4972d79111d20d03df971420b/dulwich-0.21.5-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:aae448da7d80306dda4fc46292fed7efaa466294571ab3448be16714305076f1"},
-    {url = "https://files.pythonhosted.org/packages/c2/10/a982a4ff0515b62bbcd7f69b3eb34a01d36b387c334e77e97b6674b769e2/dulwich-0.21.5-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:baecef0d8b9199822c7912876a03a1af17833f6c0d461efb62decebd45897e49"},
-    {url = "https://files.pythonhosted.org/packages/cb/af/54b0a3fc57456b7cf2c4de312c3dd6a47d350d1e0fdff5f36f8da27d8f6f/dulwich-0.21.5-cp39-cp39-win_amd64.whl", hash = "sha256:c922a4573267486be0ef85216f2da103fb38075b8465dc0e90457843884e4860"},
-    {url = "https://files.pythonhosted.org/packages/cd/73/3d93d16b6111163df17c668e70ad5a4f7fcaaf02c3f6cf60eb11323bcf35/dulwich-0.21.5-cp37-cp37m-musllinux_1_1_aarch64.whl", hash = "sha256:3e68b162af2aae995355e7920f89d50d72b53d56021e5ac0a546d493b17cbf7e"},
-    {url = "https://files.pythonhosted.org/packages/d7/15/41886e0f3fc94d6109f82840463e8b17c346c138897b58bb4494a28d489c/dulwich-0.21.5-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4db330fb59fe3b9d253bdf0e49a521739db83689520c4921ab1c5242aaf77b82"},
-    {url = "https://files.pythonhosted.org/packages/de/aa/d5aa9c0f26f86f95e83d935f8b7089ea15f7985a83902d6acf91df0238a5/dulwich-0.21.5-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6616132d219234580de88ceb85dd51480dc43b1bdc05887214b8dd9cfd4a9d40"},
-    {url = "https://files.pythonhosted.org/packages/e0/b1/e254b0ef5c3c22a7e8f6ad43a29c3b004a007c901fed4056f16bb2c802b7/dulwich-0.21.5-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:61e10242b5a7a82faa8996b2c76239cfb633620b02cdd2946e8af6e7eb31d651"},
-    {url = "https://files.pythonhosted.org/packages/e3/8e/5736de31002c9299ac9c9e1c1dcbc3e570626da72bcb0072707f167f27b4/dulwich-0.21.5-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:f9b6ac1b1c67fc6083c42b7b6cd3b211292c8a6517216c733caf23e8b103ab6d"},
-    {url = "https://files.pythonhosted.org/packages/ec/67/b77d9041dceb42b5df14d60e02b1bc106921abd5cc899b7798bc1d91d6b3/dulwich-0.21.5-cp39-cp39-win32.whl", hash = "sha256:4814ca3209dabe0fe7719e9545fbdad7f8bb250c5a225964fe2a31069940c4cf"},
-    {url = "https://files.pythonhosted.org/packages/f4/37/576f9e793e6a447df937c81b70adb81d2cd471aeea86ed46068af7a1c79f/dulwich-0.21.5-cp311-cp311-musllinux_1_1_aarch64.whl", hash = "sha256:6155ab7388ee01c670f7c5d8003d4e133eebebc7085a856c007989f0ba921b36"},
-    {url = "https://files.pythonhosted.org/packages/f8/41/ea8a37cacd520e3914f92b7fc2b42b5ddd0acb13520b62fd16337cbbe553/dulwich-0.21.5-pp37-pypy37_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:aeb736d777ee21f2117a90fc453ee181aa7eedb9e255b5ef07c51733f3fe5cb6"},
-    {url = "https://files.pythonhosted.org/packages/fc/ee/64bbc3a6bc71b8ea66604fa28c6c2f7d581cd8804c5ec0217a71701dbc86/dulwich-0.21.5-cp38-cp38-macosx_10_9_universal2.whl", hash = "sha256:3932b5e17503b265a85f1eda77ede647681c3bab53bc9572955b6b282abd26ea"},
 ]
 "iniconfig 2.0.0" = [
     {url = "https://files.pythonhosted.org/packages/d7/4b/cbd8e699e64a6f16ca3a8220661b5f83792b3017d0f79807cb8708d33913/iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
@@ -640,10 +567,6 @@ content_hash = "sha256:a56e052e6b942ac93c9deed4207ad75e22fc9d6a4c4c34ba62777c9ba
 "typing-extensions 4.6.2" = [
     {url = "https://files.pythonhosted.org/packages/38/60/300ad6f93adca578bf05d5f6cd1d854b7d140bebe2f9829561aa9977d9f3/typing_extensions-4.6.2-py3-none-any.whl", hash = "sha256:3a8b36f13dd5fdc5d1b16fe317f5668545de77fa0b8e02006381fd49d731ab98"},
     {url = "https://files.pythonhosted.org/packages/be/fc/3d12393d634fcb31d5f4231c28feaf4ead225124ba08021046317d5f450d/typing_extensions-4.6.2.tar.gz", hash = "sha256:06006244c70ac8ee83fa8282cb188f697b8db25bc8b4df07be1873c43897060c"},
-]
-"urllib3 2.0.2" = [
-    {url = "https://files.pythonhosted.org/packages/4b/1d/f8383ef593114755429c307449e7717b87044b3bcd5f7860b89b1f759e34/urllib3-2.0.2-py3-none-any.whl", hash = "sha256:d055c2f9d38dc53c808f6fdc8eab7360b6fdbbde02340ed25cfbcd817c62469e"},
-    {url = "https://files.pythonhosted.org/packages/fb/c0/1abba1a1233b81cf2e36f56e05194f5e8a0cec8c03c244cab56cc9dfb5bd/urllib3-2.0.2.tar.gz", hash = "sha256:61717a1095d7e155cdb737ac7bb2f4324a858a1e2e6466f6d03ff630ca68d3cc"},
 ]
 "wrapt 1.15.0" = [
     {url = "https://files.pythonhosted.org/packages/0c/6e/f80c23efc625c10460240e31dcb18dd2b34b8df417bc98521fbfd5bc2e9a/wrapt-1.15.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:21f6d9a0d5b3a207cdf7acf8e58d7d13d463e639f0c7e01d82cdb671e6cb7923"},
