@@ -17,8 +17,7 @@ dependencies = [
   "click>=8.1.3",
   "tomlkit>=0.11.4",
   "cppython-core>=0.4.1.dev19",
-  "pydantic>=1.9.2",
-  "dulwich>=0.20.45",
+  "pydantic>=2.0a4",
   "packaging>=21.3",
 ]
 
@@ -47,10 +46,6 @@ test = [
   "pytest-mock>=3.8.2",
   "pytest-cppython>=0.2.0.dev0",
 ]
-
-# Plugin registration
-[project.entry-points."cppython.scm"]
-cmake = "cppython.plugins.git:GitSCM"
 
 [project.scripts]
 cppython = "cppython.console.interface:cli"
@@ -93,8 +88,8 @@ load-plugins = [
   "pylint.extensions.bad_builtin",
 ]
 
-[tool.pylint.messages_control]
-extension-pkg-whitelist = "pydantic"
+[tool.pylint.typecheck]
+ignored-classes = "FieldInfo"
 
 [tool.pylint.format]
 max-line-length = "120"
