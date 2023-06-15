@@ -63,7 +63,7 @@ dependencies = [
 
 [[package]]
 name = "cppython-core"
-version = "0.6.1.dev68"
+version = "0.6.1.dev70"
 requires_python = ">=3.11"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -130,7 +130,7 @@ summary = "Utility library for gitignore style pattern matching of file paths."
 
 [[package]]
 name = "platformdirs"
-version = "3.5.1"
+version = "3.5.3"
 requires_python = ">=3.7"
 summary = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 
@@ -142,7 +142,7 @@ summary = "plugin and hook calling mechanisms for python"
 
 [[package]]
 name = "pydantic"
-version = "2.0b1"
+version = "2.0b2"
 requires_python = ">=3.7"
 summary = "Data validation using Python type hints"
 dependencies = [
@@ -174,7 +174,7 @@ dependencies = [
 
 [[package]]
 name = "pytest"
-version = "7.3.1"
+version = "7.3.2"
 requires_python = ">=3.7"
 summary = "pytest: simple powerful testing with Python"
 dependencies = [
@@ -205,7 +205,7 @@ dependencies = [
 
 [[package]]
 name = "pytest-cppython"
-version = "0.3.1.dev42"
+version = "0.3.1.dev44"
 requires_python = ">=3.11"
 summary = "A pytest plugin that imports CPPython testing types"
 dependencies = [
@@ -230,7 +230,7 @@ summary = "Style preserving TOML library"
 
 [[package]]
 name = "typing-extensions"
-version = "4.6.2"
+version = "4.6.3"
 requires_python = ">=3.7"
 summary = "Backported and Experimental Type Hints for Python 3.7+"
 
@@ -352,9 +352,9 @@ content_hash = "sha256:773ab8aa79c3209ee9a05956dc5808f351d35914c4c996301b024b71c
     {url = "https://files.pythonhosted.org/packages/fe/57/e4f8ad64d84ca9e759d783a052795f62a9f9111585e46068845b1cb52c2b/coverage-7.2.7-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6f48351d66575f535669306aa7d6d6f71bc43372473b54a832222803eb956fd1"},
     {url = "https://files.pythonhosted.org/packages/ff/d5/52fa1891d1802ab2e1b346d37d349cb41cdd4fd03f724ebbf94e80577687/coverage-7.2.7-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:f2f67fe12b22cd130d34d0ef79206061bfb5eda52feb6ce0dba0644e20a03cf4"},
 ]
-"cppython-core 0.6.1.dev68" = [
-    {url = "https://files.pythonhosted.org/packages/5a/bd/f8bb92a67c89cc907031436960a0e4a7a97bfb5ac83bb0356ca0075d711b/cppython-core-0.6.1.dev68.tar.gz", hash = "sha256:17330d7a1dfb8ec39d65f5140befd374696dfe3e315549d84c4a0a17fdbb27af"},
-    {url = "https://files.pythonhosted.org/packages/6f/79/7c91049050e3714317f934f9a23ca7232b39930fd79a74cb09672a1016ee/cppython_core-0.6.1.dev68-py3-none-any.whl", hash = "sha256:b3343fd13575757d2b39aecd30ba675177b94df8371055ca0c2e4ceb4cc04ca4"},
+"cppython-core 0.6.1.dev70" = [
+    {url = "https://files.pythonhosted.org/packages/82/44/6b22f00a9590ac4edba724f891f05ac4936b441456ab26bf90dbf80e6d07/cppython_core-0.6.1.dev70-py3-none-any.whl", hash = "sha256:c2761c1b9f20d5da53f52d2273be9dced812f56d2f8186786ccd662505da14fc"},
+    {url = "https://files.pythonhosted.org/packages/b9/a7/cdad28d35ac41701ebf868f238abd9ac8eecb89283bfafdedbcbe644d4aa/cppython-core-0.6.1.dev70.tar.gz", hash = "sha256:55dc44f3570c67a63ca9d88848a543d71eff476fe13f77948f11ea5f579822b9"},
 ]
 "dill 0.3.6" = [
     {url = "https://files.pythonhosted.org/packages/7c/e7/364a09134e1062d4d5ff69b853a56cf61c223e0afcc6906b6832bcd51ea8/dill-0.3.6.tar.gz", hash = "sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373"},
@@ -450,17 +450,17 @@ content_hash = "sha256:773ab8aa79c3209ee9a05956dc5808f351d35914c4c996301b024b71c
     {url = "https://files.pythonhosted.org/packages/95/60/d93628975242cc515ab2b8f5b2fc831d8be2eff32f5a1be4776d49305d13/pathspec-0.11.1.tar.gz", hash = "sha256:2798de800fa92780e33acca925945e9a19a133b715067cf165b8866c15a31687"},
     {url = "https://files.pythonhosted.org/packages/be/c8/551a803a6ebb174ec1c124e68b449b98a0961f0b737def601e3c1fbb4cfd/pathspec-0.11.1-py3-none-any.whl", hash = "sha256:d8af70af76652554bd134c22b3e8a1cc46ed7d91edcdd721ef1a0c51a84a5293"},
 ]
-"platformdirs 3.5.1" = [
-    {url = "https://files.pythonhosted.org/packages/89/7e/c6ff9ddcf93b9b36c90d88111c4db354afab7f9a58c7ac3257fa717f1268/platformdirs-3.5.1-py3-none-any.whl", hash = "sha256:e2378146f1964972c03c085bb5662ae80b2b8c06226c54b2ff4aa9483e8a13a5"},
-    {url = "https://files.pythonhosted.org/packages/9c/0e/ae9ef1049d4b5697e79250c4b2e72796e4152228e67733389868229c92bb/platformdirs-3.5.1.tar.gz", hash = "sha256:412dae91f52a6f84830f39a8078cecd0e866cb72294a5c66808e74d5e88d251f"},
+"platformdirs 3.5.3" = [
+    {url = "https://files.pythonhosted.org/packages/6d/1a/96efea7b36835ce89911d7813fe68f5b1db7ecae4023bf209a7aeba93017/platformdirs-3.5.3-py3-none-any.whl", hash = "sha256:0ade98a4895e87dc51d47151f7d2ec290365a585151d97b4d8d6312ed6132fed"},
+    {url = "https://files.pythonhosted.org/packages/d2/5d/29eed8861e07378ef46e956650615a9677f8f48df7911674f923236ced2b/platformdirs-3.5.3.tar.gz", hash = "sha256:e48fabd87db8f3a7df7150a4a5ea22c546ee8bc39bc2473244730d4b56d2cc4e"},
 ]
 "pluggy 1.0.0" = [
     {url = "https://files.pythonhosted.org/packages/9e/01/f38e2ff29715251cf25532b9082a1589ab7e4f571ced434f98d0139336dc/pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
     {url = "https://files.pythonhosted.org/packages/a1/16/db2d7de3474b6e37cbb9c008965ee63835bba517e22cdb8c35b5116b5ce1/pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
-"pydantic 2.0b1" = [
-    {url = "https://files.pythonhosted.org/packages/41/ef/dbe593b0a21e187ebbd7d63f714a0d8eeb069520afea5decb46642ff8854/pydantic-2.0b1.tar.gz", hash = "sha256:cba25f8a6090f8bdbc7bea424ad95a53687e10be2f23883c3460a32afd7223d6"},
-    {url = "https://files.pythonhosted.org/packages/c9/30/34f9376cb61eaf06973b4d1915fa6aaed5a9db9ad0e255c3d317ae672e34/pydantic-2.0b1-py3-none-any.whl", hash = "sha256:669f0d5e777462bd000682dd3ad4cee249e3c14bab9d0648aa179a766ac0ccd4"},
+"pydantic 2.0b2" = [
+    {url = "https://files.pythonhosted.org/packages/05/6f/504e94dcda88a5ec8c680864d188bf3501090536f0bbd3e72c8cb22446bf/pydantic-2.0b2.tar.gz", hash = "sha256:3491863cd9be6608f9cae6796a4fd151d38df1872242c1d5e992dcceb27697fe"},
+    {url = "https://files.pythonhosted.org/packages/ad/87/2cc0ffb4493da08e2b76296f380a5e912abbcb95d2f460a08a67259f6151/pydantic-2.0b2-py3-none-any.whl", hash = "sha256:a07edf22ceb91790a4954db62b82dfc0360034e2ab30c1a23d4a65024bc66eb9"},
 ]
 "pydantic-core 0.38.0" = [
     {url = "https://files.pythonhosted.org/packages/00/16/21726a8e6d18512f6d604934adc82e6a326cccaa1b6b3b7a29fbfe0f8f12/pydantic_core-0.38.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:16aa493f005447bf6528734432ecf571c7c4dcf54712154a6e3fe70d0576b9d0"},
@@ -549,9 +549,9 @@ content_hash = "sha256:773ab8aa79c3209ee9a05956dc5808f351d35914c4c996301b024b71c
     {url = "https://files.pythonhosted.org/packages/04/4c/3f7d42a1378c40813772bc5f25184144da09f00ffbe3f60ae985ffa7e10f/pylint-2.17.4-py3-none-any.whl", hash = "sha256:7a1145fb08c251bdb5cca11739722ce64a63db479283d10ce718b2460e54123c"},
     {url = "https://files.pythonhosted.org/packages/7e/d4/aba77d10841710fea016422f419dfe501dee05fa0fc3898dc048f7bf3f60/pylint-2.17.4.tar.gz", hash = "sha256:5dcf1d9e19f41f38e4e85d10f511e5b9c35e1aa74251bf95cdd8cb23584e2db1"},
 ]
-"pytest 7.3.1" = [
-    {url = "https://files.pythonhosted.org/packages/1b/d1/72df649a705af1e3a09ffe14b0c7d3be1fd730da6b98beb4a2ed26b8a023/pytest-7.3.1-py3-none-any.whl", hash = "sha256:3799fa815351fea3a5e96ac7e503a96fa51cc9942c3753cda7651b93c1cfa362"},
-    {url = "https://files.pythonhosted.org/packages/ec/d9/36b65598f3d19d0a14d13dc87ad5fa42869ae53bb7471f619a30eaabc4bf/pytest-7.3.1.tar.gz", hash = "sha256:434afafd78b1d78ed0addf160ad2b77a30d35d4bdf8af234fe621919d9ed15e3"},
+"pytest 7.3.2" = [
+    {url = "https://files.pythonhosted.org/packages/58/2a/07c65fdc40846ecb8a9dcda2c38fcb5a06a3e39d08d4a4960916431951cb/pytest-7.3.2.tar.gz", hash = "sha256:ee990a3cc55ba808b80795a79944756f315c67c12b56abd3ac993a7b8c17030b"},
+    {url = "https://files.pythonhosted.org/packages/7a/d0/de969198293cdea22b3a6fb99a99aeeddb7b3827f0823b33c5dc0734bbe5/pytest-7.3.2-py3-none-any.whl", hash = "sha256:cdcbd012c9312258922f8cd3f1b62a6580fdced17db6014896053d47cddf9295"},
 ]
 "pytest-click 1.1.0" = [
     {url = "https://files.pythonhosted.org/packages/72/1a/eb53371999b94b3c995c00117f3a232dbf6f56c7152a52cf3e3777e7d49d/pytest_click-1.1.0-py3-none-any.whl", hash = "sha256:eade4742c2f02c345e78a32534a43e8db04acf98d415090539dacc880b7cd0e9"},
@@ -561,9 +561,9 @@ content_hash = "sha256:773ab8aa79c3209ee9a05956dc5808f351d35914c4c996301b024b71c
     {url = "https://files.pythonhosted.org/packages/7a/15/da3df99fd551507694a9b01f512a2f6cf1254f33601605843c3775f39460/pytest-cov-4.1.0.tar.gz", hash = "sha256:3904b13dfbfec47f003b8e77fd5b589cd11904a21ddf1ab38a64f204d6a10ef6"},
     {url = "https://files.pythonhosted.org/packages/a7/4b/8b78d126e275efa2379b1c2e09dc52cf70df16fc3b90613ef82531499d73/pytest_cov-4.1.0-py3-none-any.whl", hash = "sha256:6ba70b9e97e69fcc3fb45bfeab2d0a138fb65c4d0d6a41ef33983ad114be8c3a"},
 ]
-"pytest-cppython 0.3.1.dev42" = [
-    {url = "https://files.pythonhosted.org/packages/0f/39/0588ed438c66da56810e14540c4821ce3d56953ca09ef077b0a19e66395d/pytest_cppython-0.3.1.dev42-py3-none-any.whl", hash = "sha256:03e917571605cc6bb86f90839ffb441d743e96280feb49094b1f577e232dbfd5"},
-    {url = "https://files.pythonhosted.org/packages/b8/84/6848328a2ce0f9fe495ae2b21845ce7dc95aed4cf2ce6b7b0396545114f3/pytest-cppython-0.3.1.dev42.tar.gz", hash = "sha256:8cda22c1c44312c62e6b3d88c687047a48aec26ec474508c0a861f5fcdcdeb7f"},
+"pytest-cppython 0.3.1.dev44" = [
+    {url = "https://files.pythonhosted.org/packages/36/46/87da70abaf4cd3fb4b63418c2da15d81cdbdc9286883a9c51b98b3285772/pytest_cppython-0.3.1.dev44-py3-none-any.whl", hash = "sha256:ef033a44691a950bae1ef083bd7efad145818b6b697fa2588e17a1e36bbc5bca"},
+    {url = "https://files.pythonhosted.org/packages/dc/3f/1149db4cdfbe2759626e631377fd8c119c8293a0d9fcfa807665c1cdd5bb/pytest-cppython-0.3.1.dev44.tar.gz", hash = "sha256:690bacb37be24c68ab7ce7bfc3c967768fa8824c452f86f31e1b6729bfd77f1f"},
 ]
 "pytest-mock 3.10.0" = [
     {url = "https://files.pythonhosted.org/packages/91/84/c951790e199cd54ddbf1021965b62a5415b81193ebdb4f4af2659fd06a73/pytest_mock-3.10.0-py3-none-any.whl", hash = "sha256:f4c973eeae0282963eb293eb173ce91b091a79c1334455acfac9ddee8a1c784b"},
@@ -573,9 +573,9 @@ content_hash = "sha256:773ab8aa79c3209ee9a05956dc5808f351d35914c4c996301b024b71c
     {url = "https://files.pythonhosted.org/packages/10/37/dd53019ccb72ef7d73fff0bee9e20b16faff9658b47913a35d79e89978af/tomlkit-0.11.8.tar.gz", hash = "sha256:9330fc7faa1db67b541b28e62018c17d20be733177d290a13b24c62d1614e0c3"},
     {url = "https://files.pythonhosted.org/packages/ef/a8/b1c193be753c02e2a94af6e37ee45d3378a74d44fe778c2434a63af92731/tomlkit-0.11.8-py3-none-any.whl", hash = "sha256:8c726c4c202bdb148667835f68d68780b9a003a9ec34167b6c673b38eff2a171"},
 ]
-"typing-extensions 4.6.2" = [
-    {url = "https://files.pythonhosted.org/packages/38/60/300ad6f93adca578bf05d5f6cd1d854b7d140bebe2f9829561aa9977d9f3/typing_extensions-4.6.2-py3-none-any.whl", hash = "sha256:3a8b36f13dd5fdc5d1b16fe317f5668545de77fa0b8e02006381fd49d731ab98"},
-    {url = "https://files.pythonhosted.org/packages/be/fc/3d12393d634fcb31d5f4231c28feaf4ead225124ba08021046317d5f450d/typing_extensions-4.6.2.tar.gz", hash = "sha256:06006244c70ac8ee83fa8282cb188f697b8db25bc8b4df07be1873c43897060c"},
+"typing-extensions 4.6.3" = [
+    {url = "https://files.pythonhosted.org/packages/42/56/cfaa7a5281734dadc842f3a22e50447c675a1c5a5b9f6ad8a07b467bffe7/typing_extensions-4.6.3.tar.gz", hash = "sha256:d91d5919357fe7f681a9f2b5b4cb2a5f1ef0a1e9f59c4d8ff0d3491e05c0ffd5"},
+    {url = "https://files.pythonhosted.org/packages/5f/86/d9b1518d8e75b346a33eb59fa31bdbbee11459a7e2cc5be502fa779e96c5/typing_extensions-4.6.3-py3-none-any.whl", hash = "sha256:88a4153d8505aabbb4e13aacb7c486c2b4a33ca3b3f807914a9b4c844c471c26"},
 ]
 "wrapt 1.15.0" = [
     {url = "https://files.pythonhosted.org/packages/0c/6e/f80c23efc625c10460240e31dcb18dd2b34b8df417bc98521fbfd5bc2e9a/wrapt-1.15.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:21f6d9a0d5b3a207cdf7acf8e58d7d13d463e639f0c7e01d82cdb671e6cb7923"},
