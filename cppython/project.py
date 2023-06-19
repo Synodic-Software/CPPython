@@ -40,11 +40,10 @@ class Project(API):
 
             # Once the plugins are resolved, the core data is complete and can be generated
 
-            pep621_data = builder.generate_pep621_data(pyproject, project_configuration, self._scm)
+            pep621_data = builder.generate_pep621_data(pyproject, project_configuration, self.scm)
             self._core_data = builder.generate_core_data(
                 project_data,
                 pyproject,
-                pep621_data,
                 plugin_build_data,
             )
 

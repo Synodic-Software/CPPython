@@ -115,7 +115,6 @@ class Builder:
         self,
         project_data: ProjectData,
         pyproject: PyProject,
-        pep621_data: PEP621Data,
         plugin_build_date: PluginBuildData,
     ) -> CoreData:
         """Parses and returns resolved data from all configuration sources
@@ -123,7 +122,6 @@ class Builder:
         Args:
             project_data: Project data
             pyproject: TODO
-            pep621_data: TODO
             plugin_build_date: TODO
 
         Raises:
@@ -137,7 +135,41 @@ class Builder:
 
         cppython_data = resolve_cppython(pyproject.tool.cppython, global_configuration, project_data, plugin_build_date)
 
-        return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
+        return CoreData(project_data=project_data, cppython_data=cppython_data)
+
+    def resolve_global_config() -> CPPythonGlobalConfiguration:
+        """_summary_
+
+        Returns:
+            _description_
+        """
+
+        return CPPythonGlobalConfiguration()
+
+    def resolve_core_data(
+        project_data: ProjectData,
+        pyproject: PyProject,
+        plugin_build_date: PluginBuildData,
+    ) -> CoreData:
+        """Parses and returns resolved data from all configuration sources
+
+        Args:
+            project_data: Project data
+            pyproject: TODO
+            plugin_build_date: TODO
+
+        Raises:
+            ConfigError: Raised if data cannot be parsed
+
+        Returns:
+            The resolved core object
+        """
+
+        global_configuration = resolve_global_config()
+
+        cppython_data = resolve_cppython(pyproject.tool.cppython, global_configuration, project_data, plugin_build_date)
+
+        return CoreData(project_data=project_data, cppython_data=cppython_data)
 
     def find_generators(self) -> list[type[Generator]]:
         """_summary_
@@ -341,7 +373,6 @@ class Builder:
             The constructed generator
         """
 
-        generator_data = resolve_generator(core_data.project_data)
         cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, generator_type)
 
         core_plugin_data = CorePluginData(
@@ -349,6 +380,8 @@ class Builder:
             pep621_data=core_data.pep621_data,
             cppython_data=cppython_plugin_data,
         )
+
+        generator_data = resolve_generator(core_plugin_data)
 
         if not generator_configuration:
             self.logger.error(
@@ -374,7 +407,6 @@ class Builder:
             A constructed provider plugins
         """
 
-        provider_data = resolve_provider(core_data.project_data)
         cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, provider_type)
 
         core_plugin_data = CorePluginData(
@@ -382,6 +414,8 @@ class Builder:
             pep621_data=core_data.pep621_data,
             cppython_data=cppython_plugin_data,
         )
+
+        provider_data = resolve_provider(core_plugin_data)
 
         if not provider_configuration:
             self.logger.error(
