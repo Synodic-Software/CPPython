@@ -32,13 +32,12 @@ class Project(API):
             self.logger.info("Initializing project")
 
             project_data = builder.generate_project_data(project_configuration)
-            self._scm = builder.create_scm(project_data)
-
             pyproject = PyProject(**pyproject_data)
 
-            plugin_build_data = builder.generate_data_plugins(pyproject)
+            plugin_build_data = builder.generate_plugins(pyproject)
 
             # Once the plugins are resolved, the core data is complete and can be generated
+            self.scm = plugin_build_data.scm_type()
 
             pep621_data = builder.generate_pep621_data(pyproject, project_configuration, self.scm)
             self._core_data = builder.generate_core_data(

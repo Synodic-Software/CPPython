@@ -67,7 +67,7 @@ class Builder:
 
         return resolve_project_configuration(project_configuration)
 
-    def generate_data_plugins(self, pyproject: PyProject) -> PluginBuildData:
+    def generate_plugins(self, pyproject: PyProject) -> PluginBuildData:
         """_summary_
 
         Args:
@@ -91,10 +91,12 @@ class Builder:
             "Provider",
         )
 
+        self._scm = builder.create_scm(project_data)
+
         # Solve the messy interactions between plugins
         generator_type, provider_type = self.solve(generator_plugins, provider_plugins)
 
-        return PluginBuildData(generator_type=generator_type, provider_type=provider_type)
+        return PluginBuildData(generator_type=generator_type, provider_type=provider_type, scm_type=scm_type)
 
     def generate_pep621_data(
         self, pyproject: PyProject, project_configuration: ProjectConfiguration, scm: SCM | None
