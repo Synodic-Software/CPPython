@@ -28,7 +28,6 @@ paths = ["LICENSE.md"]
 homepage = "https://github.com/Synodic-Software/CPPython"
 repository = "https://github.com/Synodic-Software/CPPython"
 
-[project.optional-dependencies]
 [tool.pdm]
 version = {use_scm = true}
 
