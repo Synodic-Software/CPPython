@@ -104,5 +104,6 @@ default-docstring-type = "google"
 skip_empty = true
 
 [build-system]
-build-backend = "pdm.pep517.api"
-requires = ["pdm-pep517"]
+build-backend = "pdm.backend"
+requires = ["pdm.backend"]
+
