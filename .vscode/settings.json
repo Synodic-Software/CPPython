@@ -1,17 +1,11 @@
 {
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": false,
-    "python.linting.pylintEnabled": true,
     "python.testing.pytestArgs": [
         "tests"
     ],
-    "python.formatting.provider": "black",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
     },
-    "python.linting.mypyEnabled": true,
-    "mypy.runUsingActiveInterpreter": true
 }
