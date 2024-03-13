@@ -1,22 +1,19 @@
-"""Manages data flow to and from plugins
-"""
+"""Manages data flow to and from plugins"""
 
 import asyncio
 import logging
 from typing import Any
 
-from cppython_core.exceptions import ConfigError, PluginError
-from cppython_core.plugin_schema.scm import SCM
-from cppython_core.resolution import resolve_name
+from cppython_core.exceptions import ConfigException, PluginError
+from cppython_core.resolution import resolve_model
 from cppython_core.schema import CoreData, Interface, ProjectConfiguration, PyProject
-from pydantic import ValidationError
 
 from cppython.builder import Builder
 from cppython.schema import API
 
 
 class Project(API):
-    """The object constructed at each entry_point"""
+    """The object that should be constructed at each entry_point"""
 
     def __init__(
         self, project_configuration: ProjectConfiguration, interface: Interface, pyproject_data: dict[str, Any]
@@ -25,41 +22,21 @@ class Project(API):
         self._interface = interface
         self.logger = logging.getLogger("cppython")
 
+        builder = Builder(project_configuration, self.logger)
+
+        self.logger.info("Initializing project")
+
         try:
-            builder = Builder(self.logger)
-            builder.setup_logger(project_configuration)
-
-            self.logger.info("Initializing project")
-
-            project_data = builder.generate_project_data(project_configuration)
-            pyproject = PyProject(**pyproject_data)
-
-            plugin_build_data = builder.generate_plugins(pyproject)
-
-            # Once the plugins are resolved, the core data is complete and can be generated
-            self.scm = plugin_build_data.scm_type()
-
-            pep621_data = builder.generate_pep621_data(pyproject, project_configuration, self.scm)
-            self._core_data = builder.generate_core_data(
-                project_data,
-                pyproject,
-                plugin_build_data,
-            )
-
-            # Create the chosen plugins
-            self._generator = builder.create_generator(
-                self._core_data, pyproject.tool.cppython.generator, plugin_build_data.generator_type
-            )
-            self._provider = builder.create_provider(
-                self._core_data, pyproject.tool.cppython.provider, plugin_build_data.provider_type
-            )
-
-        except ConfigError:
-            logging.exception("Unhandled configuration. CPPython will process no further")
+            pyproject = resolve_model(PyProject, pyproject_data)
+        except ConfigException as error:
+            self.logger.error(error, exc_info=True)
             return
-        except ValidationError as error:
-            logging.error(error)
+
+        if not pyproject.tool or not pyproject.tool.cppython:
+            self.logger.warning("The pyproject.toml file doesn't contain the `tool.cppython` table")
             return
+
+        self._plugins = builder.build(pyproject.project, pyproject.tool.cppython)
 
         self._enabled = True
 
@@ -83,29 +60,19 @@ class Project(API):
         """
         return self._core_data if self._enabled else None
 
-    @property
-    def scm(self) -> SCM | None:
-        """SCM
-
-        Returns:
-            SCM, if enabled
-        """
-        return self._scm if self._enabled else None
-
     async def download_provider_tools(self) -> None:
         """Download the provider tooling if required"""
         if not self._enabled:
             self.logger.info("Skipping 'download_provider_tools' because the project is not enabled")
             return
 
-        name = resolve_name(type(self._provider))
         base_path = self._core_data.cppython_data.install_path
 
-        path = base_path / name
+        path = base_path / self._provider.name()
 
         path.mkdir(parents=True, exist_ok=True)
 
-        self.logger.warning("Downloading the %s requirements to %s", name, path)
+        self.logger.warning("Downloading the %s requirements to %s", self._provider.name(), path)
         await self._provider.download_tooling(path)
 
     def sync(self) -> None:
@@ -135,13 +102,12 @@ class Project(API):
         asyncio.run(self.download_provider_tools())
 
         self.logger.info("Installing project")
-        name = resolve_name(type(self._provider))
-        self.logger.info("Installing %s provider", name)
+        self.logger.info("Installing %s provider", self._provider.name())
 
         try:
             self._provider.install()
         except Exception as exception:
-            self.logger.error("Provider %s failed to install", name)
+            self.logger.error("Provider %s failed to install", self._provider.name())
             raise exception
 
         self.sync()
@@ -160,13 +126,12 @@ class Project(API):
         asyncio.run(self.download_provider_tools())
 
         self.logger.info("Updating project")
-        name = resolve_name(type(self._provider))
-        self.logger.info("Updating %s provider", name)
+        self.logger.info("Updating %s provider", self._provider.name())
 
         try:
             self._provider.update()
         except Exception as exception:
-            self.logger.error("Provider %s failed to update", name)
+            self.logger.error("Provider %s failed to update", self._provider.name())
             raise exception
 
         self.sync()
