@@ -45,12 +45,12 @@ class Resolver:
         self._logger = logger
 
     def generate_plugins(
-        self, local_configuration: CPPythonLocalConfiguration, project_data: ProjectData
+        self, cppython_local_configuration: CPPythonLocalConfiguration, project_data: ProjectData
     ) -> PluginBuildData:
         """_summary_
 
         Args:
-            local_configuration: _description_
+            cppython_local_configuration: _description_
             project_data: _description_
 
         Returns:
@@ -60,14 +60,14 @@ class Resolver:
         raw_generator_plugins = self.find_generators()
         generator_plugins = self.filter_plugins(
             raw_generator_plugins,
-            local_configuration.generator_name,
+            cppython_local_configuration.generator_name,
             "Generator",
         )
 
         raw_provider_plugins = self.find_providers()
         provider_plugins = self.filter_plugins(
             raw_provider_plugins,
-            local_configuration.provider_name,
+            cppython_local_configuration.provider_name,
             "Provider",
         )
 
@@ -417,12 +417,18 @@ class Builder:
 
         self._resolver = Resolver(self._project_configuration, self._logger)
 
-    def build(self, pep621_configuration: PEP621Configuration, local_configuration: CPPythonLocalConfiguration) -> Data:
+    def build(
+        self,
+        pep621_configuration: PEP621Configuration,
+        cppython_local_configuration: CPPythonLocalConfiguration,
+        plugin_build_data: PluginBuildData | None = None,
+    ) -> Data:
         """_summary_
 
         Args:
             pep621_configuration: _description_
-            local_configuration: _description_
+            cppython_local_configuration: _description_
+            plugin_build_data: _description_
 
         Returns:
             _description_
@@ -430,12 +436,16 @@ class Builder:
 
         project_data = resolve_project_configuration(self._project_configuration)
 
-        plugin_build_data = self._resolver.generate_plugins(local_configuration, project_data)
+        if plugin_build_data is None:
+            plugin_build_data = self._resolver.generate_plugins(cppython_local_configuration, project_data)
+
         plugin_cppython_data = self._resolver.generate_cppython_plugin_data(plugin_build_data)
 
         global_configuration = self._resolver.resolve_global_config()
 
-        cppython_data = resolve_cppython(local_configuration, global_configuration, project_data, plugin_cppython_data)
+        cppython_data = resolve_cppython(
+            cppython_local_configuration, global_configuration, project_data, plugin_cppython_data
+        )
 
         core_data = CoreData(project_data=project_data, cppython_data=cppython_data)
 
@@ -445,10 +455,10 @@ class Builder:
 
         # Create the chosen plugins
         generator = self._resolver.create_generator(
-            core_data, pep621_data, local_configuration.generator, plugin_build_data.generator_type
+            core_data, pep621_data, cppython_local_configuration.generator, plugin_build_data.generator_type
         )
         provider = self._resolver.create_provider(
-            core_data, pep621_data, local_configuration.provider, plugin_build_data.provider_type
+            core_data, pep621_data, cppython_local_configuration.provider, plugin_build_data.provider_type
         )
 
         plugins = Plugins(generator=generator, provider=provider, scm=scm)
