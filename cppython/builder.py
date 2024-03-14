@@ -111,32 +111,6 @@ class Resolver:
         """
         return resolve_pep621(pep621_configuration, project_configuration, scm)
 
-    def generate_core_data(
-        self,
-        project_data: ProjectData,
-        local_configuration: CPPythonLocalConfiguration,
-        plugin_cppython_date: PluginCPPythonData,
-    ) -> CoreData:
-        """Parses and returns resolved data from all configuration sources
-
-        Args:
-            project_data: Project data
-            local_configuration: TODO
-            plugin_cppython_date: TODO
-
-        Raises:
-            ConfigError: Raised if data cannot be parsed
-
-        Returns:
-            The resolved core object
-        """
-
-        global_configuration = self.resolve_global_config()
-
-        cppython_data = resolve_cppython(local_configuration, global_configuration, project_data, plugin_cppython_date)
-
-        return CoreData(project_data=project_data, cppython_data=cppython_data)
-
     def resolve_global_config(self) -> CPPythonGlobalConfiguration:
         """Generates the global configuration object
 
@@ -459,11 +433,11 @@ class Builder:
         plugin_build_data = self._resolver.generate_plugins(local_configuration, project_data)
         plugin_cppython_data = self._resolver.generate_cppython_plugin_data(plugin_build_data)
 
-        core_data = self._resolver.generate_core_data(
-            project_data,
-            local_configuration,
-            plugin_cppython_data,
-        )
+        global_configuration = self._resolver.resolve_global_config()
+
+        cppython_data = resolve_cppython(local_configuration, global_configuration, project_data, plugin_cppython_data)
+
+        core_data = CoreData(project_data=project_data, cppython_data=cppython_data)
 
         scm = self._resolver.create_scm(core_data, plugin_build_data.scm_type)
 

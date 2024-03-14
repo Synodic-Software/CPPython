@@ -117,7 +117,7 @@ files = [
 
 [[package]]
 name = "cppython-core"
-version = "0.7.1.dev12"
+version = "0.7.1.dev14"
 requires_python = ">=3.12"
 summary = "Data definitions for CPPython"
 dependencies = [
@@ -125,8 +125,8 @@ dependencies = [
     "synodic-utilities>=0.1.1.dev3",
 ]
 files = [
-    {file = "cppython_core-0.7.1.dev12-py3-none-any.whl", hash = "sha256:3b6e047874f3c7294c215b344a89147445bda4aecfa81564260cd944ee147551"},
-    {file = "cppython_core-0.7.1.dev12.tar.gz", hash = "sha256:1bd3cc2c6bbcadd71dd565a27713f4ff38b3d3c790485ce424b14d4d18081e53"},
+    {file = "cppython_core-0.7.1.dev14-py3-none-any.whl", hash = "sha256:dc3f8a27b9f02ef3c11a113ed5f1d836c744170863cdaf62721b99ed65366307"},
+    {file = "cppython_core-0.7.1.dev14.tar.gz", hash = "sha256:87673de19b7998480aceee5ef7a4bc112dfaf5c349a4d76b0ac547b8b9a925af"},
 ]
 
 [[package]]
