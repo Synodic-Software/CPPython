@@ -1,5 +1,4 @@
-"""Everything needed to build a CPPython project
-"""
+"""Defines the data and routines for building a CPPython project type"""
 
 import logging
 from importlib import metadata
@@ -13,10 +12,10 @@ from cppython_core.plugin_schema.provider import Provider
 from cppython_core.plugin_schema.scm import SCM
 from cppython_core.resolution import (
     PluginBuildData,
+    PluginCPPythonData,
     resolve_cppython,
     resolve_cppython_plugin,
     resolve_generator,
-    resolve_name,
     resolve_pep621,
     resolve_project_configuration,
     resolve_provider,
@@ -26,127 +25,109 @@ from cppython_core.schema import (
     CoreData,
     CorePluginData,
     CPPythonGlobalConfiguration,
-    DataPluginT,
+    CPPythonLocalConfiguration,
+    DataPlugin,
+    PEP621Configuration,
     PEP621Data,
     ProjectConfiguration,
     ProjectData,
-    PyProject,
 )
 
+from cppython.data import Data, Plugins
 
-class Builder:
-    """Helper class for building CPPython projects"""
 
-    def __init__(self, logger: Logger) -> None:
-        self.logger = logger
+class Resolver:
+    """The resolution of data sources for the builder"""
 
-    def setup_logger(self, project_configuration: ProjectConfiguration) -> None:
-        """_summary_
+    def __init__(self, project_configuration: ProjectConfiguration, logger: Logger) -> None:
 
-        Args:
-            project_configuration: _description_
-        """
-        # Default logging levels
-        levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+        self._project_configuration = project_configuration
+        self._logger = logger
 
-        # Add default output stream
-        self.logger.addHandler(logging.StreamHandler())
-        self.logger.setLevel(levels[project_configuration.verbosity])
-
-        self.logger.info("Logging setup complete")
-
-    def generate_project_data(self, project_configuration: ProjectConfiguration) -> ProjectData:
-        """_summary_
+    def generate_plugins(
+        self, cppython_local_configuration: CPPythonLocalConfiguration, project_data: ProjectData
+    ) -> PluginBuildData:
+        """Generates the plugin data from the local configuration and project data
 
         Args:
-            project_configuration: _description_
+            cppython_local_configuration: The local configuration
+            project_data: The project data
 
         Returns:
-            _description_
-        """
-
-        return resolve_project_configuration(project_configuration)
-
-    def generate_data_plugins(self, pyproject: PyProject) -> PluginBuildData:
-        """_summary_
-
-        Args:
-            pyproject: _description_
-
-        Returns:
-            _description_
+            The resolved plugin data
         """
 
         raw_generator_plugins = self.find_generators()
         generator_plugins = self.filter_plugins(
             raw_generator_plugins,
-            pyproject.tool.cppython.generator_name,
+            cppython_local_configuration.generator_name,
             "Generator",
         )
 
         raw_provider_plugins = self.find_providers()
         provider_plugins = self.filter_plugins(
             raw_provider_plugins,
-            pyproject.tool.cppython.provider_name,
+            cppython_local_configuration.provider_name,
             "Provider",
         )
+
+        scm_plugins = self.find_source_managers()
+
+        scm_type = self.select_scm(scm_plugins, project_data)
 
         # Solve the messy interactions between plugins
         generator_type, provider_type = self.solve(generator_plugins, provider_plugins)
 
-        return PluginBuildData(generator_type=generator_type, provider_type=provider_type)
+        return PluginBuildData(generator_type=generator_type, provider_type=provider_type, scm_type=scm_type)
+
+    def generate_cppython_plugin_data(self, plugin_build_data: PluginBuildData) -> PluginCPPythonData:
+        """Generates the CPPython plugin data from the resolved plugins
+
+        Args:
+            plugin_build_data: The resolved plugin data
+
+        Returns:
+            The plugin data used by CPPython
+        """
+
+        return PluginCPPythonData(
+            generator_name=plugin_build_data.generator_type.name(),
+            provider_name=plugin_build_data.provider_type.name(),
+            scm_name=plugin_build_data.scm_type.name(),
+        )
 
     def generate_pep621_data(
-        self, pyproject: PyProject, project_configuration: ProjectConfiguration, scm: SCM | None
+        self, pep621_configuration: PEP621Configuration, project_configuration: ProjectConfiguration, scm: SCM | None
     ) -> PEP621Data:
-        """_summary_
+        """Generates the PEP621 data from configuration sources
 
         Args:
-            pyproject: _description_
-            project_configuration: _description_
-            scm: _description_
+            pep621_configuration: The PEP621 configuration
+            project_configuration: The project configuration
+            scm: The source control manager, if any
 
         Returns:
-            _description_
+            The resolved PEP621 data
         """
-        return resolve_pep621(pyproject.project, project_configuration, scm)
+        return resolve_pep621(pep621_configuration, project_configuration, scm)
 
-    def generate_core_data(
-        self,
-        project_data: ProjectData,
-        pyproject: PyProject,
-        pep621_data: PEP621Data,
-        plugin_build_date: PluginBuildData,
-    ) -> CoreData:
-        """Parses and returns resolved data from all configuration sources
-
-        Args:
-            project_data: Project data
-            pyproject: TODO
-            pep621_data: TODO
-            plugin_build_date: TODO
-
-        Raises:
-            ConfigError: Raised if data cannot be parsed
+    def resolve_global_config(self) -> CPPythonGlobalConfiguration:
+        """Generates the global configuration object
 
         Returns:
-            The resolved core object
+            The global configuration object
         """
 
-        global_configuration = CPPythonGlobalConfiguration()
-
-        cppython_data = resolve_cppython(pyproject.tool.cppython, global_configuration, project_data, plugin_build_date)
-
-        return CoreData(project_data=project_data, pep621_data=pep621_data, cppython_data=cppython_data)
+        return CPPythonGlobalConfiguration()
 
     def find_generators(self) -> list[type[Generator]]:
-        """_summary_
+        """Extracts the generator plugins from the package's entry points
 
         Raises:
-            PluginError: _description_
+            PluginError: Raised if no plugins can be found
 
         Returns:
-            _description_
+            The list of generator plugin types
         """
 
         group_name = "generator"
@@ -156,14 +137,12 @@ class Builder:
         for entry_point in list(metadata.entry_points(group=f"cppython.{group_name}")):
             loaded_type = entry_point.load()
             if not issubclass(loaded_type, Generator):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{resolve_name(loaded_type)}' plugin must be an instance of"
+                self._logger.warning(
+                    f"Found incompatible plugin. The '{loaded_type.name()}' plugin must be an instance of"
                     f" '{group_name}'"
                 )
             else:
-                self.logger.warning(
-                    f"{group_name} plugin found: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
-                )
+                self._logger.warning(f"{group_name} plugin found: {loaded_type.name()} from {getmodule(loaded_type)}")
                 plugin_types.append(loaded_type)
 
         if not plugin_types:
@@ -172,13 +151,13 @@ class Builder:
         return plugin_types
 
     def find_providers(self) -> list[type[Provider]]:
-        """_summary_
+        """Extracts the provider plugins from the package's entry points
 
         Raises:
-            PluginError: _description_
+            PluginError: Raised if no plugins can be found
 
         Returns:
-            _description_
+            The list of provider plugin types
         """
 
         group_name = "provider"
@@ -188,14 +167,12 @@ class Builder:
         for entry_point in list(metadata.entry_points(group=f"cppython.{group_name}")):
             loaded_type = entry_point.load()
             if not issubclass(loaded_type, Provider):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{resolve_name(loaded_type)}' plugin must be an instance of"
+                self._logger.warning(
+                    f"Found incompatible plugin. The '{loaded_type.name()}' plugin must be an instance of"
                     f" '{group_name}'"
                 )
             else:
-                self.logger.warning(
-                    f"{group_name} plugin found: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
-                )
+                self._logger.warning(f"{group_name} plugin found: {loaded_type.name()} from {getmodule(loaded_type)}")
                 plugin_types.append(loaded_type)
 
         if not plugin_types:
@@ -203,9 +180,39 @@ class Builder:
 
         return plugin_types
 
-    def filter_plugins(
-        self, plugin_types: list[type[DataPluginT]], pinned_name: str | None, group_name: str
-    ) -> list[type[DataPluginT]]:
+    def find_source_managers(self) -> list[type[SCM]]:
+        """Extracts the source control manager plugins from the package's entry points
+
+        Raises:
+            PluginError: Raised if no plugins can be found
+
+        Returns:
+            The list of source control manager plugin types
+        """
+
+        group_name = "scm"
+        plugin_types: list[type[SCM]] = []
+
+        # Filter entries by type
+        for entry_point in list(metadata.entry_points(group=f"cppython.{group_name}")):
+            loaded_type = entry_point.load()
+            if not issubclass(loaded_type, SCM):
+                self._logger.warning(
+                    f"Found incompatible plugin. The '{loaded_type.name()}' plugin must be an instance of"
+                    f" '{group_name}'"
+                )
+            else:
+                self._logger.warning(f"{group_name} plugin found: {loaded_type.name()} from {getmodule(loaded_type)}")
+                plugin_types.append(loaded_type)
+
+        if not plugin_types:
+            raise PluginError(f"No {group_name} plugin was found")
+
+        return plugin_types
+
+    def filter_plugins[
+        T: DataPlugin
+    ](self, plugin_types: list[type[T]], pinned_name: str | None, group_name: str) -> list[type[T]]:
         """Finds and filters data plugins
 
         Args:
@@ -223,20 +230,20 @@ class Builder:
         # Lookup the requested plugin if given
         if pinned_name is not None:
             for loaded_type in plugin_types:
-                if resolve_name(loaded_type) == pinned_name:
-                    self.logger.warning(
-                        f"Using {group_name} plugin: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
+                if loaded_type.name() == pinned_name:
+                    self._logger.warning(
+                        f"Using {group_name} plugin: {loaded_type.name()} from {getmodule(loaded_type)}"
                     )
                     return [loaded_type]
 
-        self.logger.warning(f"'{group_name}_name' was empty. Trying to deduce {group_name}s")
+        self._logger.warning(f"'{group_name}_name' was empty. Trying to deduce {group_name}s")
 
-        supported_types: list[type[DataPluginT]] = []
+        supported_types: list[type[T]] = []
 
         # Deduce types
         for loaded_type in plugin_types:
-            self.logger.warning(
-                f"A {group_name} plugin is supported: {resolve_name(loaded_type)} from {getmodule(loaded_type)}"
+            self._logger.warning(
+                f"A {group_name} plugin is supported: {loaded_type.name()} from {getmodule(loaded_type)}"
             )
             supported_types.append(loaded_type)
 
@@ -246,20 +253,40 @@ class Builder:
 
         return supported_types
 
+    def select_scm(self, scm_plugins: list[type[SCM]], project_data: ProjectData) -> type[SCM]:
+        """Given data constraints, selects the SCM plugin to use
+
+        Args:
+            scm_plugins: The list of SCM plugin types
+            project_data: The project data
+
+        Raises:
+            PluginError: Raised if no SCM plugin was found that supports the given data
+
+        Returns:
+            The selected SCM plugin type
+        """
+
+        for scm_type in scm_plugins:
+            if scm_type.features(project_data.pyproject_file.parent).repository:
+                return scm_type
+
+        raise PluginError("No SCM plugin was found that supports the given path")
+
     def solve(
         self, generator_types: list[type[Generator]], provider_types: list[type[Provider]]
     ) -> tuple[type[Generator], type[Provider]]:
-        """_summary_
+        """Selects the first generator and provider that can work together
 
         Args:
-            generator_types: _description_
-            provider_types: _description_
+            generator_types: The list of generator plugin types
+            provider_types: The list of provider plugin types
 
         Raises:
-            PluginError: _description_
+            PluginError: Raised if no provider that supports a given generator could be deduced
 
         Returns:
-            _description_
+            A tuple of the selected generator and provider plugin types
         """
 
         combos: list[tuple[type[Generator], type[Provider]]] = []
@@ -279,113 +306,161 @@ class Builder:
 
     def create_scm(
         self,
-        project_data: ProjectData,
-    ) -> SCM | None:
-        """_summary_
+        core_data: CoreData,
+        scm_type: type[SCM],
+    ) -> SCM:
+        """Creates a source control manager from input configuration
 
         Args:
-            project_data: _description_
-
-        Raises:
-            PluginError: Ya
+            core_data: The resolved configuration data
+            scm_type: The plugin type
 
         Returns:
-            _description_
+            The constructed source control manager
         """
-        group = "scm"
-        path = project_data.pyproject_file.parent
 
-        scm_types: list[type[SCM]] = []
+        cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, scm_type)
+        scm_data = resolve_scm(core_data.project_data, cppython_plugin_data)
 
-        if not (entries := list(metadata.entry_points(group=f"cppython.{group}"))):
-            raise PluginError("No SCM plugin found")
-
-        # Filter entries
-        for entry_point in entries:
-            plugin_type = entry_point.load()
-            if not issubclass(plugin_type, SCM):
-                self.logger.warning(
-                    f"Found incompatible plugin. The '{resolve_name(plugin_type)}' plugin must be an instance of"
-                    f" '{group}'"
-                )
-            else:
-                scm_types.append(plugin_type)
-
-        # Deduce the SCM repository
-        plugin = None
-        for scm_type in scm_types:
-            if scm_type.features(path).repository:
-                scm_data = resolve_scm(project_data)
-                plugin = scm_type(scm_data)
-                break
-
-        if not plugin:
-            self.logger.error("No applicable SCM plugin found for the given path")
+        plugin = scm_type(scm_data)
 
         return plugin
 
     def create_generator(
-        self, core_data: CoreData, generator_configuration: dict[str, Any], generator_type: type[Generator]
+        self,
+        core_data: CoreData,
+        pep621_data: PEP621Data,
+        generator_configuration: dict[str, Any],
+        generator_type: type[Generator],
     ) -> Generator:
         """Creates a generator from input configuration
 
         Args:
             core_data: The resolved configuration data
+            pep621_data: The PEP621 data
             generator_configuration: The generator table of the CPPython configuration data
             generator_type: The plugin type
-
-        Raises:
-            PluginError: Raised if no viable generator plugin was found
 
         Returns:
             The constructed generator
         """
 
-        generator_data = resolve_generator(core_data.project_data)
         cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, generator_type)
+
+        generator_data = resolve_generator(core_data.project_data, cppython_plugin_data)
+
+        if not generator_configuration:
+            self._logger.error(
+                "The pyproject.toml table 'tool.cppython.generator' does not exist. Sending generator empty data",
+            )
 
         core_plugin_data = CorePluginData(
             project_data=core_data.project_data,
-            pep621_data=core_data.pep621_data,
+            pep621_data=pep621_data,
             cppython_data=cppython_plugin_data,
         )
-
-        if not generator_configuration:
-            self.logger.error(
-                "The pyproject.toml table 'tool.cppython.generator' does not exist. Sending generator empty data",
-            )
 
         return generator_type(generator_data, core_plugin_data, generator_configuration)
 
     def create_provider(
-        self, core_data: CoreData, provider_configuration: dict[str, Any], provider_type: type[Provider]
+        self,
+        core_data: CoreData,
+        pep621_data: PEP621Data,
+        provider_configuration: dict[str, Any],
+        provider_type: type[Provider],
     ) -> Provider:
         """Creates Providers from input data
 
         Args:
             core_data: The resolved configuration data
+            pep621_data: The PEP621 data
             provider_configuration: The provider data table
             provider_type: The type to instantiate
-
-        Raises:
-            PluginError: Raised if no viable provider plugin was found
 
         Returns:
             A constructed provider plugins
         """
 
-        provider_data = resolve_provider(core_data.project_data)
         cppython_plugin_data = resolve_cppython_plugin(core_data.cppython_data, provider_type)
 
-        core_plugin_data = CorePluginData(
-            project_data=core_data.project_data,
-            pep621_data=core_data.pep621_data,
-            cppython_data=cppython_plugin_data,
-        )
+        provider_data = resolve_provider(core_data.project_data, cppython_plugin_data)
 
         if not provider_configuration:
-            self.logger.error(
+            self._logger.error(
                 "The pyproject.toml table 'tool.cppython.provider' does not exist. Sending provider empty data",
             )
 
+        core_plugin_data = CorePluginData(
+            project_data=core_data.project_data,
+            pep621_data=pep621_data,
+            cppython_data=cppython_plugin_data,
+        )
+
         return provider_type(provider_data, core_plugin_data, provider_configuration)
+
+
+class Builder:
+    """Helper class for building CPPython projects"""
+
+    def __init__(self, project_configuration: ProjectConfiguration, logger: Logger) -> None:
+        self._project_configuration = project_configuration
+        self._logger = logger
+
+        # Default logging levels
+        levels = [logging.WARNING, logging.INFO, logging.DEBUG]
+
+        # Add default output stream
+        self._logger.addHandler(logging.StreamHandler())
+        self._logger.setLevel(levels[project_configuration.verbosity])
+
+        self._logger.info("Logging setup complete")
+
+        self._resolver = Resolver(self._project_configuration, self._logger)
+
+    def build(
+        self,
+        pep621_configuration: PEP621Configuration,
+        cppython_local_configuration: CPPythonLocalConfiguration,
+        plugin_build_data: PluginBuildData | None = None,
+    ) -> Data:
+        """Builds the project data
+
+        Args:
+            pep621_configuration: The PEP621 configuration
+            cppython_local_configuration: The local configuration
+            plugin_build_data: Plugin override data. If it exists, the build will use the given types instead of resolving them
+
+        Returns:
+            The built data object
+        """
+
+        project_data = resolve_project_configuration(self._project_configuration)
+
+        if plugin_build_data is None:
+            plugin_build_data = self._resolver.generate_plugins(cppython_local_configuration, project_data)
+
+        plugin_cppython_data = self._resolver.generate_cppython_plugin_data(plugin_build_data)
+
+        global_configuration = self._resolver.resolve_global_config()
+
+        cppython_data = resolve_cppython(
+            cppython_local_configuration, global_configuration, project_data, plugin_cppython_data
+        )
+
+        core_data = CoreData(project_data=project_data, cppython_data=cppython_data)
+
+        scm = self._resolver.create_scm(core_data, plugin_build_data.scm_type)
+
+        pep621_data = self._resolver.generate_pep621_data(pep621_configuration, self._project_configuration, scm)
+
+        # Create the chosen plugins
+        generator = self._resolver.create_generator(
+            core_data, pep621_data, cppython_local_configuration.generator, plugin_build_data.generator_type
+        )
+        provider = self._resolver.create_provider(
+            core_data, pep621_data, cppython_local_configuration.provider, plugin_build_data.provider_type
+        )
+
+        plugins = Plugins(generator=generator, provider=provider, scm=scm)
+
+        return Data(core_data, plugins, self._logger)

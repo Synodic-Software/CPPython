@@ -1,5 +1,4 @@
-"""A click CLI for CPPython interfacing
-"""
+"""A click CLI for CPPython interfacing"""
 
 from logging import getLogger
 from pathlib import Path
@@ -61,7 +60,8 @@ class Configuration:
             The constructed Project
         """
 
-        pyproject_data = tomlkit.loads(self.configuration.pyproject_file.read_text(encoding="utf-8"))
+        path: Path = self.configuration.pyproject_file
+        pyproject_data = tomlkit.loads(path.read_text(encoding="utf-8"))
 
         return Project(self.configuration, self.interface, pyproject_data)
 

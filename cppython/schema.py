@@ -1,10 +1,10 @@
-"""Project schema specifications
-"""
+"""Project schema specifications"""
 
 from abc import abstractmethod
+from typing import Protocol
 
 
-class API:
+class API(Protocol):
     """Project API specification"""
 
     @abstractmethod
