@@ -1,4 +1,4 @@
-"""Contains and manages the project data"""
+"""Defines the post-construction data management for CPPython"""
 
 from dataclasses import dataclass
 from logging import Logger
@@ -20,7 +20,7 @@ class Plugins:
 
 
 class Data:
-    """_summary_"""
+    """Contains and manages the project data"""
 
     def __init__(self, core_data: CoreData, plugins: Plugins, logger: Logger) -> None:
         self._core_data = core_data
