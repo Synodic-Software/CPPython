@@ -359,7 +359,7 @@ files = [
 
 [[package]]
 name = "pytest-cppython"
-version = "0.3.1.dev49"
+version = "0.3.1.dev50"
 requires_python = ">=3.12"
 summary = "A pytest plugin that imports CPPython testing types"
 dependencies = [
@@ -370,8 +370,8 @@ dependencies = [
     "pytest>=8.0.0",
 ]
 files = [
-    {file = "pytest_cppython-0.3.1.dev49-py3-none-any.whl", hash = "sha256:99e61318c4af078d86529b8f7e16da24de8b31ea1eb2df4cf99a9c667ad88000"},
-    {file = "pytest_cppython-0.3.1.dev49.tar.gz", hash = "sha256:d1a685c6cbfedcf9c6c17516c201026c7449918978b08afa935db38d0df28707"},
+    {file = "pytest_cppython-0.3.1.dev50-py3-none-any.whl", hash = "sha256:1b22cce6af81dbd6e6c1e6f8e15654ad6b0149c3d38e1312e8be36324b17f88a"},
+    {file = "pytest_cppython-0.3.1.dev50.tar.gz", hash = "sha256:c39ff9ee013af4c7e8b500d95eeb4e8dabc33099a9a8a9ab15139e328d8782c2"},
 ]
 
 [[package]]
